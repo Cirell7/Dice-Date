@@ -67,6 +67,17 @@ nav ul li a:hover {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
+/*Икноки*/
+.tilda-icon {
+    background-image: url('https://static.tildacdn.com/tild3935-3966-4237-a163-623363626162/logoblackontranspare.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; /* Иконка поместится в элемент */
+    display: inline-block;
+    width: 1em; /* Соответствует размеру шрифта */
+    height: 1em;
+}
+
 
 /* Герой-секция */
 .hero {
@@ -198,6 +209,29 @@ section h2::after {
     margin-bottom: 15px;
 }
 
+/*Кнопка*/
+html {
+    scroll-behavior: smooth;
+}
+.scroll-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #06d6a0;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(6, 214, 160, 0.3);
+}
+.scroll-to-top svg {
+    color: white;
+}
 
 /* Подвал */
 footer {
@@ -368,3 +402,45 @@ footer {
     padding: 15px;
     font-size: 18px;
 }
+
+/*Ваш результат принят*/
+.success-modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.success-content {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    position: relative;
+}
+
+.success-content h2 {
+    color: #5a4a3a;
+    margin-bottom: 20px;
+}
+
+/* Добавил такую же палочку */
+.success-content h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, #ffd166, #ff9e64);
+    margin: 15px auto; /* По центру как в других заголовках */
+    border-radius: 2px;
+}
+
+.success-content .btn {
+    margin-top: 20px;
+}
+
