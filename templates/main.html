@@ -7,7 +7,7 @@
     <!-- Подключение Font Awesome для иконок -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'CSS/style.css' %}" />
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </head>
 <body>
 
@@ -146,9 +146,9 @@
                     <p>Автор: Уткина Полина Сергеевна</p>
                 </div>
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-vk"></i></a>
-                    <a href="#"><i class="fab fa-telegram"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="https://vk.com/school1208official"><i class="fab fa-vk"></i></a>
+                    <a href="https://t.me/school1208oficial"><i class="fab fa-telegram"></i></a>
+                    <a href="https://nashashcool.tilda.ws/"><i class="tilda-icon" title="Наш сайт на Tilda"></i></a>
                 </div>
             </div>
             <div class="copyright">
@@ -158,9 +158,11 @@
     </footer>
 
     <!-- Кнопка "Наверх" -->
-    <div class="scroll-to-top">
-        <i class="fas fa-chevron-up"></i>
-    </div>
+    <a href="#" class="scroll-to-top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </a>
 
     
     <div id="error-modal" class="modal">
@@ -185,5 +187,15 @@
         </div>
     </div>
 
+
+    {% if show_success %}
+<div class="success-modal">
+    <div class="success-content">
+        <h2>Принято!</h2>
+        <p>Ваше сообщение об ошибке отправлено.</p>
+        <a href="{% url 'main_menu' %}" class="btn">OK</a>
+    </div>
+</div>
+{% endif %}
 </body>
 </html>

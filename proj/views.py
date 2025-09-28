@@ -16,7 +16,9 @@ def submit_error(request):
     if request.method == "POST":
         error = request.POST.get("error")
         email = request.POST.get("email")
-        if error:
+        if error and error.strip():
             Form_error.objects.create(error=error, email=email)
-            return redirect('main_menu')  # ← это важно!
+            # Показываем ту же страницу с флагом успеха
+            return render(request, 'main.html', {'show_success': True})
+    
     return redirect('main_menu')
