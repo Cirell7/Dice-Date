@@ -1,0 +1,236 @@
+/* Шапка - современная */
+header {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    padding: 15px 0;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+
+.logo-icon {
+    margin-right: 10px;
+    font-size: 32px;
+}
+
+/* Десктопное меню */
+.desktop-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.desktop-nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.desktop-nav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffd166;
+}
+
+/* Простой dropdown */
+.nav-item.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none !important;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    min-width: 180px;
+    padding: 10px 0;
+    border-radius: 6px;
+    list-style: none;
+    z-index: 1000;
+    margin-top: 5px;
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block !important;
+
+}
+
+.dropdown-item {
+    display: block;
+    padding: 8px 16px;
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Мобильное меню - скрыто на десктопе */
+.mobile-menu {
+    display: none;
+}
+
+.menu-toggle {
+    display: none;
+}
+
+/* Гамбургер-иконка */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.hamburger span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: white;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* Мобильное меню */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    padding: 80px 30px 30px;
+    transition: right 0.3s ease;
+    z-index: 999;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+}
+
+.mobile-nav__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-nav__menu li a {
+    color: white;
+    text-decoration: none;
+    padding: 15px 20px;
+    display: block;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.mobile-nav__menu li a:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(5px);
+}
+
+/* Медиа-запрос для мобильных */
+@media (max-width: 768px) {
+    .desktop-nav {
+        display: none;
+    }
+    
+    .mobile-menu {
+        display: block;
+    }
+    
+    .hamburger {
+        display: flex;
+    }
+    
+    .mobile-nav {
+        display: block;
+    }
+    
+    /* Анимация гамбургера */
+    .menu-toggle:checked + .hamburger span:nth-child(1) {
+        transform: rotate(45deg) translate(6px, 6px);
+    }
+    
+    .menu-toggle:checked + .hamburger span:nth-child(2) {
+        opacity: 0;
+    }
+    
+    .menu-toggle:checked + .hamburger span:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
+    }
+    
+    .menu-toggle:checked + .hamburger span {
+        background-color: white;
+    }
+    
+    /* Адаптивность логотипа */
+    .logo {
+        font-size: 24px;
+    }
+    
+    .logo-icon {
+        font-size: 28px;
+    }
+    
+    .header-content {
+        padding: 0 15px;
+    }
+}
+
+/* Дополнительные улучшения для очень маленьких экранов */
+@media (max-width: 480px) {
+    .mobile-nav {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .logo {
+        font-size: 20px;
+    }
+    
+    .logo-icon {
+        font-size: 24px;
+        margin-right: 8px;
+    }
+}
+
+/* Улучшение доступности для фокуса */
+.mobile-nav__menu li a:focus {
+    outline: 2px solid #ffd166;
+    outline-offset: 2px;
+}
+
+.hamburger:focus {
+    outline: 2px solid #ffd166;
+}

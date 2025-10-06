@@ -1,0 +1,81 @@
+
+
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/menu.css' %}" />
+{% endblock %}
+
+<!-- Шапка сайта -->
+<header>
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🎲</span>
+                <span>Dice&Date</span>
+            </div>
+            
+            <!-- Десктопное меню -->
+            <nav class="desktop-nav">
+                <ul>
+                    <li><a href="{% url 'main_menu' %}">Главная</a></li>
+                    <li><a href="{% url 'maintwo_menu' %}">О проекте</a></li>
+                    <li><a href="#error-modal">Сообщить об ошибке</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button">Аккаунт</a>
+                        <ul class="dropdown-menu">
+                            {% if user.is_authenticated %}
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+                            {% else %}
+                            <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
+                            <li><a class="dropdown-item" href="{% url 'register' %}">Создать аккаунт</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Мобильное меню -->
+            <div class="mobile-menu">
+                <input id="menu-toggle" type="checkbox" class="menu-toggle">
+                <label for="menu-toggle" class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </label>
+                
+                <nav class="mobile-nav">
+                    <ul class="mobile-nav__menu">
+                        <li><a href="{% url 'main_menu' %}">Главная</a></li>
+                        <li><a href="{% url 'maintwo_menu' %}">О проекте</a></li>
+                        <li><a href="#relevance">Актуальность</a></li>
+                        <li><a href="#error-modal">Сообщить об ошибке</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button">Аккаунт</a>
+                            <ul class="dropdown-menu">
+                                {% if user.is_authenticated %}
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+                                {% else %}
+                                <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
+                                <li><a class="dropdown-item" href="{% url 'register' %}">Создать аккаунт</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    // Закрытие меню при клике на ссылку
+    const mobileLinks = document.querySelectorAll('.mobile-nav__menu a');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            menuToggle.checked = false;
+            mobileNav.style.right = '-100%';
+            body.style.overflow = 'auto';
+        });
+    });
+</script>
