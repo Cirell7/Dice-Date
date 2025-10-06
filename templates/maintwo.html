@@ -1,0 +1,120 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="https://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block title %}
+  Страница #{{ current_page }}
+{% endblock %}
+
+{% block main %}
+    <!-- Секция "Актуальность проекта" -->
+    <section class="relevance" id="relevance">
+        <div class="container">
+            <h2>Актуальность проекта</h2>
+                <div class="relevance-text">
+                    <p>Актуальность проекта обусловлена потребностью в социализации. Настольные игры — популярное хобби, которое развивает логику, коммуникацию и креативность.</p>
+                    <p>Они сближают людей и поднимают настроение, но не у всех есть для этого подходящая компания. Даже имея друзей, многие люди испытывают одиночество, так как не могут разделить свои увлечения и просто провести время вместе.</p>
+                    <p>Создание сайта Dice&Date поможет преодолеть одиночество и найти единомышленников по интересам в своём городе. Он позволяет организовывать встречи просто и безопасно.</p>
+                </div>
+        </div>
+    </section>
+    
+    <!-- Секция "Цели и задачи проекта" -->
+    <section class="goals-tasks">
+        <div class="container">
+            <h2>Цели и задачи</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <h4><i class="fas fa-bullseye"></i> Цели проекта</h4>
+                    <ul class="goals-list">
+                        <li>Разработать и реализовать функциональный веб-сайт на тему meetup-встреч</li>
+                        <li>Применить полученные знания и навыки в области веб-разработки</li>
+                        <li>Развить навыки самостоятельной работы и планирования</li>
+                        <li>Освоить современные технологии веб-разработки</li>
+                    </ul>
+                </div>
+                <div class="benefit-item">
+                    <h4><i class="fas fa-tasks"></i> Задачи проекта</h4>
+                    <ul class="tasks-list">
+                        <li>Изучить теоретические основы веб-разработки</li>
+                        <li>Определить структуру сайта, контент и дизайн</li>
+                        <li>Разработать макеты страниц</li>
+                        <li>Написать код сайта с использованием выбранных технологий</li>
+                        <li>Обеспечить адаптивность сайта для различных устройств</li>
+                        <li>Протестировать сайт и внести необходимые исправления</li>
+                        <li>Разместить сайт в интернете</li>
+                        <li>Подготовить документацию по проекту</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Секция "Общие сведения о проекте" -->
+    <section id="about" class="about-project">
+        <div class="container">
+            <h2>О проекте</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <h4><i class="fas fa-info-circle"></i> Основная информация</h4>
+                    <p><strong>Название проекта:</strong> Dice&Date</p>
+                    <p><strong>Предметная область:</strong> Платформа для локальных встреч</p>
+                    <p><strong>Тип проекта:</strong> Индивидуальный</p>
+                </div>
+                <div class="benefit-item">
+                    <h4><i class="fas fa-user-tie"></i> Участники проекта</h4>
+                    <p><strong>Автор проекта:</strong> Уткина Полина Сергеевна</p>
+                    <p><strong>Руководитель проекта:</strong> Христофорова Анастасия Владимировна</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Кнопка "Наверх" -->
+    <a href="#" class="scroll-to-top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </a>
+
+    <!-- Модальное окно для сообщения об ошибке -->
+    <div id="error-modal" class="modal">
+        <div class="modal-content">
+            <a href="#" class="close-btn">×</a>
+            <h2>Сообщить об ошибке</h2>
+            
+            <form action="{% url 'submit_error' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="error-text">Опишите ошибку:</label>
+                    <textarea id="error-text" name="error" required placeholder="Что пошло не так?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Ваш email:</label>
+                    <input type="email" id="email" name="email" placeholder="email@example.com">
+                </div>
+                
+                <button type="submit" class="btn">Отправить сообщение</button>
+            </form>
+        </div>
+    </div>
+
+    {% if show_success %}
+    <div class="success-modal">
+        <div class="success-content">
+            <h2>Принято!</h2>
+            <p>Ваше сообщение об ошибке отправлено.</p>
+            <a href="{% url 'maintwo_menu' %}" class="btn">OK</a>
+        </div>
+    </div>
+    {% endif %}
+
+{% endblock %}
