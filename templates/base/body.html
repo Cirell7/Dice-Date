@@ -1,0 +1,47 @@
+
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/body.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+    <!-- Кнопка "Наверх" -->
+    <a href="#" class="scroll-to-top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </a>
+
+    <!-- Модальное окно для сообщения об ошибке -->
+    <div id="error-modal" class="modal">
+        <div class="modal-content">
+            <a href="#" class="close-btn">×</a>
+            <h2>Сообщить об ошибке</h2>
+            
+            <form action="{% url 'submit_error' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="error-text">Опишите ошибку:</label>
+                    <textarea id="error-text" name="error" required placeholder="Что пошло не так?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Ваш email:</label>
+                    <input type="email" id="email" name="email" placeholder="email@example.com">
+                </div>
+                
+                <button type="submit" class="btn">Отправить сообщение</button>
+            </form>
+        </div>
+    </div>
+
+    {% if show_success %}
+    <div class="success-modal">
+        <div class="success-content">
+            <h2>Принято!</h2>
+            <p>Ваше сообщение об ошибке отправлено.</p>
+            <a href="{% url 'maintwo_menu' %}" class="btn">OK</a>
+        </div>
+    </div>
+    {% endif %}
