@@ -1,81 +1,89 @@
-
-
 {% load static %}
 
 {% block extra_style %}
   <link rel="stylesheet" href="{% static 'css/menu.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/menu_media.css' %}" />
 {% endblock %}
 
-<!-- Шапка сайта -->
+{% block main %}
 <header>
-    <div class="container">
-        <div class="header-content">
-            <div class="logo">
-                <span class="logo-icon">🎲</span>
-                <span>Dice&Date</span>
-            </div>
+    <div>
+        <div class="logo">
+            <span class="logo-icon">🎲</span>
+            <span>Dice&Date</span>
+        </div>
+
+        <!-- Десктопное меню -->
+        <nav class="desktop-nav desktop-only">
+            <ul class="nav-links">
+                <li class="nav-item"><a class="nav-link" href="{% url 'main_menu' %}">Главная</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'maintwo_menu' %}">О проекте</a></li>
+                <li class="nav-item"><a class="nav-link" href="#error-modal">Сообщить об ошибке</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
+                    <ul class="dropdown-menu">
+                        {% if user.is_authenticated %}
+                        <li><a class="dropdown-item" href="">Выйти</a></li>
+                        {% else %}
+                        <li><a class="dropdown-item" href="">Войти</a></li>
+                        <li><a class="dropdown-item" href="">Создать аккаунт</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Мобильное меню -->
+        <div class="mobile-menu">
+            <input id="menu-toggle" type="checkbox" class="menu-toggle">
+            <label for="menu-toggle" class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </label>
             
-            <!-- Десктопное меню -->
-            <nav class="desktop-nav">
-                <ul>
-                    <li><a href="{% url 'main_menu' %}">Главная</a></li>
-                    <li><a href="{% url 'maintwo_menu' %}">О проекте</a></li>
-                    <li><a href="#error-modal">Сообщить об ошибке</a></li>
+            <nav class="mobile-nav">
+                <label for="menu-toggle" class="mobile-nav__close">✕</label>
+                <ul class="mobile-nav__menu">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'main_menu' %}">Главная</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'maintwo_menu' %}">О проекте</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#relevance">Актуальность</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#error-modal">Сообщить об ошибке</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button">Аккаунт</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
                         <ul class="dropdown-menu">
                             {% if user.is_authenticated %}
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+                            <li><a class="dropdown-item" href="">Выйти</a></li>
                             {% else %}
-                            <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
-                            <li><a class="dropdown-item" href="{% url 'register' %}">Создать аккаунт</a></li>
+                            <li><a class="dropdown-item" href="">Войти</a></li>
+                            <li><a class="dropdown-item" href="">Создать аккаунт</a></li>
                             {% endif %}
                         </ul>
                     </li>
                 </ul>
             </nav>
-
-            <!-- Мобильное меню -->
-            <div class="mobile-menu">
-                <input id="menu-toggle" type="checkbox" class="menu-toggle">
-                <label for="menu-toggle" class="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </label>
-                
-                <nav class="mobile-nav">
-                    <ul class="mobile-nav__menu">
-                        <li><a href="{% url 'main_menu' %}">Главная</a></li>
-                        <li><a href="{% url 'maintwo_menu' %}">О проекте</a></li>
-                        <li><a href="#relevance">Актуальность</a></li>
-                        <li><a href="#error-modal">Сообщить об ошибке</a></li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button">Аккаунт</a>
-                            <ul class="dropdown-menu">
-                                {% if user.is_authenticated %}
-                                <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
-                                {% else %}
-                                <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
-                                <li><a class="dropdown-item" href="{% url 'register' %}">Создать аккаунт</a></li>
-                                {% endif %}
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
         </div>
     </div>
 </header>
 
 <script>
-    // Закрытие меню при клике на ссылку
-    const mobileLinks = document.querySelectorAll('.mobile-nav__menu a');
-    mobileLinks.forEach(link => {
-        link.addEventListener('click', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileNav = document.querySelector('.mobile-nav');
+        const mobileClose = document.getElementById('mobile-close');
+
+        menuToggle.addEventListener('change', function() {
+            if (this.checked) {
+                mobileNav.style.right = '0';
+            } else {
+                mobileNav.style.right = '-100%';
+            }
+        });
+        
+        mobileClose.addEventListener('click', function() {
             menuToggle.checked = false;
             mobileNav.style.right = '-100%';
-            body.style.overflow = 'auto';
         });
     });
 </script>
+{% endblock %}
