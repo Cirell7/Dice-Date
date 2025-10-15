@@ -1,0 +1,45 @@
+/* КНОПКА НАВЕРХ */
+.scroll-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #3498db, #9b59b6);
+    color: white;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    text-decoration: none;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.scroll-to-top:hover {
+    background: linear-gradient(135deg, #2980b9, #8e44ad);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.6);
+}
+
+.scroll-to-top svg {
+    color: white;
+}
+
+
+/* КНОПКА */
+.btn {
+    background: linear-gradient(135deg, #3498db, #9b59b6);
+    color: white;
+    padding: 15px 35px;
+    border-radius: 30px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
