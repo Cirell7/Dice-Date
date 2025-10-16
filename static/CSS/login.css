@@ -1,0 +1,41 @@
+/* Класс для центрирования контента на страницах */
+.centered-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+/* Улучшим расстояния в форме */
+.modal-content form {
+    margin-top: 20px;
+}
+
+.modal-content p {
+    text-align: center;
+    margin-top: 25px;
+    color: #2c3e50;
+}
+
+.modal-content a {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.modal-content a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* Стили для ошибок */
+.error-message {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+    padding: 8px;
+    background: #fdf2f2;
+    border-radius: 5px;
+    border-left: 3px solid #e74c3c;
+}

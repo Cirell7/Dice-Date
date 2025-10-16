@@ -19,4 +19,5 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", proj.views.logout_view, name="logout"),
+    path("profile/", proj.views.profile_page, name="profile"),
 ]

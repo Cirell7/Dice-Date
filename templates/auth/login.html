@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/login.css' %}" />
+{% endblock %}
+
+{% block title %}
+  Логин
+{% endblock %}
+
+{% block main %}
+<div class="container_background centered-page">
+  <div class="modal-content">
+    <h2>Вход</h2>  <!-- Добавьте заголовок -->
+    
+    <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+
+      {% for field in form.visible_fields %}
+        <div class="form-group">  <!-- Добавьте класс form-group -->
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="error-message">
+              {% for error in field.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn">Войти</button>
+      
+      {% if form.errors %}
+        <div class="error-message" style="margin-top: 15px;">
+          Ваше имя пользователя и/или пароль введены неправильно. Попробуйте снова.
+        </div>
+      {% endif %}
+    </form>
+
+    <p>
+      Нет аккаунта? <a href="{% url 'register' %}">Создайте!</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

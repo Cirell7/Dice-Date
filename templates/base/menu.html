@@ -23,10 +23,10 @@
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
                     <ul class="dropdown-menu">
                         {% if user.is_authenticated %}
-                        <li><a class="dropdown-item" href="">Выйти</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
                         {% else %}
-                        <li><a class="dropdown-item" href="">Войти</a></li>
-                        <li><a class="dropdown-item" href="">Создать аккаунт</a></li>
+                        <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
+                        <li><a class="dropdown-item" href="{% url 'register' %}">Создать аккаунт</a></li>
                         {% endif %}
                     </ul>
                 </li>
@@ -53,10 +53,10 @@
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
                         <ul class="dropdown-menu">
                             {% if user.is_authenticated %}
-                            <li><a class="dropdown-item" href="">Выйти</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
                             {% else %}
-                            <li><a class="dropdown-item" href="">Войти</a></li>
-                            <li><a class="dropdown-item" href="">Создать аккаунт</a></li>
+                            <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
+                            <li><a class="dropdown-item" href="{% url 'register' %}">Создать аккаунт</a></li>
                             {% endif %}
                         </ul>
                     </li>
