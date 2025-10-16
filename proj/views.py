@@ -1,11 +1,10 @@
 from django.shortcuts import render,redirect
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from proj.models import Form,Form_error
+from proj.models import Form_error
 from proj.form import RegisterForm
 from django.db.models import QuerySet
 from django.contrib.auth import login, logout
 
-# Create your views here.
 def profile_page(request: HttpRequest) -> HttpResponse:
     """
     страница профиля

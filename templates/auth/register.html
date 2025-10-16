@@ -1,0 +1,38 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block extra_style %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}" />
+{% endblock %}
+
+{% block title %}
+  Регистрация
+{% endblock %}
+
+{% block main %}
+<div class="container_background centered-page">
+  <div class="modal-content">
+      <h2>Регистрация</h2>
+      <form action="{% url 'register' %}" method="post">
+          {% csrf_token %}
+
+          {% for field in form.visible_fields %}
+              <div class="form-group">  <!-- Добавьте этот класс -->
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field }}
+              </div>
+          {% endfor %}
+
+          <button type="submit" class="btn">Зарегистрироваться</button>
+
+          {% if error == 1 %}
+              <div class="error-message" style="margin-top: 15px;">
+                  Пользователь с таким именем уже существует. Попробуйте снова.
+              </div>
+          {% endif %}
+      </form>
+
+      <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войдите!</a></p>
+  </div>
+</div>
+{% endblock %}
