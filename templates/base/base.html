@@ -9,6 +9,7 @@
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="stylesheet" href="{% static 'css/base/base.css' %}" />
+    <link rel="stylesheet" href="{% static "css/base/element.css" %}">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet" />
 
@@ -37,7 +38,7 @@
     </header>
     
     <main>
-      {% include 'base/body.html' %}
+      {% include 'base/reportpage.html' %}
       {% block main %}{% endblock %}
     </main>
 

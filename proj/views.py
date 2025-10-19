@@ -52,10 +52,10 @@ def logout_view(request):
 
 
 def main_menu(request):
-    return render(request, "pages/hero.html")
+    return render(request, "pages/main.html")
 
 def maintwo_menu(request):
-    return render(request, "pages/main.html")
+    return render(request, "pages/main2.html")
 
 def submit_error(request):
     if request.method == "POST":
@@ -64,6 +64,6 @@ def submit_error(request):
         if error and error.strip():
             Form_error.objects.create(error=error, email=email)
             # Показываем ту же страницу с флагом успеха
-            return render(request, 'pages/hero.html', {'show_success': True})
+            return render(request, 'pages/main.html', {'show_success': True})
 
     return redirect('main_menu')
