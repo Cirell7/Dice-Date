@@ -1,71 +1,76 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-
-{% block extra_scripts %}
-  <script src="https://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+{% block extra_style %}
+<link rel="stylesheet" href="{% static 'css/dice_date/onboarding.css'%}">
 {% endblock %}
+
 {% block main %}
 <div class="profile-container">
     <h1>Добро пожаловать, {{ user.username }}!</h1>
-    <!-- ваш основной контент профиля -->
+    
+    <!-- ТЕСТОВЫЙ БЛОК -->
+    <div style="background: {% if show_onboarding %}green{% else %}red{% endif %}; color: white; padding: 10px; margin: 10px 0;">
+        show_onboarding = {{ show_onboarding }}
+    </div>
 </div>
 
 <!-- Onboarding модальное окно -->
 {% if show_onboarding %}
-    <div id="onboarding-modal" class="modal">
-        <div class="modal-content">
-            <div class="onboarding-step">
-                <div class="onboarding-header">
-                    <h2>О вас</h2>
-                    <p>Расскажите нам о себе, чтобы улучшить ваш опыт</p>
-                </div>
-                
-                <div class="gender-selection">
-                    <div class="gender-option">
-                        <input type="radio" id="female" name="gender" value="female">
-                        <label for="female" class="gender-card">
-                            <span class="gender-icon">👩</span>
-                            <span class="gender-label">Женщина</span>
-                        </label>
-                    </div>
-                    
-                    <div class="gender-option">
-                        <input type="radio" id="male" name="gender" value="male">
-                        <label for="male" class="gender-card">
-                            <span class="gender-icon">👨</span>
-                            <span class="gender-label">Мужчина</span>
-                        </label>
-                    </div>
-                    
-                    <div class="gender-option">
-                        <input type="radio" id="prefer-not-to-say" name="gender" value="prefer-not-to-say">
-                        <label for="prefer-not-to-say" class="gender-card">
-                            <span class="gender-icon">🙂</span>
-                            <span class="gender-label">Предпочитаю не говорить</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button type="button" class="btn-secondary" onclick="closeOnboarding()">Пропустить</button>
-                    <button type="button" class="btn-primary" onclick="saveOnboarding()">Продолжить</button>
-                </div>
+<div class="onboarding-overlay">
+    <div class="modal-content">
+        <a href="#" class="close-btn" onclick="closeOnboarding(); return false;">×</a>
+        
+        <div class="onboarding-header">
+            <h2>О вас</h2>
+            <p>Расскажите нам о себе, чтобы улучшить ваш опыт</p>
+        </div>
+        
+        <div class="gender-selection">
+            <div class="gender-option">
+                <input type="radio" id="female" name="gender" value="female">
+                <label for="female" class="gender-card">
+                    <span>👩</span>
+                    <span>Женщина</span>
+                </label>
+            </div>
+            
+            <div class="gender-option">
+                <input type="radio" id="male" name="gender" value="male">
+                <label for="male" class="gender-card">
+                    <span>👨</span>
+                    <span>Мужчина</span>
+                </label>
+            </div>
+            
+            <div class="gender-option">
+                <input type="radio" id="prefer-not-to-say" name="gender" value="prefer-not-to-say">
+                <label for="prefer-not-to-say" class="gender-card">
+                    <span>🙂</span>
+                    <span>Предпочитаю не говорить</span>
+                </label>
             </div>
         </div>
+        
+        <div class="action-buttons">
+            <button type="button" class="btn-secondary" onclick="closeOnboarding()">Пропустить</button>
+            <button type="button" class="btn-primary" onclick="saveOnboarding()">Продолжить</button>
+        </div>
     </div>
+</div>
+
 <script>
 function closeOnboarding() {
-    document.getElementById('onboarding-modal').style.display = 'none';
-    // Можно отправить AJAX запрос чтобы сохранить выбор
+    document.querySelector('.onboarding-overlay').style.display = 'none';
 }
 
-// Закрытие по клику вне окна
-document.getElementById('onboarding-modal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeOnboarding();
+function saveOnboarding() {
+    const selectedGender = document.querySelector('input[name="gender"]:checked');
+    if (selectedGender) {
+        console.log('Выбран пол:', selectedGender.value);
     }
-});
+    closeOnboarding();
+}
 </script>
 {% endif %}
 {% endblock %}
