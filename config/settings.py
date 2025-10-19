@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "proj",
     "core",
+    "pages",
     "dashboard"
 ]
 
@@ -50,10 +50,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'proj.middleware.OnboardingMiddleware',
+    'pages.middleware.OnboardingMiddleware',
 ]
 
-ROOT_URLCONF = 'first.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'first.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
