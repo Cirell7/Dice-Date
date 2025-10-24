@@ -1,0 +1,116 @@
+{% extends 'pages/profile.html' %}
+{% load static %}
+
+{% block extra_style %}
+<link rel="stylesheet" href="{% static 'css/dice_date/onboarding.css'%}">
+{% endblock %}
+
+{% block main %}
+{{ block.super }} 
+<div class="onboarding-overlay">
+    <div class="modal-content">
+        <a href="#" class="close-btn" onclick="closeOnboarding(); return false;">×</a>
+        
+        <div class="onboarding-header">
+            <h2>О вас</h2>
+            <p>Расскажите нам о себе, чтобы улучшить ваш опыт</p>
+        </div>
+        
+        <form id="onboarding-form">
+            {% csrf_token %}
+            
+            <div class="gender-selection">
+                <div class="gender-option">
+                    <input type="radio" id="female" name="gender" value="female" required>
+                    <label for="female" class="gender-card">
+                        <span>👩</span>
+                        <span>Женщина</span>
+                    </label>
+                </div>
+                
+                <div class="gender-option">
+                    <input type="radio" id="male" name="gender" value="male" required>
+                    <label for="male" class="gender-card">
+                        <span>👨</span>
+                        <span>Мужчина</span>
+                    </label>
+                </div>
+                
+                <div class="gender-option">
+                    <input type="radio" id="prefer-not-to-say" name="gender" value="prefer-not-to-say" required>
+                    <label for="prefer-not-to-say" class="gender-card">
+                        <span>🙂</span>
+                        <span>Предпочитаю не говорить</span>
+                    </label>
+                </div>
+            </div>
+    
+            <div class="form-section">
+                <h3>Дата рождения</h3>
+                <div class="birth-date-container">
+                    <input type="date" name="birth_date" id="birth_date" class="birth-date-input" required>
+                    <small class="birth-date-hint">Укажите вашу дату рождения</small>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn-secondary" onclick="closeOnboarding()">Пропустить</button>
+                <button type="button" class="btn-primary" onclick="saveOnboarding()" id="submit-btn">Продолжить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function closeOnboarding() {
+    document.querySelector('.onboarding-overlay').style.display = 'none';
+    window.location.href = "{% url 'profile' %}";
+}
+
+function saveOnboarding() {
+    const selectedGender = document.querySelector('input[name="gender"]:checked');
+    const birthDate = document.getElementById('birth_date').value;
+    const submitBtn = document.getElementById('submit-btn');
+    
+    // Простая валидация
+    if (!selectedGender) {
+        alert('Пожалуйста, выберите ваш пол');
+        return;
+    }
+    
+    if (!birthDate) {
+        alert('Пожалуйста, заполните дату рождения');
+        return;
+    }
+
+    // Блокируем кнопку
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Сохранение...';
+    
+    // Подготавливаем данные
+    const formData = new FormData();
+    formData.append('gender', selectedGender.value);
+    formData.append('birth_date', birthDate);  // исправлено на birth_date
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    
+    // Отправляем данные
+    fetch("", {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = "{% url 'profile' %}";
+        } else {
+            throw new Error('Ошибка сервера');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка при сохранении. Попробуйте еще раз.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Продолжить';
+    });
+}
+</script>
+{% endblock %}

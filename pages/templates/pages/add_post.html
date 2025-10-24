@@ -1,0 +1,112 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/add_post.css' %}" />
+{% endblock %}
+
+{% block title %}
+  Создать голосование
+{% endblock %}
+
+{% block main %}
+  <div class="container_background">
+    <div class="center">
+      <form action="/votings/add" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="voting_name">Введите имя</label>
+        <input type="text" name="voting_name" id="voting_name" placeholder="Имя" required minlength="1" maxlength="100" size="50" class="form-control" />
+        <label for="voting_description">Введите описание голосования</label>
+        <textarea name="voting_description" id="voting_description" placeholder="Описание" required minlength="1" maxlength="500" class="form-control"></textarea>
+        <label for="voting_type">Выберите тип</label>
+        <select name="voting_type" id="voting_type" placeholder="Тип" class="form-control">
+          <option value="0">Один из многих</option>
+          <option value="1">Несколько из многих</option>
+        </select>
+
+        <label for="voting_expiration_date">Дата окончания</label>
+        <input type="date" name="voting_expiration_date" id="voting_expiration_date" required class="form-control" min="{{ tomorrow|date:'Y-m-d' }}" />
+        <label for="voting_image">Изображение</label>
+        <input type="file" name="voting_image" id="voting_image" class="form-control" accept="image/*" />
+        <hr />
+        <div id="options-container"></div>
+        <button type="button" id="add-option" class="btn btn-primary">Добавить вариант</button>
+        <hr />
+        <button type="submit" id="submit_voting" class="btn btn-success" disabled="true">Создать</button>
+      </form>
+    </div>
+  </div>
+<script>
+    document.getElementById('add-option').addEventListener('click', function () {
+        var optionsContainer = document.getElementById('options-container');
+        var optionCount = optionsContainer.querySelectorAll('.option').length + 1;
+    
+        var newOption = document.createElement('div');
+        newOption.className = 'form-group option';
+    
+        var label = document.createElement('label');
+        label.htmlFor = 'option' + optionCount;
+        label.textContent = 'Вариант ' + optionCount + ':';
+    
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.id = 'option' + optionCount;
+        input.name = 'option' + optionCount;
+        input.className = 'form-control';
+        input.required = true;
+    
+        var removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'btn btn-danger btn-remove-option';
+        removeButton.textContent = 'Удалить';
+        removeButton.addEventListener('click', function () {
+            newOption.remove();
+            updateOptions();
+            switchSend();
+        });
+    
+        newOption.appendChild(label);
+        newOption.appendChild(input);
+        newOption.appendChild(removeButton);
+    
+        optionsContainer.appendChild(newOption);
+        updateOptions();
+        switchSend();
+    });
+    
+    
+    
+    function updateOptions() {
+        var optionsContainer = document.getElementById('options-container');
+        var options = optionsContainer.querySelectorAll('.option');
+    
+        options.forEach(function (option, index) {
+            var label = option.querySelector('label');
+            var input = option.querySelector('input');
+    
+            label.textContent = 'Вариант ' + (index + 1) + ':';
+            label.htmlFor = 'option' + (index + 1);
+    
+            input.id = 'option' + (index + 1);
+            input.name = 'option' + (index + 1);
+        });
+    }
+    
+    function switchSend() {
+        var optionsContainer = document.getElementById('options-container');
+        var options = optionsContainer.querySelectorAll('.option');
+        if (options.length < 2) {
+            document.getElementById("submit_voting").disabled = true;
+        }
+        else {
+            document.getElementById("submit_voting").disabled = false;
+        }
+    
+    }
+    
+    document.getElementById('voting_description').addEventListener('input', function (event) {
+        this.style.height = 'auto';
+        this.style.height = `${this.scrollHeight}px`;
+    });
+</script>
+{% endblock %}
