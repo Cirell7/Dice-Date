@@ -20,4 +20,6 @@ urlpatterns = [
     ),
     path("logout/", pages.views.logout_view, name="logout"),
     path("profile/", pages.views.profile_page, name="profile"),
+    path("profile_onboarding/", pages.views.profile_page_onboarding, name="profile_page_onboarding"),
+    path("add_post/", pages.views.add_post, name="add_post"),
 ]
