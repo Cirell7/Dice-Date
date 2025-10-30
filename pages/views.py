@@ -1,10 +1,18 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from pages.models import Post, Posts, Form_error, Profile
 from pages.form import RegisterForm
 from django.db.models import QuerySet
 from django.contrib.auth import login, logout
-
+from django.contrib.auth.views import LoginView
+class CustomLoginView(LoginView):
+    template_name = "auth/login.html"
+    
+    def get_success_url(self):
+        # Получаем профиль текущего пользователя
+        profile = get_object_or_404(Profile, user=self.request.user)
+        # Перенаправляем на страницу профиля с его id
+        return f'/profile/{self.request.user.id}'
 
 def profile_page_onboarding(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
@@ -13,21 +21,25 @@ def profile_page_onboarding(request: HttpRequest) -> HttpResponse:
         
         # Создаем профиль
         
-        profile = Profile.objects.create(
-            user=request.user,
-            gender=gender,
-            birth_date=birth_date
-        )
-
-        
+        profile = Profile.objects.get(user=request.user)  # ✅
+        profile.gender = gender
+        profile.birth_date = birth_date
         profile.save()
-        return redirect('profile')
-    
+
+        return redirect('profile',user_id=request.user.id)
+
     return render(request, "pages/onboarding.html")
 
-def profile_page(request: HttpRequest) -> HttpResponse:
-    return render(request, "pages/profile.html")
-
+def profile_page(request: HttpRequest, user_id) -> HttpResponse:
+    profile = get_object_or_404(Profile,user_id=user_id)
+    if request.FILES.get('photo'):
+        profile.photo = request.FILES['photo']
+        profile.save()
+        return redirect('profile',user_id=user_id)
+    context = {
+        "profile": profile
+    }
+    return render(request, "pages/profile.html", context)
 
 def register_page(request: HttpRequest) -> HttpResponse:
     error_input = 0
@@ -36,6 +48,7 @@ def register_page(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             user = form.save()
             login(request, user)
+            Profile.objects.create(user=request.user)
             return redirect('profile_page_onboarding')
         else:
             error_input = 1
