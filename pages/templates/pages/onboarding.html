@@ -64,7 +64,7 @@
 <script>
 function closeOnboarding() {
     document.querySelector('.onboarding-overlay').style.display = 'none';
-    window.location.href = "{% url 'profile' %}";
+    window.location.href = "{% url 'profile' user_id=user.id %}";
 }
 
 function saveOnboarding() {
@@ -100,7 +100,7 @@ function saveOnboarding() {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = "{% url 'profile' %}";
+            window.location.href = "{% url 'profile' user_id=user.id %}";
         } else {
             throw new Error('Ошибка сервера');
         }
