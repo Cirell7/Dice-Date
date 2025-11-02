@@ -18,7 +18,6 @@
         <div class="modal-content">
             <a href="#" class="close-btn">×</a>
             <h2>Сообщить об ошибке</h2>
-            
             <form action="{% url 'submit_error' %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="template_name" value="main.html">

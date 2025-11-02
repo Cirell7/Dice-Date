@@ -1,0 +1,63 @@
+.editable-field {
+    position: relative;
+    padding: 8px 12px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    margin: 8px 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.editable-field:hover {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+}
+
+.editable-field:hover .edit-icon {
+    opacity: 1;
+}
+
+.edit-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    color: #6c757d;
+}
+
+.editable-field.editing .edit-icon {
+    display: none;
+}
+
+.field-value {
+    display: inline-block;
+    min-height: 20px;
+    padding-right: 30px;
+}
+
+.edit-input, .edit-textarea, .edit-select {
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: none;
+}
+
+.edit-textarea {
+    height: 80px;
+    min-height: 60px;
+}
+
+.field-actions {
+    margin-top: 10px;
+    display: none;
+    text-align: right;
+}
+
+.field-actions.visible {
+    display: block;
+}

@@ -3,6 +3,9 @@
 
 {% block extra_style %}
 <link rel="stylesheet" href="{% static 'css/dice_date/onboarding.css'%}">
+<link rel="stylesheet" href="{% static 'css/dice_date/profile.css' %}" />
+<link rel="stylesheet" href="{% static 'css/dice_date/profile_btn.css' %}" />
+<link rel="stylesheet" href="{% static 'css/dice_date/profile_avatar.css' %}" />
 {% endblock %}
 
 {% block main %}
@@ -60,6 +63,8 @@
         </form>
     </div>
 </div>
+
+<script src="{% static 'js/onboarding.js' %}"></script>
 
 <script>
 function closeOnboarding() {

@@ -45,7 +45,6 @@
     transition: all 0.3s ease;
 }
 
-
 .gender-option input[type="radio"]:checked + .gender-card {
     border-color: #3498db;
     background: #e3f2fd;

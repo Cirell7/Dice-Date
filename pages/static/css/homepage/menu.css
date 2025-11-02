@@ -6,7 +6,7 @@
 }
 
 header {
-    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    background: linear-gradient(135deg, #2c3e50, #3498db);
     color: white;
     padding: 15px 0;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
@@ -14,21 +14,24 @@ header {
     z-index: 1000;
 }
 
-/* ВЫРАВНИВАНИЕ - ДОБАВЬ ЭТО */
-header > div {
+/* Общие стили для контейнера и навигации */
+header > div,
+.nav-links,
+.desktop-only {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+}
+
+header > div {
+    justify-content: space-between;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
 .nav-links {
-    display: flex;
     list-style: none;
     gap: 30px;
-    align-items: center;
     margin: 0;
     padding: 0;
 }
@@ -43,11 +46,6 @@ header > div {
 
 .nav-links a:hover {
     background-color: rgba(255, 255, 255, 0.15);
-}
-
-
-.desktop-only {
-    display: flex;
 }
 
 .logo {

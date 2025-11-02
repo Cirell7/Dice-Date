@@ -2,9 +2,9 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from pages.models import Post, Posts, Form_error, Profile
 from pages.form import RegisterForm
-from django.db.models import QuerySet
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
+
 class CustomLoginView(LoginView):
     template_name = "auth/login.html"
     
@@ -18,10 +18,10 @@ def profile_page_onboarding(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         gender = request.POST.get('gender')
         birth_date = request.POST.get('birth_date')
-        
+
         # Создаем профиль
-        
-        profile = Profile.objects.get(user=request.user)  # ✅
+
+        profile = Profile.objects.get(user=request.user) 
         profile.gender = gender
         profile.birth_date = birth_date
         profile.save()
@@ -29,15 +29,44 @@ def profile_page_onboarding(request: HttpRequest) -> HttpResponse:
         return redirect('profile',user_id=request.user.id)
 
     return render(request, "pages/onboarding.html")
-
 def profile_page(request: HttpRequest, user_id) -> HttpResponse:
-    profile = get_object_or_404(Profile,user_id=user_id)
-    if request.FILES.get('photo'):
-        profile.photo = request.FILES['photo']
-        profile.save()
-        return redirect('profile',user_id=user_id)
+    profile = get_object_or_404(Profile, user_id=user_id)
+    user_obj = profile.user
+    
+    if request.method == 'POST':
+        # Обработка загрузки фото
+        if 'update_photo' in request.POST and request.FILES.get('photo'):
+            profile.photo = request.FILES['photo']
+            profile.save()
+            return redirect('profile', user_id=user_id)
+        
+        # AJAX запрос на обновление поля
+        elif request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            field_name = request.POST.get('update_field')
+            
+            if field_name == 'username':
+                new_username = request.POST.get('username')
+                if new_username and new_username != user_obj.username:
+                    user_obj.username = new_username
+                    user_obj.save()
+            
+            elif field_name == 'gender':
+                profile.gender = request.POST.get('gender', '')
+            
+            elif field_name == 'birth_date':
+                birth_date = request.POST.get('birth_date')
+                if birth_date:
+                    profile.birth_date = birth_date
+            
+            elif field_name == 'description':
+                profile.description = request.POST.get('description', '')
+            
+            profile.save()
+            return JsonResponse({'success': True})
+    
     context = {
-        "profile": profile
+        "profile": profile,
+        "user": user_obj
     }
     return render(request, "pages/profile.html", context)
 

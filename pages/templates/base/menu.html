@@ -64,25 +64,4 @@
         </div>
     </div>
 </header>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileNav = document.querySelector('.mobile-nav');
-        const mobileClose = document.getElementById('mobile-close');
-
-        menuToggle.addEventListener('change', function() {
-            if (this.checked) {
-                mobileNav.style.right = '0';
-            } else {
-                mobileNav.style.right = '-100%';
-            }
-        });
-        
-        mobileClose.addEventListener('click', function() {
-            menuToggle.checked = false;
-            mobileNav.style.right = '-100%';
-        });
-    });
-</script>
 {% endblock %}
