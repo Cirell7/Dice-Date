@@ -4,6 +4,8 @@ from pages.models import Post, Posts, Form_error, Profile
 from pages.form import RegisterForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.models import User
+from django.contrib import messages  # ← ДОБАВЬТЕ ЭТО
 
 class CustomLoginView(LoginView):
     template_name = "auth/login.html"
@@ -29,10 +31,12 @@ def profile_page_onboarding(request: HttpRequest) -> HttpResponse:
         return redirect('profile',user_id=request.user.id)
 
     return render(request, "pages/onboarding.html")
+
+
 def profile_page(request: HttpRequest, user_id) -> HttpResponse:
     profile = get_object_or_404(Profile, user_id=user_id)
     user_obj = profile.user
-    
+
     if request.method == 'POST':
         # Обработка загрузки фото
         if 'update_photo' in request.POST and request.FILES.get('photo'):
@@ -47,26 +51,38 @@ def profile_page(request: HttpRequest, user_id) -> HttpResponse:
             if field_name == 'username':
                 new_username = request.POST.get('username')
                 if new_username and new_username != user_obj.username:
-                    user_obj.username = new_username
-                    user_obj.save()
+                    # ПРОВЕРКА на уникальность username
+                    if not User.objects.filter(username=new_username).exclude(id=user_obj.id).exists():
+                        user_obj.username = new_username
+                        user_obj.save()
+                    else:
+                        # Сохраняем ошибку в messages
+                        messages.error(request, 'username_exists')  # ← ИЗМЕНИЛИ
+                        return JsonResponse({'success': True, 'error': 1})
             
             elif field_name == 'gender':
-                profile.gender = request.POST.get('gender', '')
-            
+                new_gender = request.POST.get('gender')
+                if new_gender is not None:  # ← Если поле вообще было в форме
+                    profile.gender = new_gender
+                    profile.save()
+
             elif field_name == 'birth_date':
                 birth_date = request.POST.get('birth_date')
                 if birth_date:
                     profile.birth_date = birth_date
+                profile.save()
             
             elif field_name == 'description':
-                profile.description = request.POST.get('description', '')
+                new_description = request.POST.get('description')
+                if new_description is not None:  # ← Если поле вообще было в форме
+                    profile.description = new_description
+                    profile.save()
             
-            profile.save()
-            return JsonResponse({'success': True})
+            return JsonResponse({'success': True, 'error': 0})
     
     context = {
         "profile": profile,
-        "user": user_obj
+        "user": user_obj,
     }
     return render(request, "pages/profile.html", context)
 

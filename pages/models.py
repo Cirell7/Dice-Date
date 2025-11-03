@@ -13,8 +13,20 @@ class Posts(models.Model):
 # Create your models here.
 
 class Profile(models.Model):
+    GENDER_CHOICES = [
+        ('M', 'Мужской'),
+        ('F', 'Женский'),
+        ('O', 'Другой'),
+        ('prefer-not-to-say', 'Предпочитаю не говорить'),
+    ]
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=100, blank=True, null=True)
+    gender = models.CharField(
+        max_length=20, 
+        choices=GENDER_CHOICES,  
+        blank=True, 
+        null=True
+    )
     birth_date = models.DateField(blank=True, null=True)
     photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
     description = models.TextField(blank=True, null=True)
