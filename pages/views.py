@@ -86,6 +86,33 @@ def profile_page(request: HttpRequest, user_id) -> HttpResponse:
     }
     return render(request, "pages/profile.html", context)
 
+# Простой API для проверки username
+def check_username(request):
+    # Получаем username из GET-параметров
+    username = request.GET.get('username', '').strip()
+    
+    # Базовая валидация
+    if not username:
+        return JsonResponse({
+            'error': 'Username is required',
+            'available': False
+        }, status=400)
+    
+    if len(username) < 3:
+        return JsonResponse({
+            'error': 'Username must be at least 3 characters',
+            'available': False
+        }, status=400)
+    
+    # Проверяем, существует ли username в базе данных
+    username_exists = User.objects.filter(username__iexact=username).exists()
+    
+    return JsonResponse({
+        'available': not username_exists,
+        'username': username,
+        'exists': username_exists
+    })
+
 def register_page(request: HttpRequest) -> HttpResponse:
     error_input = 0
     if request.method == "POST":

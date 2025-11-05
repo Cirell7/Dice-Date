@@ -13,17 +13,22 @@
 <div class="container_background centered-page">
   <div class="modal-content">
       <h2>Регистрация</h2>
-      <form action="{% url 'register' %}" method="post">
+      <form action="{% url 'register' %}" method="post" id="registerForm">
           {% csrf_token %}
 
           {% for field in form.visible_fields %}
-              <div class="form-group">  <!-- Добавьте этот класс -->
+              <div class="form-group">
                   <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                   {{ field }}
+                  
+                  <!-- Добавляем статус только для username -->
+                  {% if field.name == 'username' %}
+                  <div id="username-status" class="username-status"></div>
+                  {% endif %}
               </div>
           {% endfor %}
 
-          <button type="submit" class="btn">Зарегистрироваться</button>
+          <button type="submit" class="btn" id="submitBtn">Зарегистрироваться</button>
 
           {% if error == 1 %}
               <div class="error-message" style="margin-top: 15px;">
@@ -35,4 +40,92 @@
       <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войдите!</a></p>
   </div>
 </div>
+
+<script>
+// Проверка username в реальном времени
+let checkTimeout;
+
+function checkUsernameAvailability(username) {
+    if (username.length < 3) {
+        return Promise.resolve(true); // Слишком короткие имена пропускаем
+    }
+    
+    return fetch(`/api/check-username/?username=${encodeURIComponent(username)}`)
+        .then(response => response.json())
+        .then(data => {
+            return data.available;
+        })
+        .catch(error => {
+            console.error('Error checking username:', error);
+            return true; // В случае ошибки разрешаем использование
+        });
+}
+
+// Находим поле username после загрузки страницы
+document.addEventListener('DOMContentLoaded', function() {
+    const usernameInput = document.querySelector('input[name="username"]');
+    const statusElement = document.getElementById('username-status');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (usernameInput) {
+        // Добавляем класс для стилизации
+        usernameInput.classList.add('form-input');
+        
+        usernameInput.addEventListener('input', function() {
+            const username = this.value;
+            
+            // Очищаем предыдущий таймер
+            clearTimeout(checkTimeout);
+            
+            // Сбрасываем стили для коротких имен
+            if (username.length < 3) {
+                this.classList.remove('valid', 'invalid');
+                statusElement.textContent = '';
+                statusElement.className = 'username-status';
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            // Ставим задержку чтобы не спамить запросами
+            checkTimeout = setTimeout(() => {
+                checkUsernameAvailability(username)
+                    .then(isAvailable => {
+                        if (isAvailable) {
+                            this.classList.remove('invalid');
+                            this.classList.add('valid');
+                            statusElement.textContent = '✓ Имя пользователя доступно';
+                            statusElement.className = 'username-status available';
+                            submitBtn.disabled = false;
+                        } else {
+                            this.classList.remove('valid');
+                            this.classList.add('invalid');
+                            statusElement.textContent = '✗ Имя пользователя уже занято';
+                            statusElement.className = 'username-status taken';
+                            submitBtn.disabled = true;
+                        }
+                    });
+            }, 500);
+        });
+    }
+    
+    // Валидация формы перед отправкой
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+        const usernameInput = document.querySelector('input[name="username"]');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (submitBtn.disabled) {
+            event.preventDefault();
+            alert('Пожалуйста, выберите доступное имя пользователя');
+            return false;
+        }
+        
+        // Дополнительная проверка длины
+        if (usernameInput.value.length < 3) {
+            event.preventDefault();
+            alert('Имя пользователя должно содержать минимум 3 символа');
+            return false;
+        }
+    });
+});
+</script>
 {% endblock %}
