@@ -1,0 +1,55 @@
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/dice_date/menu1.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/homepage/menu_media.css' %}" />
+{% endblock %}
+
+{% block main %}
+    <!-- Верхний header -->
+    <header class="top-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🎲</span>
+                <span>Dice&Date</span>
+            </div>
+            <!-- Мобильный гамбургер -->
+            <div class="mobile-only">
+                {% include 'base/menu_media.html' %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Десктопное Боковое меню -->
+    <aside class="sidebar desktop-only">
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'main_menu' %}">🏠 Главная</a></li>
+                <li><a href="{% url 'maintwo_menu' %}">ℹ️ О проекте</a></li>
+                <li><a href="#error-modal">⚠️ Сообщить об ошибке</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">🚪 Выйти</a></li>
+                {% else %}
+                <li><a href="{% url 'login' %}">🔑 Войти</a></li>
+                <li><a href="{% url 'register' %}">👤 Создать аккаунт</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="container_background">
+            <div class="center">
+                <!-- Ваш контент здесь -->
+                <h1>Добро пожаловать в Dice&Date!</h1>
+                <p>Основной контент вашего приложения...</p>
+                
+                <!-- Ваша форма создания голосования -->
+                <form action="/votings/add" method="post" enctype="multipart/form-data">
+                    <!-- ... ваша форма ... -->
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock %}

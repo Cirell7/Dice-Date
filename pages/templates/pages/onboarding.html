@@ -3,9 +3,14 @@
 
 {% block extra_style %}
 <link rel="stylesheet" href="{% static 'css/dice_date/onboarding.css'%}">
-<link rel="stylesheet" href="{% static 'css/dice_date/profile.css' %}" />
-<link rel="stylesheet" href="{% static 'css/dice_date/profile_btn.css' %}" />
-<link rel="stylesheet" href="{% static 'css/dice_date/profile_avatar.css' %}" />
+{% endblock %}
+{% block extra_scripts %}
+    <script>
+        const onboardingUrls = {
+            profile: "{% url 'profile' user_id=user.id %}"
+        };
+    </script>
+    <script src="{% static 'js/onboarding.js' %}"></script>
 {% endblock %}
 
 {% block main %}
@@ -64,58 +69,4 @@
     </div>
 </div>
 
-<script src="{% static 'js/onboarding.js' %}"></script>
-
-<script>
-function closeOnboarding() {
-    document.querySelector('.onboarding-overlay').style.display = 'none';
-    window.location.href = "{% url 'profile' user_id=user.id %}";
-}
-
-function saveOnboarding() {
-    const selectedGender = document.querySelector('input[name="gender"]:checked');
-    const birthDate = document.getElementById('birth_date').value;
-    const submitBtn = document.getElementById('submit-btn');
-    
-    // Простая валидация
-    if (!selectedGender) {
-        alert('Пожалуйста, выберите ваш пол');
-        return;
-    }
-    
-    if (!birthDate) {
-        alert('Пожалуйста, заполните дату рождения');
-        return;
-    }
-
-    // Блокируем кнопку
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Сохранение...';
-    
-    // Подготавливаем данные
-    const formData = new FormData();
-    formData.append('gender', selectedGender.value);
-    formData.append('birth_date', birthDate);  // исправлено на birth_date
-    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-    
-    // Отправляем данные
-    fetch("", {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (response.ok) {
-            window.location.href = "{% url 'profile' user_id=user.id %}";
-        } else {
-            throw new Error('Ошибка сервера');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Произошла ошибка при сохранении. Попробуйте еще раз.');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Продолжить';
-    });
-}
-</script>
 {% endblock %}

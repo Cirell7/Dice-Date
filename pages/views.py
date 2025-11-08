@@ -1,41 +1,40 @@
-from django.shortcuts import render,redirect,get_object_or_404
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from pages.models import Post, Posts, Form_error, Profile
-from pages.form import RegisterForm
+"""pages"""
+import datetime
+
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
-from django.contrib import messages  # ← ДОБАВЬТЕ ЭТО
+from django.contrib import messages
+from django.utils import timezone
+from django.shortcuts import render,redirect,get_object_or_404
+from django.http import HttpRequest, HttpResponse, JsonResponse
+
+from pages.models import Post, Posts, Form_error, Profile
+from pages.form import RegisterForm
 
 class CustomLoginView(LoginView):
+    """Переопределяет стандартный LoginView для перенаправления"""
     template_name = "auth/login.html"
-    
     def get_success_url(self):
-        # Получаем профиль текущего пользователя
-        profile = get_object_or_404(Profile, user=self.request.user)
-        # Перенаправляем на страницу профиля с его id
         return f'/profile/{self.request.user.id}'
 
 def profile_page_onboarding(request: HttpRequest) -> HttpResponse:
+    """Настройка предпочтений пользователя при первом входе"""
     if request.method == "POST":
         gender = request.POST.get('gender')
         birth_date = request.POST.get('birth_date')
 
-        # Создаем профиль
-
-        profile = Profile.objects.get(user=request.user) 
+        profile = Profile.objects.get(user=request.user)
         profile.gender = gender
         profile.birth_date = birth_date
         profile.save()
 
         return redirect('profile',user_id=request.user.id)
-
     return render(request, "pages/onboarding.html")
 
-
 def profile_page(request: HttpRequest, user_id) -> HttpResponse:
+    """Профиль пользователя"""
     profile = get_object_or_404(Profile, user_id=user_id)
-    user_obj = profile.user
 
     if request.method == 'POST':
         # Обработка загрузки фото
@@ -43,106 +42,92 @@ def profile_page(request: HttpRequest, user_id) -> HttpResponse:
             profile.photo = request.FILES['photo']
             profile.save()
             return redirect('profile', user_id=user_id)
-        
+
         # AJAX запрос на обновление поля
-        elif request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             field_name = request.POST.get('update_field')
-            
+            profile_save = False
+
             if field_name == 'username':
                 new_username = request.POST.get('username')
-                if new_username and new_username != user_obj.username:
-                    # ПРОВЕРКА на уникальность username
-                    if not User.objects.filter(username=new_username).exclude(id=user_obj.id).exists():
-                        user_obj.username = new_username
-                        user_obj.save()
-                    else:
-                        # Сохраняем ошибку в messages
-                        messages.error(request, 'username_exists')  # ← ИЗМЕНИЛИ
-                        return JsonResponse({'success': True, 'error': 1})
-            
+                if len(new_username) < 3 or len(new_username) > 15:
+                    messages.error(request, 'username_incorrect')
+                    return JsonResponse({'success': True, 'error': 1})
+                if User.objects.filter(username=new_username).exists():
+                    messages.error(request, 'username_exists')
+                    return JsonResponse({'success': True, 'error': 1})
+                if new_username and new_username != profile.user.username:
+                    profile.user.username = new_username
+                    profile_save = True
+
             elif field_name == 'gender':
                 new_gender = request.POST.get('gender')
-                if new_gender is not None:  # ← Если поле вообще было в форме
+                if new_gender is not None:
                     profile.gender = new_gender
-                    profile.save()
+                    profile_save = True
 
             elif field_name == 'birth_date':
                 birth_date = request.POST.get('birth_date')
                 if birth_date:
+                    birth_year = int(birth_date[:4])
+                    if birth_year > 2008:
+                        messages.error(request, 'date_error')
+                        return JsonResponse({'success': True, 'error': 1})
                     profile.birth_date = birth_date
-                profile.save()
-            
+                    profile_save = True
+
             elif field_name == 'description':
                 new_description = request.POST.get('description')
-                if new_description is not None:  # ← Если поле вообще было в форме
+                if new_description is not None:
                     profile.description = new_description
-                    profile.save()
-            
+                    profile_save = True
+            if profile_save:
+                profile.save()
+
             return JsonResponse({'success': True, 'error': 0})
-    
+
     context = {
         "profile": profile,
-        "user": user_obj,
+        "user": profile.user,
     }
     return render(request, "pages/profile.html", context)
 
-# Простой API для проверки username
 def check_username(request):
-    # Получаем username из GET-параметров
+    """API для проверки уникальности username"""
     username = request.GET.get('username', '').strip()
-    
-    # Базовая валидация
-    if not username:
-        return JsonResponse({
-            'error': 'Username is required',
-            'available': False
-        }, status=400)
-    
-    if len(username) < 3:
-        return JsonResponse({
-            'error': 'Username must be at least 3 characters',
-            'available': False
-        }, status=400)
-    
-    # Проверяем, существует ли username в базе данных
-    username_exists = User.objects.filter(username__iexact=username).exists()
-    
-    return JsonResponse({
-        'available': not username_exists,
-        'username': username,
-        'exists': username_exists
-    })
+    exists = User.objects.filter(username__iexact=username).exists()
+    return JsonResponse({'available': not exists})
 
 def register_page(request: HttpRequest) -> HttpResponse:
-    error_input = 0
+    """Регистрация пользователя"""
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            Profile.objects.create(user=request.user)
+            Profile.objects.create(user=user)
             return redirect('profile_page_onboarding')
-        else:
-            error_input = 1
     else:
         form = RegisterForm()
 
-    context = {"form": form, "error": error_input, "user": request.user}
+    context = {"form": form, "user": request.user}
     return render(request, "auth/register.html", context)
 
 def logout_view(request):
+    """Вход в аккаунт"""
     logout(request)
     return redirect("main_menu")
 
-
 def main_menu(request):
+    """Главная страница"""
     return render(request, "pages/main.html")
 
 def maintwo_menu(request):
+    """Страница с информацией о проекте"""
     return render(request, "pages/main2.html")
 
 def submit_error(request):
-    
+    """Форма сообщения об ошибке"""
     if request.method == "POST":
         error = request.POST.get("error")
         email = request.POST.get("email")
@@ -152,11 +137,6 @@ def submit_error(request):
             return render(request, 'pages/main.html', {'show_success': True})
 
     return redirect('main_menu')
-
-
-from django.contrib import messages
-from django.utils import timezone
-import datetime
 
 def add_post(request):
     """Создание нового поста"""

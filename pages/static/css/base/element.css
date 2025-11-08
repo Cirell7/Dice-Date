@@ -1,4 +1,4 @@
-/* КНОПКА НАВЕРХ */
+/* Кнопка вверх */
 .scroll-to-top {
     position: fixed;
     bottom: 30px;
@@ -29,7 +29,7 @@
 }
 
 
-/* КНОПКА */
+/* Кнопка */
 .btn {
     background: linear-gradient(135deg, #3498db, #9b59b6);
     color: white;
@@ -45,6 +45,7 @@
 }
 
 .close-btn {
+    cursor: pointer;
     position: absolute;
     top: 15px;
     right: 20px;

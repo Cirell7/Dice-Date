@@ -1,5 +1,3 @@
-// static/js/profile-editing.js
-
 let originalValues = {};
 let currentEditingField = null;
 
@@ -94,9 +92,7 @@ function saveField(fieldName) {
     // Отправляем данные на сервер
     const formData = new FormData(document.getElementById('profileForm'));
     formData.append('update_field', fieldName);
-    
-    console.log(`DEBUG: Saving field ${fieldName} with value: ${formData.get(fieldName)}`);  // ← ДОБАВЬТЕ
-    
+
     fetch('', {
         method: 'POST',
         body: formData,
@@ -104,30 +100,6 @@ function saveField(fieldName) {
             'X-Requested-With': 'XMLHttpRequest',
         }
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('DEBUG: Server response:', data);  // ← ДОБАВЬТЕ
-        if (data.error === 1 && fieldName === 'username') {
-            console.log('DEBUG: Username error detected, reloading...');  // ← ДОБАВЬТЕ
-            window.location.reload();
-        } else {
-            console.log('DEBUG: Success, reloading...');  // ← ДОБАВЬТЕ
-            window.location.reload();
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        window.location.reload();
-    });
-}
-
-// Простые функции для модалки - ОДНА ВЕРСИЯ!
-function openUploadModal() {
-    document.getElementById('uploadModal').style.display = 'block';
-}
-
-function closeModal() {
-    document.getElementById('uploadModal').style.display = 'none';
 }
 
 // ДЕЛАЕМ ФУНКЦИИ ГЛОБАЛЬНЫМИ для доступа из HTML!
