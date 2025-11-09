@@ -18,19 +18,88 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         return f'/profile/{self.request.user.id}'
 
-def profile_page_onboarding(request: HttpRequest) -> HttpResponse:
+def profile_page_onboarding1(request: HttpRequest) -> HttpResponse:
     """Настройка предпочтений пользователя при первом входе"""
     if request.method == "POST":
-        gender = request.POST.get('gender')
-        birth_date = request.POST.get('birth_date')
+        profile = get_object_or_404(Profile, user_id=request.user)
+        verification = Verification(profile, 'gender')
+        profile_save, error, profile = verification.verification(request.POST.get('gender'))
 
-        profile = Profile.objects.get(user=request.user)
-        profile.gender = gender
-        profile.birth_date = birth_date
-        profile.save()
+        if error!=0:
+            messages.error(request, error)
+            return JsonResponse({'success': True, 'error': 1})
 
-        return redirect('profile',user_id=request.user.id)
-    return render(request, "pages/onboarding.html")
+        if profile_save:
+            profile.save()
+            profile.user.save()
+            return redirect('profile_page_onboarding2')
+    return render(request, "pages/onboarding1.html")
+
+def profile_page_onboarding2(request: HttpRequest) -> HttpResponse:
+    """Настройка предпочтений пользователя при первом входе"""
+    if request.method == "POST":
+        profile = get_object_or_404(Profile, user_id=request.user)
+        verification = Verification(profile, 'birth_date')
+        profile_save, error, profile = verification.verification(request.POST.get('birth_date'))
+
+        if error!=0:
+            messages.error(request, error)
+            return JsonResponse({'success': True, 'error': 1})
+
+        if profile_save:
+            profile.save()
+            profile.user.save()
+            return redirect('profile',user_id=request.user.id)
+    return render(request, "pages/onboarding2.html")
+
+
+class Verification:
+    """Работа с профилем перед сохранением"""
+    def __init__(self,profile, field_name):
+        self.profile=profile
+        self.field_name=field_name
+
+    def verification(self, new):
+        profile_save = False
+        error=0
+        if self.field_name == 'username' and new and new != self.profile.user.username:
+            result = self.name_verification(new)
+            if result!=new:
+                error = result
+            self.profile.user.username = new
+            profile_save = True
+
+        elif self.field_name == 'gender' and new is not None:
+            self.profile.gender = new
+            profile_save = True
+
+        elif self.field_name == 'birth_date' and new:
+            result = self.day_verification(int(new[:4]))
+            if not str(result).isdigit():
+                error = result
+            self.profile.birth_date = new
+            profile_save = True
+
+        elif self.field_name == 'description' and new is not None:
+            self.profile.description = new
+            profile_save = True
+
+        return profile_save, error, self.profile
+
+    def name_verification(self, new_username):
+        """Валидация юзернейма"""
+        if len(new_username) < 3 or len(new_username) > 15:
+            return 'username_incorrect'
+        if User.objects.filter(username=new_username).exists():
+            return 'username_exists'
+        return new_username
+
+    def day_verification(self, birth_year):
+        """Валидация даты рождения"""
+        if birth_year > 2008:
+            return 'date_error'
+        return birth_year
+
 
 def profile_page(request: HttpRequest, user_id) -> HttpResponse:
     """Профиль пользователя"""
@@ -47,42 +116,17 @@ def profile_page(request: HttpRequest, user_id) -> HttpResponse:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             field_name = request.POST.get('update_field')
             profile_save = False
+            new = request.POST.get(field_name)
 
-            if field_name == 'username':
-                new_username = request.POST.get('username')
-                if len(new_username) < 3 or len(new_username) > 15:
-                    messages.error(request, 'username_incorrect')
-                    return JsonResponse({'success': True, 'error': 1})
-                if User.objects.filter(username=new_username).exists():
-                    messages.error(request, 'username_exists')
-                    return JsonResponse({'success': True, 'error': 1})
-                if new_username and new_username != profile.user.username:
-                    profile.user.username = new_username
-                    profile_save = True
+            verification = Verification(profile, field_name)
+            profile_save, error, profile = verification.verification(new)
+            if error!=0:
+                messages.error(request, error)
+                return JsonResponse({'success': True, 'error': 1})
 
-            elif field_name == 'gender':
-                new_gender = request.POST.get('gender')
-                if new_gender is not None:
-                    profile.gender = new_gender
-                    profile_save = True
-
-            elif field_name == 'birth_date':
-                birth_date = request.POST.get('birth_date')
-                if birth_date:
-                    birth_year = int(birth_date[:4])
-                    if birth_year > 2008:
-                        messages.error(request, 'date_error')
-                        return JsonResponse({'success': True, 'error': 1})
-                    profile.birth_date = birth_date
-                    profile_save = True
-
-            elif field_name == 'description':
-                new_description = request.POST.get('description')
-                if new_description is not None:
-                    profile.description = new_description
-                    profile_save = True
             if profile_save:
                 profile.save()
+                profile.user.save()
 
             return JsonResponse({'success': True, 'error': 0})
 
@@ -106,7 +150,7 @@ def register_page(request: HttpRequest) -> HttpResponse:
             user = form.save()
             login(request, user)
             Profile.objects.create(user=user)
-            return redirect('profile_page_onboarding')
+            return redirect('profile_page_onboarding1')
     else:
         form = RegisterForm()
 

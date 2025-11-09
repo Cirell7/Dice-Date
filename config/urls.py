@@ -16,7 +16,8 @@ urlpatterns = [
     path("logout/", pages.views.logout_view, name="logout"),
     path("profile/<int:user_id>", pages.views.profile_page, name="profile"),
     path('api/check-username/', pages.views.check_username, name='check_username'),  # ← API ДОЛЖЕН БЫТЬ ЗДЕСЬ
-    path("profile_onboarding/", pages.views.profile_page_onboarding, name="profile_page_onboarding"),
+    path("profile_onboarding1/", pages.views.profile_page_onboarding1, name="profile_page_onboarding1"),
+    path("profile_onboarding2/", pages.views.profile_page_onboarding2, name="profile_page_onboarding2"),
     path("add_post/", pages.views.add_post, name="add_post"),
 ]
 if settings.DEBUG:

@@ -10,7 +10,7 @@
             profile: "{% url 'profile' user_id=user.id %}"
         };
     </script>
-    <script src="{% static 'js/onboarding.js' %}"></script>
+    <script src="{% static 'js/onboarding2.js' %}"></script>
 {% endblock %}
 
 {% block main %}
@@ -26,32 +26,6 @@
         
         <form id="onboarding-form">
             {% csrf_token %}
-            
-            <div class="gender-selection">
-                <div class="gender-option">
-                    <input type="radio" id="female" name="gender" value="female" required>
-                    <label for="female" class="gender-card">
-                        <span>👩</span>
-                        <span>Женщина</span>
-                    </label>
-                </div>
-                
-                <div class="gender-option">
-                    <input type="radio" id="male" name="gender" value="male" required>
-                    <label for="male" class="gender-card">
-                        <span>👨</span>
-                        <span>Мужчина</span>
-                    </label>
-                </div>
-                
-                <div class="gender-option">
-                    <input type="radio" id="prefer-not-to-say" name="gender" value="prefer-not-to-say" required>
-                    <label for="prefer-not-to-say" class="gender-card">
-                        <span>🙂</span>
-                        <span>Предпочитаю не говорить</span>
-                    </label>
-                </div>
-            </div>
     
             <div class="form-section">
                 <h3>Дата рождения</h3>

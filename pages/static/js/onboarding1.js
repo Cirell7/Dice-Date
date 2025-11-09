@@ -1,11 +1,10 @@
 function closeOnboarding() {
     document.querySelector('.onboarding-overlay').style.display = 'none';
-    window.location.href = onboardingUrls.profile;
+    window.location.href = "/profile_onboarding2/";
 }
 
 function saveOnboarding() {
     const selectedGender = document.querySelector('input[name="gender"]:checked');
-    const birthDate = document.getElementById('birth_date').value;
     const submitBtn = document.getElementById('submit-btn');
     
     // ПРАВИЛЬНОЕ получение CSRF токена
@@ -16,11 +15,6 @@ function saveOnboarding() {
         alert('Пожалуйста, выберите ваш пол');
         return;
     }
-    
-    if (!birthDate) {
-        alert('Пожалуйста, заполните дату рождения');
-        return;
-    }
 
     // Блокируем кнопку
     submitBtn.disabled = true;
@@ -29,7 +23,6 @@ function saveOnboarding() {
     // Подготавливаем данные
     const formData = new FormData();
     formData.append('gender', selectedGender.value);
-    formData.append('birth_date', birthDate);
     // CSRF токен УЖЕ в форме, не нужно добавлять вручную
     
     // Отправляем данные с правильными заголовками
@@ -42,7 +35,7 @@ function saveOnboarding() {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = onboardingUrls.profile;
+            window.location.href = "/profile_onboarding2/";
         } else {
             throw new Error('Ошибка сервера');
         }
