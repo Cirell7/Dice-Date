@@ -1,8 +1,3 @@
-function closeOnboarding() {
-    document.querySelector('.onboarding-overlay').style.display = 'none';
-    window.location.href = onboardingUrls.profile;
-}
-
 function saveOnboarding() {
     const birthDate = document.getElementById('birth_date').value;
     const submitBtn = document.getElementById('submit-btn');
@@ -24,18 +19,29 @@ function saveOnboarding() {
         body: formData,
         headers: {
             'X-CSRFToken': csrfToken
-        }
+        },
+        redirect: 'manual' // Важно: обрабатываем редиректы вручную
     })
-    .then(response => response.json())  // ← ЧИТАЕМ JSON!
-    .then(data => {
-        if (data.error === 0) {
-            // УСПЕХ (error=0) - переходим в профиль
+    .then(response => {
+        if (response.status === 0 || response.status === 200) {
+            // УСПЕХ - редирект на профиль
             window.location.href = onboardingUrls.profile;
+        } else if (response.status === 302) {
+            // РЕДИРЕКТ - следуем за ним
+            return response.text().then(() => {
+                window.location.href = onboardingUrls.profile;
+            });
         } else {
-            // ОШИБКА (error=1) - НЕ переходим, показываем сообщение
-            alert('Извините, наш сайт предназначен для пользователей старше 16 лет');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Продолжить';
+            // ОШИБКА - показываем сообщение
+            return response.json().then(data => {
+                if (data.error === 1) {
+                    alert('Извините, наш сайт предназначен для пользователей старше 16 лет');
+                } else {
+                    alert('Произошла ошибка при сохранении');
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Продолжить';
+            });
         }
     })
     .catch(error => {

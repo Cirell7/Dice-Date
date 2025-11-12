@@ -36,14 +36,18 @@
     <header>
       {% include 'base/menu1.html' %}
     </header>
-    
-    <main>
-      {% include 'base/reportpage.html' %}
-      {% block main %}{% endblock %}
+
+    <!-- Основной контент -->
+    <main class="main-content">
+      <div class="container_background">
+        <div class="center">
+          {% block main %}{% endblock %}
+        </div>
+      </div>
     </main>
 
     <footer>
-        {% include 'base/foot.html' %}
+      {% include 'base/foot.html' %}
     </footer>
   </body>
 </html>

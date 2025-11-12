@@ -15,7 +15,34 @@
             </div>
             <!-- Мобильный гамбургер -->
             <div class="mobile-only">
-                {% include 'base/menu_media.html' %}
+<div class="mobile-menu">
+    <input id="menu-toggle" type="checkbox" class="menu-toggle">
+    <label for="menu-toggle" class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+    {% include 'base/reportpage.html' %}
+    <nav class="mobile-nav">
+        <label for="menu-toggle" class="mobile-nav__close">✕</label>
+        <ul class="mobile-nav__menu">
+            <li class="nav-item"><a class="nav-link" href="{% url 'profile' user_id=user.id %}">🏠 Профиль</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'add_post' %}">Добавить событие</a></li>
+            <li class="nav-item"><a class="nav-link" href="#error-modal">Сообщить об ошибке</a></li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
+                <ul class="dropdown-menu">
+                    {% if user.is_authenticated %}
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+                    {% else %}
+                    <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
+                    <li><a class="dropdown-item" href="{% url 'register' %}">Создать аккаунт</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</div>
             </div>
         </div>
     </header>
@@ -24,8 +51,8 @@
     <aside class="sidebar desktop-only">
         <nav class="sidebar-nav">
             <ul>
-                <li><a href="{% url 'main_menu' %}">🏠 Главная</a></li>
-                <li><a href="{% url 'maintwo_menu' %}">ℹ️ О проекте</a></li>
+                <a href="{% url 'profile' user_id=user.id %}">🏠 Профиль</a>
+                <li><a href="{% url 'add_post' %}">ℹ️ Добавить событие </a></li>
                 <li><a href="#error-modal">⚠️ Сообщить об ошибке</a></li>
                 {% if user.is_authenticated %}
                 <li><a href="{% url 'logout' %}">🚪 Выйти</a></li>
@@ -36,20 +63,4 @@
             </ul>
         </nav>
     </aside>
-
-    <!-- Основной контент -->
-    <main class="main-content">
-        <div class="container_background">
-            <div class="center">
-                <!-- Ваш контент здесь -->
-                <h1>Добро пожаловать в Dice&Date!</h1>
-                <p>Основной контент вашего приложения...</p>
-                
-                <!-- Ваша форма создания голосования -->
-                <form action="/votings/add" method="post" enctype="multipart/form-data">
-                    <!-- ... ваша форма ... -->
-                </form>
-            </div>
-        </div>
-    </main>
 {% endblock %}

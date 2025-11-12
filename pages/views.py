@@ -41,11 +41,9 @@ def profile_page_onboarding2(request: HttpRequest) -> HttpResponse:
         profile = get_object_or_404(Profile, user_id=request.user)
         verification = Verification(profile, 'birth_date')
         profile_save, error, profile = verification.verification(request.POST.get('birth_date'))
-
         if error!=0:
             messages.error(request, error)
             return JsonResponse({'success': True, 'error': 1})
-
         if profile_save:
             profile.save()
             profile.user.save()
@@ -184,58 +182,21 @@ def submit_error(request):
 
 def add_post(request):
     """Создание нового поста"""
-    if not request.user.is_authenticated:
-        return redirect("login")
+    if request.method == 'POST':
+        post = Posts(
+            name=request.POST['title'],
+            description=request.POST.get('description', ''),
+            expiration_date=request.POST['event_date'],
+            address=request.POST.get('address', ''),
+            max_participants=request.POST.get('max_participants', 10),
+            user=request.user
+        )
+        
+        if 'image' in request.FILES:
+            post.image = request.FILES['image']
+            
+        post.save()
+        return redirect('add_post')
+    
+    return render(request, 'pages/add_post.html')
 
-    if request.method == "POST":
-        try:
-            # Извлекаем данные
-            name = request.POST.get("voting_name", "").strip()
-            description = request.POST.get("voting_description", "").strip()
-            post_type = request.POST.get("voting_type", "-1")
-            expiration_date = request.POST.get("voting_expiration_date")
-
-            # Проверяем обязательные поля
-            if not name or not description or post_type == "-1" or not expiration_date:
-                messages.error(request, "Все обязательные поля должны быть заполнены")
-            else:
-                # Создаем пост
-                post = Posts(
-                    name=name,
-                    description=description,
-                    type=int(post_type),
-                    creation_date=timezone.now(),
-                    expiration_date=expiration_date,
-                    user=request.user,
-                    image=request.FILES.get("voting_image")
-                )
-                post.save()
-
-                # Создаем связь в модели Post
-                Post.objects.create(
-                    past=post,
-                    user=request.user,
-                    creation_date=timezone.now()
-                )
-
-                # Обрабатываем варианты (если есть)
-                option_fields = [key for key in request.POST.keys() if key.startswith("option")]
-                for field_name in option_fields:
-                    option_value = request.POST[field_name].strip()
-                    if option_value:
-                        # Здесь можно создать варианты если нужно
-                        pass
-
-                messages.success(request, "Пост успешно создан!")
-                return redirect(f"/posts/{post.id}")
-
-        except Exception as e:
-            messages.error(request, "Произошла ошибка при создании поста")
-
-    # GET-запрос или ошибка
-    tomorrow = timezone.now() + datetime.timedelta(days=1)
-    context = {
-        "user": request.user, 
-        "tomorrow": tomorrow.strftime("%Y-%m-%dT%H:%M")
-    }
-    return render(request, "pages/add_post.html", context)

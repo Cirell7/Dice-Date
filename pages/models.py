@@ -3,12 +3,13 @@ from django.contrib.auth.models import User
 
 class Posts(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(max_length=500)
-    type = models.IntegerField()
-    creation_date = models.DateTimeField()
+    description = models.TextField(blank=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
     expiration_date = models.DateTimeField()
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="images/", null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="images/", blank=True, null=True)
+    address = models.CharField(max_length=200, blank=True)
+    max_participants = models.IntegerField(default=10)
 
 # Create your models here.
 

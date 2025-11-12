@@ -36,10 +36,10 @@
     {% csrf_token %}
     <header>
       {% include 'base/menu.html' %}
+      {% include 'base/reportpage.html' %}
     </header>
     
     <main>
-      {% include 'base/reportpage.html' %}
       {% block main %}{% endblock %}
     </main>
 

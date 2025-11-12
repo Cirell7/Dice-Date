@@ -4,6 +4,9 @@ footer {
     color: white;
     padding: 10px 0 20px;
     margin-top: 60px;
+    position: relative;
+    z-index: 999;
+    width: 100%;
 }
 
 .footer-content {
@@ -20,7 +23,7 @@ footer {
     display: flex;
     gap: 15px;
     justify-content: flex-end;
-    margin-left: auto; /* Прижимает к правому краю */
+    margin-left: auto;
 }
 
 .social-links a {

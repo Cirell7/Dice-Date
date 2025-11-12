@@ -1,9 +1,55 @@
-* {
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1 0 auto; /* Занимает всё доступное пространство */
+}
+
+.main-content {
+    margin-left: 25px; /* Ширина бокового меню */
+    padding: 20px;
+    margin-top: 60px; /* Высота верхнего хедера */
+    min-height: calc(100vh - 60px);
+}
+
+footer {
+    flex-shrink: 0; /* Не сжимается */
+}
+/* На десктопе - меню после футера */
+@media (min-width: 769px) {
+    .mobile-menu {
+        order: 3; /* после футера */
+    }
+    
+    footer {
+        order: 2;
+    }
+    
+    main {
+        order: 1;
+    }
+}
+
+/* На мобильных - меню перед футером */
+@media (max-width: 768px) {
+    .mobile-menu {
+        order: 2; /* перед футером */
+    }
+    
+    footer {
+        order: 3;
+    }
+    
+    main {
+        order: 1;
+    }
 }

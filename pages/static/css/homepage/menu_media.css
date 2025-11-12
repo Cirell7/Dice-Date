@@ -71,10 +71,13 @@
 
 /* Медиа-запрос для мобильных */
 @media (max-width: 768px) {
+    .menu-toggle:checked ~ .scroll-to-top {
+        display: none !important;
+    }
+    .desktop-only,
     .desktop-nav {
         display: none;
     }
-    
     .mobile-menu,
     .hamburger,
     .mobile-nav,

@@ -73,29 +73,12 @@
     padding-left: 25px;
 }
 
-/* Медиа-запрос для мобильных */
-@media (max-width: 768px) {
-    .desktop-only {
-        display: none !important;
-    }
-    
-    .mobile-only {
-        display: block !important;
-    }
-    
-    .mobile-menu {
-        display: block;
-    }
-    
-    /* Адаптация основного контента для мобильных */
+/* Сдвигаем основной контент для десктопной версии */
+@media (min-width: 769px) {
     .main-content {
-        margin-left: 0;
-        margin-top: 60px;
-        padding: 15px;
-        width: 100%;
-    }
-    
-    .container_background {
+        margin-left: 250px; /* Ширина бокового меню */
         padding: 20px;
+        margin-top: 60px; /* Высота верхнего хедера */
+        min-height: calc(100vh - 60px);
     }
 }
