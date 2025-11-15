@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 
-from pages.models import Post, Posts, Form_error, Profile
+from pages.models import Posts, Form_error, Profile, Comment
 from pages.form import RegisterForm
 
 class CustomLoginView(LoginView):
@@ -196,7 +196,57 @@ def add_post(request):
             post.image = request.FILES['image']
             
         post.save()
-        return redirect('add_post')
+        return redirect('posts_list')
     
     return render(request, 'pages/add_post.html')
 
+def posts_list(request):
+    """Страница со всеми постами"""
+    posts = Posts.objects.filter(expiration_date__gte=timezone.now()).order_by('-creation_date')
+    
+    context = {
+        'posts': posts,
+        'title_page': 'Все встречи'
+    }
+    return render(request, 'pages/posts_list.html', context)
+
+
+def post_detail(request, post_id):
+    """Детальный просмотр поста с комментариями"""
+    post = get_object_or_404(Posts, id=post_id)
+    comments = Comment.objects.filter(post=post).order_by('-created_at')
+    
+    # Обработка POST-запроса для комментариев
+    if request.method == "POST" and request.user.is_authenticated:
+        action = request.POST.get("action")
+        # Удаление комментария
+        if action == "delete_comment":
+            comment_id = request.POST.get("comment_id")
+            try:
+                comment = Comment.objects.get(id=comment_id, user=request.user)
+                comment.delete()
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({'success': True})
+                return redirect('post_detail', id=post_id)
+            except Comment.DoesNotExist:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({'success': False, 'error': 'Комментарий не найден'})
+        
+        # Добавление комментария
+        elif 'comment_description' in request.POST and request.POST['comment_description'].strip():
+            comment_text = request.POST['comment_description'].strip()
+            Comment.objects.create(
+                post=post,  # используем post вместо voting
+                user=request.user,
+                text=comment_text,
+            )
+            return redirect('post_detail', id=post_id)
+    
+    context = {
+        "post": post,
+        "comments": comments,
+        "title_page": post.name,
+        "user": request.user,
+        "user_is_authenticated": request.user.is_authenticated,
+    }
+    return render(request, "pages/post_detail.html", context)

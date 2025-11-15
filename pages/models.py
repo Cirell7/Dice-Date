@@ -34,11 +34,13 @@ class Profile(models.Model):
     likes_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
-class Post(models.Model):
-    past = models.ForeignKey(Posts, on_delete=models.CASCADE)
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE, blank=True, null=True)
-    creation_date = models.DateTimeField()
 
 class Form_error(models.Model):
     error: models.CharField=models.CharField(max_length=100)
     email: models.CharField=models.CharField(max_length=100)
+
+class Comment(models.Model):
+    post = models.ForeignKey(Posts, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,126 @@
+{% extends 'base/base1.html' %}
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/view_voting.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/delete.css' %}" />
+{% endblock %}
+
+{% block main %}
+<div class="container" id="post-container">
+    <div class="elements_container">
+        <div class="description">
+            <h1>{{ post.name }}</h1>
+            <p><strong>Описание:</strong> {{ post.description }}</p>
+            <hr />
+            
+            {% if post.image %}
+            <img src="{{ post.image.url }}" class="img-fluid" />
+            <hr />
+            {% endif %}
+
+            <span><strong>Дата создания:</strong> {{ post.creation_date|date:"d.m.Y H:i" }}</span>
+            <span class="date_field"><strong>Когда:</strong> {{ post.expiration_date|date:"d.m.Y H:i" }}</span>
+            <br>
+            <span><strong>Где:</strong> {{ post.address }}</span>
+            <br>
+            <span><strong>Максимум участников:</strong> {{ post.max_participants }}</span>
+            <hr />
+            
+            {% if user == post.user %}
+            <a class="btn btn-warning" href="{% url 'post_edit' post.id %}">Редактировать</a>
+            {% endif %}
+        </div>
+
+        <!-- Комментарии -->
+        <div class="container list_container">
+            <h3>Комментарии ({{ comments|length }})</h3>
+            <div class="comments-list">
+                {% for comment in comments %}
+                <div class="comment-item border-bottom pb-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <strong class="text-primary">{{ comment.user.username }}</strong>
+                        <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
+                        {% if user.is_authenticated and user == comment.user %}
+                        <button class="btn btn-outline-danger btn-sm ms-2 delete-comment" 
+                                data-comment-id="{{ comment.id }}"
+                                data-post-id="{{ post.id }}">
+                            🗑️
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="mt-2">{{ comment.text }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Форма комментария -->
+        <div class="container_background">
+            <div class="center">
+                <form action="{% url 'post_detail' post.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    <label for="comment_description">Добавить комментарий</label>
+                    <div class="input-group">
+                        <textarea name="comment_description" id="comment_description" 
+                                placeholder="Введите ваш комментарий..." required minlength="1" maxlength="500" 
+                                class="form-control"></textarea>
+                        {% if user.is_authenticated %}
+                        <button type="submit" class="btn btn-success">Отправить</button>
+                        {% else %}
+                        <button type="button" class="btn btn-success" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#loginModal">Отправить
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработка удаления комментариев
+    document.querySelectorAll('.delete-comment').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.getAttribute('data-comment-id');
+            const postId = this.getAttribute('data-post-id');
+            
+            if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+                deleteComment(commentId, postId, this);
+            }
+        });
+    });
+    
+    function deleteComment(commentId, postId, buttonElement) {
+        const formData = new FormData();
+        formData.append('action', 'delete_comment');
+        formData.append('comment_id', commentId);
+    
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const commentItem = buttonElement.closest('.comment-item');
+                commentItem.remove();
+            } else {
+                alert('Ошибка при удалении комментария: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Комментарий удален, перезагрузите страницу');
+        });
+    }
+});
+</script>
+{% endblock %}

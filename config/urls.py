@@ -19,6 +19,8 @@ urlpatterns = [
     path("profile_onboarding1/", pages.views.profile_page_onboarding1, name="profile_page_onboarding1"),
     path("profile_onboarding2/", pages.views.profile_page_onboarding2, name="profile_page_onboarding2"),
     path("add_post/", pages.views.add_post, name="add_post"),
+    path('posts_list/', pages.views.posts_list, name='posts_list'),
+    path('post_detail/<int:post_id>/', pages.views.post_detail, name='post_detail'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

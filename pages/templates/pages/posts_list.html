@@ -1,0 +1,41 @@
+{% extends 'base/base1.html' %}
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/posts_list.css' %}" />
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <h1>Все встречи</h1>
+    
+    {% for post in posts %}
+    <div class="post-card mb-4 p-4 border rounded">
+        <div class="post-header">
+            <h2><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h2>
+            <p><strong>Автор:</strong> {{ post.user.username }}</p>
+            <p><strong>Когда:</strong> {{ post.expiration_date|date:"d.m.Y H:i" }}</p>
+            <p><strong>Где:</strong> {{ post.address }}</p>
+            <p><strong>Максимум участников:</strong> {{ post.max_participants }}</p>
+        </div>
+        
+        <div class="post-description">
+            <p>{{ post.description }}</p>
+        </div>
+        
+        {% if post.image %}
+        <div class="post-image">
+            <img src="{{ post.image.url }}" class="img-fluid" style="max-height: 300px;" />
+        </div>
+        {% endif %}
+        
+        <div class="post-footer mt-3">
+            <a href="{% url 'post_detail' post.id %}" class="btn btn-primary">Подробнее</a>
+            <span class="text-muted ms-3">Комментарии: {{ post.comments.count }}</span>
+        </div>
+    </div>
+    {% empty %}
+    <p>Пока нет активных встреч. <a href="{% url 'add_post' %}">Создайте первую!</a></p>
+    {% endfor %}
+</div>
+{% endblock %}
