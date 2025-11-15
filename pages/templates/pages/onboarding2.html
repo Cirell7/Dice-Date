@@ -1,20 +1,13 @@
-{% extends 'pages/profile.html' %}
+{% extends 'pages/post_list.html' %}
 {% load static %}
 
 {% block extra_style %}
 <link rel="stylesheet" href="{% static 'css/dice_date/onboarding.css'%}">
 {% endblock %}
 {% block extra_scripts %}
-    <script>
-        const onboardingUrls = {
-            profile: "{% url 'profile' user_id=user.id %}"
-        };
-    </script>
-    <script src="{% static 'js/onboarding2.js' %}"></script>
 {% endblock %}
 
-{% block main %}
-{{ block.super }} 
+{% block main %}{{ block.super }} 
 <div class="onboarding-overlay">
     <div class="modal-content">
         <a href="#" class="close-btn" onclick="closeOnboarding(); return false;">×</a>
@@ -24,7 +17,7 @@
             <p>Расскажите нам о себе, чтобы улучшить ваш опыт</p>
         </div>
         
-        <form id="onboarding-form">
+        <form method="post">
             {% csrf_token %}
     
             <div class="form-section">
@@ -37,10 +30,9 @@
 
             <div class="action-buttons">
                 <button type="button" class="btn-secondary" onclick="closeOnboarding()">Пропустить</button>
-                <button type="button" class="btn-primary" onclick="saveOnboarding()" id="submit-btn">Продолжить</button>
+                <button type="submit" class="btn-primary" id="submit-btn">Продолжить</button>
             </div>
         </form>
     </div>
 </div>
-
 {% endblock %}

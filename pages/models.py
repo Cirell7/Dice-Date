@@ -17,7 +17,6 @@ class Profile(models.Model):
     GENDER_CHOICES = [
         ('M', 'Мужской'),
         ('F', 'Женский'),
-        ('O', 'Другой'),
         ('prefer-not-to-say', 'Предпочитаю не говорить'),
     ]
     

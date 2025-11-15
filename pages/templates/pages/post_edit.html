@@ -1,0 +1,44 @@
+{% extends 'base/base1.html' %}
+{% load static %}
+
+{% block extra_scripts %}
+  <script src="{% static 'js/edit_post.js' %}" defer></script>
+{% endblock %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/edit_post.css' %}" />
+{% endblock %}
+
+{% block main %}
+  <div class="container_background">
+    <div class="center">
+      <form action="{% url 'post_edit' post.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="post_name">Название события</label>
+        <input type="text" name="post_name" id="post_name" placeholder="Название события" required minlength="1" maxlength="100" size="50" class="form-control" value="{{ post.name }}" />
+        
+        <label for="post_description">Описание события</label>
+        <textarea name="post_description" id="post_description" placeholder="Описание" required minlength="1" maxlength="500" class="form-control">{{ post.description }}</textarea>
+        
+        <label for="post_address">Адрес</label>
+        <input type="text" name="post_address" id="post_address" placeholder="Адрес" required minlength="1" maxlength="200" class="form-control" value="{{ post.address }}" />
+        
+        <label for="post_max_participants">Максимум участников</label>
+        <input type="number" name="post_max_participants" id="post_max_participants" required min="1" class="form-control" value="{{ post.max_participants }}" />
+        
+        <label for="post_expiration_date">Дата окончания</label>
+        <input type="datetime-local" name="post_expiration_date" id="post_expiration_date" required class="form-control" value="{{ post.expiration_date|date:'Y-m-d\\TH:i' }}" />
+        
+        <label for="post_image">Изображение</label>
+        <input type="file" name="post_image" id="post_image" class="form-control" accept="image/*" />
+        
+        <hr />
+        
+        <div class="actions">
+          <button type="submit" id="submit_changes" name="action" class="btn btn-success" value="submit">Применить изменения</button>
+          <button type="submit" id="delete_post" name="action" class="btn btn-danger" value="delete">УДАЛИТЬ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

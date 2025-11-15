@@ -26,9 +26,9 @@
     <nav class="mobile-nav">
         <label for="menu-toggle" class="mobile-nav__close">✕</label>
         <ul class="mobile-nav__menu">
-            <li class="nav-item"><a class="nav-link" href="{% url 'profile' user_id=user.id %}">🏠 Профиль</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'profile' user_id=user.id %}"> Профиль</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'add_post' %}">Добавить событие</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'posts_list' %}"> Посмотреть события </a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'post_list' %}"> Посмотреть события </a></li>
             <li class="nav-item"><a class="nav-link" href="#error-modal">Сообщить об ошибке</a></li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
@@ -52,11 +52,11 @@
     <aside class="sidebar desktop-only">
         <nav class="sidebar-nav">
             <ul>
-                <a href="{% url 'profile' user_id=user.id %}">🏠 Профиль</a>
-                <li><a href="{% url 'add_post' %}">ℹ️ Добавить событие </a></li>
-                <li><a href="{% url 'posts_list' %}"> Посмотреть события </a></li>
-                <li><a href="#error-modal">⚠️ Сообщить об ошибке</a></li>
-                <li><a href="{% url 'logout' %}">🚪 Выйти</a></li>
+                <a href="{% url 'profile' user_id=user.id %}"> Профиль</a>
+                <li><a href="{% url 'add_post' %}"> Добавить событие </a></li>
+                <li><a href="{% url 'post_list' %}"> Посмотреть события </a></li>
+                <li><a href="#error-modal"> Сообщить об ошибке</a></li>
+                <li><a href="{% url 'logout' %}"> Выйти</a></li>
             </ul>
         </nav>
     </aside>

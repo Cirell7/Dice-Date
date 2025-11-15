@@ -16,7 +16,7 @@ class CustomLoginView(LoginView):
     """Переопределяет стандартный LoginView для перенаправления"""
     template_name = "auth/login.html"
     def get_success_url(self):
-        return f'/profile/{self.request.user.id}'
+        return f'/post_list/{self.request.user.id}'
 
 def profile_page_onboarding1(request: HttpRequest) -> HttpResponse:
     """Настройка предпочтений пользователя при первом входе"""
@@ -41,13 +41,12 @@ def profile_page_onboarding2(request: HttpRequest) -> HttpResponse:
         profile = get_object_or_404(Profile, user_id=request.user)
         verification = Verification(profile, 'birth_date')
         profile_save, error, profile = verification.verification(request.POST.get('birth_date'))
-        if error!=0:
-            messages.error(request, error)
-            return JsonResponse({'success': True, 'error': 1})
-        if profile_save:
+        if profile_save and error==0:
             profile.save()
             profile.user.save()
-            return redirect('profile',user_id=request.user.id)
+            return redirect('post_list')
+        elif profile_save:
+            return redirect('post_list')
     return render(request, "pages/onboarding2.html")
 
 
@@ -196,11 +195,11 @@ def add_post(request):
             post.image = request.FILES['image']
             
         post.save()
-        return redirect('posts_list')
+        return redirect('post_list')
     
     return render(request, 'pages/add_post.html')
 
-def posts_list(request):
+def post_list(request):
     """Страница со всеми постами"""
     posts = Posts.objects.filter(expiration_date__gte=timezone.now()).order_by('-creation_date')
     
@@ -208,8 +207,37 @@ def posts_list(request):
         'posts': posts,
         'title_page': 'Все встречи'
     }
-    return render(request, 'pages/posts_list.html', context)
+    return render(request, 'pages/post_list.html', context)
 
+def post_edit(request: HttpRequest, post_id) -> HttpResponse:
+    post = get_object_or_404(Posts, id=post_id)
+    
+    if request.method == "POST":
+        action = request.POST.get('action')
+        
+        if action == 'delete':
+            post.delete()
+            return redirect('post_list') 
+        
+        elif action == 'submit':
+            # Обновление поста
+            post.name = request.POST['post_name']
+            post.description = request.POST.get('post_description', '')
+            post.expiration_date = request.POST['post_expiration_date']
+            post.address = request.POST.get('post_address', '')
+            post.max_participants = request.POST.get('post_max_participants', 10)
+            
+            if 'post_image' in request.FILES:
+                post.image = request.FILES['post_image']
+            
+            post.save()
+            return redirect('post_detail', post_id=post_id)
+    
+    # Для GET запроса - отображение формы редактирования
+    context = {
+        'post': post
+    }
+    return render(request, "pages/post_edit.html", context)
 
 def post_detail(request, post_id):
     """Детальный просмотр поста с комментариями"""

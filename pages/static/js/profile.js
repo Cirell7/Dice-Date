@@ -1,47 +1,32 @@
 // static/js/profile-editing.js
+document.addEventListener('click', function(e) {
+    // Если клик по кнопке отмены
+    if (e.target.classList.contains('cancel-btn')) {
+        const field = e.target.closest('.editable-field');
+        if (field) {
+            const fieldName = field.dataset.field;
+            cancelEditing(fieldName);
+            e.stopPropagation();
+        }
+    }
+    
+    // Если клик по кнопке сохранения
+    if (e.target.classList.contains('save-btn')) {
+        const field = e.target.closest('.editable-field');
+        if (field) {
+            const fieldName = field.dataset.field;
+            saveField(fieldName);
+            e.stopPropagation();
+        }
+    }
+});
 
 let originalValues = {};
 let currentEditingField = null;
-
 function startEditing(fieldName) {
-    // Если уже редактируем другое поле, сначала сохраняем/отменяем его
-    if (currentEditingField && currentEditingField !== fieldName) {
+    if (currentEditingField) {
         cancelEditing(currentEditingField);
     }
-    
-    const field = document.querySelector(`[data-field="${fieldName}"]`);
-    const valueElement = field.querySelector('.field-value');
-    const inputElement = field.querySelector('.edit-input, .edit-textarea, .edit-select');
-    const actionsElement = document.getElementById(`${fieldName}-actions`);
-    
-    // Сохраняем оригинальное значение
-    originalValues[fieldName] = inputElement.value || valueElement.textContent.trim();
-    
-    // Переходим в режим редактирования
-    valueElement.style.display = 'none';
-    inputElement.style.display = 'block';
-    actionsElement.classList.add('visible');
-    field.classList.add('editing');
-    
-    // Устанавливаем текущее редактируемое поле
-    currentEditingField = fieldName;
-    
-    // Фокусируемся на поле ввода
-    if (inputElement.tagName !== 'SELECT') {
-        inputElement.focus();
-        if (inputElement.tagName === 'TEXTAREA') {
-            inputElement.setSelectionRange(inputElement.value.length, inputElement.value.length);
-        }
-    }
-}
-
-function cancelEditing(fieldName) {
-    // Если передали null, используем текущее поле
-    if (fieldName === null && currentEditingField) {
-        fieldName = currentEditingField;
-    }
-    
-    if (!fieldName) return;
     
     const field = document.querySelector(`[data-field="${fieldName}"]`);
     if (!field) return;
@@ -50,32 +35,35 @@ function cancelEditing(fieldName) {
     const inputElement = field.querySelector('.edit-input, .edit-textarea, .edit-select');
     const actionsElement = document.getElementById(`${fieldName}-actions`);
     
-    if (!valueElement || !inputElement || !actionsElement) return;
+    if (valueElement) valueElement.style.display = 'none';
+    if (inputElement) inputElement.style.display = 'inline-block';
+    if (actionsElement) actionsElement.style.display = 'block';
     
-    // Восстанавливаем оригинальное значение
-    if (inputElement.tagName === 'SELECT') {
-        const options = inputElement.options;
-        for (let i = 0; i < options.length; i++) {
-            if (options[i].value === originalValues[fieldName]) {
-                inputElement.selectedIndex = i;
-                break;
-            }
-        }
-    } else {
-        inputElement.value = originalValues[fieldName];
-    }
+    field.classList.add('editing');
+    currentEditingField = fieldName;
     
-    // Выходим из режима редактирования
-    valueElement.style.display = 'inline';
-    inputElement.style.display = 'none';
-    actionsElement.classList.remove('visible');
-    field.classList.remove('editing');
-    
-    // Сбрасываем текущее редактируемое поле
-    if (currentEditingField === fieldName) {
-        currentEditingField = null;
+    if (inputElement && (inputElement.tagName === 'INPUT' || inputElement.tagName === 'TEXTAREA')) {
+        inputElement.focus();
     }
 }
+
+function cancelEditing(fieldName) {
+    const field = document.querySelector(`[data-field="${fieldName}"]`);
+    if (!field) return;
+    
+    const valueElement = field.querySelector('.field-value');
+    const inputElement = field.querySelector('.edit-input, .edit-textarea, .edit-select');
+    const actionsElement = document.getElementById(`${fieldName}-actions`);
+    
+    // Восстанавливаем оригинальные стили (убираем inline стили)
+    if (valueElement) valueElement.style.display = '';
+    if (inputElement) inputElement.style.display = 'none'; // оставляем скрытым
+    if (actionsElement) actionsElement.style.display = 'none'; // оставляем скрытым
+    
+    field.classList.remove('editing');
+    currentEditingField = null;
+}
+
 function saveField(fieldName) {
     const field = document.querySelector(`[data-field="${fieldName}"]`);
     const inputElement = field.querySelector('.edit-input, .edit-textarea, .edit-select');

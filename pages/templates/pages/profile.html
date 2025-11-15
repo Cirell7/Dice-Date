@@ -68,7 +68,7 @@
                         <option value="">Выберите пол</option>
                         <option value="M" {% if profile.gender == 'M' %}selected{% endif %}>Мужской</option>
                         <option value="F" {% if profile.gender == 'F' %}selected{% endif %}>Женский</option>
-                        <option value="O" {% if profile.gender == 'O' %}selected{% endif %}>Другой</option>
+                        <option value="prefer-not-to-say" {% if profile.gender == 'prefer-not-to-say' %}selected{% endif %}>Предпочитаю не говорить</option>
                     </select>
                     <button type="button" onclick="saveField('gender')" class="save-btn">Сохранить</button>
                     <button type="button" onclick="cancelEditing('gender')" class="cancel-btn">Отмена</button>
@@ -105,8 +105,8 @@
                 <div class="edit-icon">✎</div>
                 <div class="field-actions" id="description-actions">
                     <textarea name="description" class="edit-textarea">{{ profile.description }}</textarea>
-                    <button type="button" onclick="saveField('description')" class="save-btn">Сохранить</button>
-                    <button type="button" onclick="cancelEditing('description')" class="cancel-btn">Отмена</button>
+                    <button type="button" class="save-btn">Сохранить</button>
+                    <button type="button" class="cancel-btn">Отмена</button>
                 </div>
             </div>
         </div>
