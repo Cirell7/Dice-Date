@@ -3,10 +3,12 @@
 
 {% block extra_style %}
   <link rel="stylesheet" href="{% static 'css/add_post.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/map.css' %}" />
 {% endblock %}
 
 {% block extra_scripts %}
   <script src="{% static 'js/add_post.js' %}"></script>
+  <script src="https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ&lang=ru_RU" type="text/javascript"></script>
 {% endblock %}
 
 {% block title %}Создать встречу - Dice&Date{% endblock %}
@@ -63,16 +65,23 @@
                         <h3>📍 Место встречи</h3>
                         
                         <div class="form-group">
-                            <label for="address">Адрес встречи</label>
+                            <label for="address">Место встречи</label>
                             <input type="text" id="address" name="address" 
                                    placeholder="Центральный парк, кафе 'Кофейня'...">
                         </div>
-
-                        <div class="map-preview">
-                            <div class="map-icon">🗺️</div>
-                            <p>Карта для выбора места</p>
-                            <small>Пока можно указать адрес вручную</small>
+                    </div>
+                    <div class="form-section">
+                        <!-- Карта -->
+                        <div class="map-container">
+                            <div id="map" style="width: 100%; height: 300px; border-radius: 12px;"></div>
+                            <div class="map-controls">
+                                <button type="button" id="find-me" class="btn-map">📍 Мое местоположение</button>
+                                <button type="button" id="clear-map" class="btn-map">🗑️ Очистить</button>
+                            </div>
+                            <small>Выберите место на карте</small>
                         </div>
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
                     </div>
 
                     <!-- Участники и фото -->
@@ -112,4 +121,119 @@
     </div>
 </div>
 
+<script>
+// Инициализация карты
+ymaps.ready(init);
+
+let map, placemark;
+
+function init() {
+    // Создаем карту
+    map = new ymaps.Map('map', {
+        center: [55.76, 37.64], // Москва по умолчанию
+        zoom: 10
+    });
+
+    // Обработчик клика по карте
+    map.events.add('click', function (e) {
+        const coords = e.get('coords');
+        
+        // Сохраняем координаты в скрытые поля
+        document.getElementById('latitude').value = coords[0];
+        document.getElementById('longitude').value = coords[1];
+        
+        // Если метка уже есть - удаляем
+        if (placemark) {
+            map.geoObjects.remove(placemark);
+        }
+        
+        // Создаем новую метку
+        placemark = new ymaps.Placemark(coords, {}, {
+            preset: 'islands#redDotIcon'
+        });
+        
+        map.geoObjects.add(placemark);
+        
+        // Получаем адрес по координатам
+        ymaps.geocode(coords).then(function (res) {
+            const firstGeoObject = res.geoObjects.get(0);
+            const address = firstGeoObject.getAddressLine();
+            document.getElementById('address').value = address;
+        });
+    });
+
+    // Кнопка "Мое местоположение"
+    document.getElementById('find-me').addEventListener('click', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const coords = [position.coords.latitude, position.coords.longitude];
+                
+                // Сохраняем координаты в скрытые поля
+                document.getElementById('latitude').value = coords[0];
+                document.getElementById('longitude').value = coords[1];
+                
+                map.setCenter(coords, 15);
+                
+                if (placemark) {
+                    map.geoObjects.remove(placemark);
+                }
+                
+                placemark = new ymaps.Placemark(coords, {}, {
+                    preset: 'islands#blueHomeIcon'
+                });
+                
+                map.geoObjects.add(placemark);
+                
+                // Получаем адрес
+                ymaps.geocode(coords).then(function (res) {
+                    const firstGeoObject = res.geoObjects.get(0);
+                    const address = firstGeoObject.getAddressLine();
+                    document.getElementById('address').value = address;
+                });
+            });
+        }
+    });
+
+    // Кнопка "Очистить"
+    document.getElementById('clear-map').addEventListener('click', function() {
+        if (placemark) {
+            map.geoObjects.remove(placemark);
+            placemark = null;
+        }
+        document.getElementById('address').value = '';
+        // Очищаем координаты
+        document.getElementById('latitude').value = '';
+        document.getElementById('longitude').value = '';
+    });
+
+    // Обработчик ручного ввода адреса (геокодирование)
+    document.getElementById('address').addEventListener('change', function() {
+        const address = this.value;
+        if (address) {
+            ymaps.geocode(address).then(function (res) {
+                const firstGeoObject = res.geoObjects.get(0);
+                if (firstGeoObject) {
+                    const coords = firstGeoObject.geometry.getCoordinates();
+                    
+                    // Сохраняем координаты
+                    document.getElementById('latitude').value = coords[0];
+                    document.getElementById('longitude').value = coords[1];
+                    
+                    // Устанавливаем метку
+                    if (placemark) {
+                        map.geoObjects.remove(placemark);
+                    }
+                    
+                    placemark = new ymaps.Placemark(coords, {}, {
+                        preset: 'islands#greenDotIcon'
+                    });
+                    
+                    map.geoObjects.add(placemark);
+                    map.setCenter(coords, 15);
+                }
+            });
+        }
+    });
+}
+</script>
 {% endblock %}

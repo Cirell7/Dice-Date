@@ -22,6 +22,10 @@ urlpatterns = [
     path('post_list/', pages.views.post_list, name='post_list'),
     path('post_detail/<int:post_id>/', pages.views.post_detail, name='post_detail'),
     path('post_edit/<int:post_id>/', pages.views.post_edit, name='post_edit'),
+    path('messages/', pages.views.messages_list, name='messages_list'),
+    path('messages/<int:user_id>/', pages.views.message_thread, name='message_thread'),
+    path('messages/send/<int:post_id>/', pages.views.send_message, name='send_message'),
+    path('profile_view/<int:user_id>/', pages.views.profile_view, name='profile_view')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

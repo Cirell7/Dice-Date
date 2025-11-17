@@ -1,0 +1,55 @@
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.author-photo-link {
+    text-decoration: none;
+    display: block;
+}
+
+.author-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.author-photo:hover {
+    transform: scale(1.05);
+    border-color: #007bff;
+}
+
+.default-avatar {
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.default-avatar:hover {
+    transform: scale(1.05);
+    background-color: #0056b3;
+}
+
+.author-details {
+    flex: 1;
+}
+
+.author-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.author-link:hover {
+    text-decoration: underline;
+}

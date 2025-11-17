@@ -9,14 +9,14 @@ from django.utils import timezone
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 
-from pages.models import Posts, Form_error, Profile, Comment
+from pages.models import Posts, Form_error, Profile, Comment, Message
 from pages.form import RegisterForm
 
 class CustomLoginView(LoginView):
     """Переопределяет стандартный LoginView для перенаправления"""
     template_name = "auth/login.html"
     def get_success_url(self):
-        return f'/post_list/{self.request.user.id}'
+        return f'/post_list/'
 
 def profile_page_onboarding1(request: HttpRequest) -> HttpResponse:
     """Настройка предпочтений пользователя при первом входе"""
@@ -182,13 +182,29 @@ def submit_error(request):
 def add_post(request):
     """Создание нового поста"""
     if request.method == 'POST':
+        latitude_str = request.POST.get('latitude', '').strip()
+        longitude_str = request.POST.get('longitude', '').strip()
+        
+        latitude = None
+        longitude = None
+        
+        if latitude_str and longitude_str:
+            try:
+                latitude = float(latitude_str)
+                longitude = float(longitude_str)
+            except (ValueError, TypeError):
+                # Если не удалось преобразовать в число, оставляем None
+                pass
+        
         post = Posts(
             name=request.POST['title'],
             description=request.POST.get('description', ''),
             expiration_date=request.POST['event_date'],
             address=request.POST.get('address', ''),
             max_participants=request.POST.get('max_participants', 10),
-            user=request.user
+            user=request.user,
+            latitude=latitude,
+            longitude=longitude
         )
         
         if 'image' in request.FILES:
@@ -278,3 +294,94 @@ def post_detail(request, post_id):
         "user_is_authenticated": request.user.is_authenticated,
     }
     return render(request, "pages/post_detail.html", context)
+
+from django.db.models import Q
+
+def messages_list(request: HttpRequest) -> HttpResponse:
+    """Список диалогов пользователя"""
+    # Получаем всех пользователей, с которыми есть переписка
+    user_messages = Message.objects.filter(
+        Q(sender=request.user) | Q(receiver=request.user)
+    )
+    
+    # Получаем уникальных собеседников
+    threads = {}
+    for message in user_messages:
+        other_user = message.receiver if message.sender == request.user else message.sender
+        if other_user.id not in threads:
+            threads[other_user.id] = {
+                'user': other_user,
+                'last_message': message,
+                'unread_count': Message.objects.filter(
+                    sender=other_user, receiver=request.user, is_read=False
+                ).count()
+            }
+    
+    context = {
+        'threads': sorted(threads.values(), key=lambda x: x['last_message'].timestamp, reverse=True)
+    }
+    return render(request, "pages/messages_list.html", context)
+
+def message_thread(request: HttpRequest, user_id: int) -> HttpResponse:
+    """Переписка с конкретным пользователем"""
+    other_user = get_object_or_404(User, id=user_id)
+    
+    # Получаем все сообщения между пользователями
+    messages = Message.objects.filter(
+        Q(sender=request.user, receiver=other_user) |
+        Q(sender=other_user, receiver=request.user)
+    ).order_by('timestamp')
+    
+    # Помечаем сообщения как прочитанные
+    Message.objects.filter(sender=other_user, receiver=request.user, is_read=False).update(is_read=True)
+    
+    if request.method == "POST":
+        content = request.POST.get('content', '').strip()
+        if content:
+            Message.objects.create(
+                sender=request.user,
+                receiver=other_user,
+                content=content
+            )
+            return redirect('message_thread', user_id=user_id)
+    
+    context = {
+        'other_user': other_user,
+        'messages': messages
+    }
+    return render(request, "pages/message_thread.html", context)
+
+def send_message(request: HttpRequest, post_id: int) -> HttpResponse:
+    """Отправка сообщения автору поста"""
+    if request.method == "POST":
+        post = get_object_or_404(Posts, id=post_id)
+        content = request.POST.get('content', '').strip()
+        
+        if content and post.user != request.user:
+            Message.objects.create(
+                sender=request.user,
+                receiver=post.user,
+                post=post,
+                content=content
+            )
+            return redirect('message_thread', user_id=post.user.id)
+    
+    return redirect('post_detail', post_id=post_id)
+
+def profile_view(request: HttpRequest, user_id: int):
+    # Получаем пользователя по ID
+    profile_user = get_object_or_404(User, id=user_id)
+    
+    # Получаем или создаем профиль
+    profile, created = Profile.objects.get_or_create(user=profile_user)
+    
+    # Проверяем, не пытается ли пользователь смотреть свой собственный профиль
+    is_own_profile = request.user.is_authenticated and request.user.id == user_id
+    
+    context = {
+        'profile_user': profile_user,
+        'profile': profile,
+        'is_own_profile': is_own_profile,
+    }
+    
+    return render(request, 'pages/profile_view.html', context)

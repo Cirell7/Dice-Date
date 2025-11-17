@@ -1,0 +1,45 @@
+{% extends 'base/base1.html' %}
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'css/messages.css' %}" />
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <div class="messages-header">
+        <h1>💬 Мои сообщения</h1>
+    </div>
+
+    {% if threads %}
+    <div class="threads-list">
+        {% for thread in threads %}
+        <div class="thread-item {% if thread.unread_count > 0 %}unread{% endif %}">
+            <a href="{% url 'message_thread' thread.user.id %}" class="thread-link">
+                <div class="thread-avatar">
+                    {% if thread.user.profile.photo %}
+                        <img src="{{ thread.user.profile.photo.url }}" alt="{{ thread.user.username }}">
+                    {% else %}
+                        <div class="default-avatar">{{ thread.user.username|first|upper }}</div>
+                    {% endif %}
+                    {% if thread.unread_count > 0 %}
+                    <span class="unread-badge">{{ thread.unread_count }}</span>
+                    {% endif %}
+                </div>
+                <div class="thread-info">
+                    <h4>{{ thread.user.username }}</h4>
+                    <p class="last-message">{{ thread.last_message.content|truncatechars:50 }}</p>
+                    <small class="timestamp">{{ thread.last_message.timestamp|date:"d.m.Y H:i" }}</small>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-messages">
+        <p>У вас пока нет сообщений</p>
+        <a href="{% url 'post_list' %}" class="btn btn-primary">Найти встречи</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

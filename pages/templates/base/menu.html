@@ -18,7 +18,10 @@
             <ul class="nav-links">
                 <li class="nav-item"><a class="nav-link" href="{% url 'main_menu' %}">Главная</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'maintwo_menu' %}">О проекте</a></li>
-                <li class="nav-item"><a class="nav-link" href="#error-modal">Сообщить об ошибке</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="javascript:void(0)" onclick="openErrorModal()">Сообщить об ошибке</a>
+                </li>
+                
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
                     <ul class="dropdown-menu">
@@ -42,13 +45,19 @@
         <span></span>
         <span></span>
     </label>
-    {% include 'base/reportpage.html' %}
+    <a href="#" class="scroll-to-top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </a>
     <nav class="mobile-nav">
         <label for="menu-toggle" class="mobile-nav__close">✕</label>
         <ul class="mobile-nav__menu">
             <li class="nav-item"><a class="nav-link" href="{% url 'main_menu' %}">Главная</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'maintwo_menu' %}">О проекте</a></li>
-            <li class="nav-item"><a class="nav-link" href="#error-modal">Сообщить об ошибке</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)" onclick="openErrorModal()">Сообщить об ошибке</a>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
                 <ul class="dropdown-menu">

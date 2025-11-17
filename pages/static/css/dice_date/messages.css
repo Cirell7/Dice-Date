@@ -1,0 +1,133 @@
+.threads-list {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.thread-item {
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s;
+}
+
+.thread-item:last-child {
+    border-bottom: none;
+}
+
+.thread-item.unread {
+    background-color: #f8f9fa;
+}
+
+.thread-link {
+    display: flex;
+    padding: 15px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.thread-link:hover {
+    background-color: #f8f9fa;
+}
+
+.thread-avatar {
+    position: relative;
+    margin-right: 15px;
+}
+
+.thread-avatar img, .default-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.default-avatar {
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.unread-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thread-info h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.last-message {
+    margin: 0 0 5px 0;
+    color: #666;
+}
+
+.timestamp {
+    color: #999;
+}
+
+.messages-container {
+    height: 60vh;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.message.sent {
+    justify-content: flex-end;
+}
+
+.message.received {
+    justify-content: flex-start;
+}
+
+.message-content {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    position: relative;
+}
+
+.message.sent .message-content {
+    background: #007bff;
+    color: white;
+}
+
+.message.received .message-content {
+    background: white;
+    border: 1px solid #ddd;
+}
+
+.message-form textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 12px 20px;
+    resize: none;
+    height: 50px;
+}
+
+.no-messages {
+    text-align: center;
+    padding: 40px;
+}

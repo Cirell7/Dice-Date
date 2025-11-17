@@ -36,7 +36,6 @@
     {% csrf_token %}
     <header>
       {% include 'base/menu.html' %}
-      {% include 'base/reportpage.html' %}
     </header>
     
     <main>
@@ -46,5 +45,6 @@
     <footer>
         {% include 'base/foot.html' %}
     </footer>
+    {% include 'base/reportpage.html' %}
   </body>
 </html>

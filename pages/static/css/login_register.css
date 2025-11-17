@@ -7,35 +7,38 @@
     padding: 20px;
 }
 
-/* Улучшим расстояния в форме */
-.modal-content form {
-    margin-top: 20px;
+/* Контейнер для форм авторизации */
+.auth-form {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    max-width: 550px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-.modal-content p {
+.auth-form h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 28px;
+}
+
+/* Формы */
+
+.auth-form p {
     text-align: center;
     margin-top: 25px;
     color: #2c3e50;
 }
 
-.modal-content a {
+.auth-form a {
     color: #3498db;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.modal-content a:hover {
+.auth-form a:hover {
     color: #2980b9;
     text-decoration: underline;
-}
-
-/* Стили для ошибок */
-.error-message {
-    color: #e74c3c;
-    font-size: 14px;
-    margin-top: 5px;
-    padding: 8px;
-    background: #fdf2f2;
-    border-radius: 5px;
-    border-left: 3px solid #e74c3c;
 }

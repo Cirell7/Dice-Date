@@ -11,7 +11,7 @@
 
 {% block main %}
 <div class="container_background centered-page">
-    <div class="modal-content">
+    <div class="auth-form">
         <h2>Регистрация</h2>
         <form action="{% url 'register' %}" method="post" id="registerForm">
             {% csrf_token %}
