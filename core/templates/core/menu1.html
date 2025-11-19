@@ -1,8 +1,8 @@
 {% load static %}
 
 {% block extra_style %}
-  <link rel="stylesheet" href="{% static 'css/dice_date/menu1.css' %}" />
-  <link rel="stylesheet" href="{% static 'css/homepage/menu_media.css' %}" />
+  <link rel="stylesheet" href="{% static 'core/css/base/menu1.css' %}" />
+  <link rel="stylesheet" href="{% static 'core/css/base/menu_media.css' %}" />
 {% endblock %}
 
 {% block main %}
@@ -33,6 +33,8 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'profile' user_id=user.id %}"> Профиль</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'add_post' %}">Добавить событие</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'post_list' %}"> Посмотреть события </a></li>
+
+            <li class="nav-item"><a class="nav-link" href="{% url 'messages_list' %}"> Мои сообщения </a></li>
             <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0)" onclick="openErrorModal()">Сообщить об ошибке</a>
             </li>
@@ -61,6 +63,7 @@
                 <a href="{% url 'profile' user_id=user.id %}"> Профиль</a>
                 <li><a href="{% url 'add_post' %}"> Добавить событие </a></li>
                 <li><a href="{% url 'post_list' %}"> Посмотреть события </a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'messages_list' %}"> Мои сообщения </a></li>
                 <li class="nav-item">
                     <a class="nav-link" href="javascript:void(0)" onclick="openErrorModal()">Сообщить об ошибке</a>
                 </li>

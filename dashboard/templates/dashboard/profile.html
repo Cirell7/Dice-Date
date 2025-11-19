@@ -1,0 +1,138 @@
+{% extends "core/base1.html" %}
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'dashboard/css/profile.css' %}" />
+  <link rel="stylesheet" href="{% static 'dashboard/css/profile_btn.css' %}" />
+  <link rel="stylesheet" href="{% static 'dashboard/css/profile_avatar.css' %}" />
+{% endblock %}
+{% block extra_scripts %}
+  <script src="{% static 'js/profile.js' %}"></script>
+  <script src="{% static 'js/photo-upload.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+<div class="profile-container">
+    <h1>Профиль {{ user.username }}</h1>
+    <!-- Кружок для загрузки фото -->
+    <div class="photo-section">
+        <div class="upload-circle" onclick="openUploadModal()">
+            {% if profile.photo %}
+                <img src="{{ profile.photo.url }}" class="profile-photo">
+                <div class="change-overlay">✎</div>
+            {% else %}
+                <div class="plus-icon">+</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Информация профиля с инлайн-редактированием -->
+    <form method="post" enctype="multipart/form-data" id="profileForm">
+        {% csrf_token %}
+        <div class="profile-info">
+            <!-- Имя пользователя -->
+            <div class="editable-field" data-field="username" onclick="startEditing('username')">
+                <strong>Имя пользователя:</strong>
+                <span class="field-value {% if not user.username %}empty-field{% endif %}">
+                    {{ user.username|default:"Не указано" }}
+                </span>
+                <div class="edit-icon">✎</div>
+                <div class="field-actions" id="username-actions">
+                    <input type="text" name="username" value="{{ user.username }}" class="edit-input">
+                    <button type="button" onclick="saveField('username')" class="save-btn">Сохранить</button>
+                    <button type="button" onclick="cancelEditing('username')" class="cancel-btn">Отмена</button>
+                </div>
+            </div>
+            {% for message in messages %}
+                {% if message.message == 'username_exists' %}
+                    <div class="error-message" style="margin-top: 10px;">
+                        Пользователь с таким именем уже существует. Попробуйте снова.
+                    </div>
+                {% endif %}
+                {% if message.message == 'username_incorrect' %}
+                    <div class="error-message" style="margin-top: 10px;">
+                        Используйте имя от 3х до 15 символов
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Пол -->
+            <div class="editable-field" data-field="gender" onclick="startEditing('gender')">
+                <strong>Пол:</strong>
+                <span class="field-value {% if not profile.gender %}empty-field{% endif %}">
+                    {{ profile.get_gender_display|default:"Не указан" }}
+                </span>
+                <div class="edit-icon">✎</div>
+                <div class="field-actions" id="gender-actions">
+                    <select name="gender" class="edit-select">
+                        <option value="">Выберите пол</option>
+                        <option value="M" {% if profile.gender == 'M' %}selected{% endif %}>Мужской</option>
+                        <option value="F" {% if profile.gender == 'F' %}selected{% endif %}>Женский</option>
+                        <option value="prefer-not-to-say" {% if profile.gender == 'prefer-not-to-say' %}selected{% endif %}>Предпочитаю не говорить</option>
+                    </select>
+                    <button type="button" onclick="saveField('gender')" class="save-btn">Сохранить</button>
+                    <button type="button" onclick="cancelEditing('gender')" class="cancel-btn">Отмена</button>
+                </div>
+            </div>
+
+            <!-- Дата рождения -->
+            <div class="editable-field" data-field="birth_date" onclick="startEditing('birth_date')">
+                <strong>Дата рождения:</strong>
+                <span class="field-value {% if not profile.birth_date %}empty-field{% endif %}">
+                    {{ profile.birth_date|default:"Не указана" }}
+                </span>
+                <div class="edit-icon">✎</div>
+                <div class="field-actions" id="birth_date-actions">
+                    <input type="date" name="birth_date" value="{{ profile.birth_date|date:'Y-m-d' }}" class="edit-input">
+                    <button type="button" onclick="saveField('birth_date')" class="save-btn">Сохранить</button>
+                    <button type="button" onclick="cancelEditing('birth_date')" class="cancel-btn">Отмена</button>
+                </div>
+            </div>
+            {% for message in messages %}
+                {% if message.message == 'date_error' %}
+                    <div class="error-message" style="margin-top: 10px;">
+                        Извините, наш сайт предназначен для пользователей старше 16 лет
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Описание -->
+            <div class="editable-field" data-field="description" onclick="startEditing('description')">
+                <strong>Описание:</strong>
+                <span class="field-value {% if not profile.description %}empty-field{% endif %}">
+                    {{ profile.description|default:"Нет описания" }}
+                </span>
+                <div class="edit-icon">✎</div>
+                <div class="field-actions" id="description-actions">
+                    <textarea name="description" class="edit-textarea">{{ profile.description }}</textarea>
+                    <button type="button" class="save-btn">Сохранить</button>
+                    <button type="button" class="cancel-btn">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Модальное окно загрузки фото -->
+<div id="uploadModal" class="modal">
+    <div class=".modal-content-foto">
+        <a href="#" class="close-btn">×</a>
+        <h3>Добавить фото профиля</h3>
+
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+
+            <div class="drop-zone" id="dropZone">
+                <input type="file" name="photo" id="fileInput" accept="image/*" required>
+                <div class="drop-content">
+                    <div class="upload-icon">📁</div>
+                    <p>Перетащите фото сюда</p>
+                    <p class="or-text">или</p>
+                    <button type="button" class="browse-btn">Выберите файл</button>
+                </div>
+                <div class="file-name" id="fileName"></div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
