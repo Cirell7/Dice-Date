@@ -6,8 +6,9 @@ from django.conf.urls.static import static
 # Импорты из PAGES - ВСЕ onboarding и profile_page тут!
 from pages.views import (
     main_menu, maintwo_menu, add_post, post_list, 
-    post_detail, post_edit, profile_page_onboarding1,  # ← ОНИ В PAGES!
-    profile_page_onboarding2              # ← И profile_page тоже в PAGES!
+    post_detail, post_edit, profile_page_onboarding1,  
+    profile_page_onboarding2, join_post, post_requests,  # ← ДОБАВЛЕНЫ новые функции
+    approve_request, reject_request                      # ← ДОБАВЛЕНЫ новые функции
 )
 
 # Импорты из CORE - только аутентификация
@@ -15,9 +16,10 @@ from core.views import CustomLoginView, register_page, logout_view, check_userna
 
 # Импорты из DASHBOARD - только то что реально есть в dashboard
 from dashboard.views import (
-    messages_list, message_thread, send_message, profile_view,profile_page
+    messages_list, message_thread, send_message, profile_view, profile_page
     # НЕТ profile_page_onboarding1, profile_page_onboarding2, profile_page!
 )
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     
@@ -28,6 +30,12 @@ urlpatterns = [
     path('post_list/', post_list, name='post_list'),
     path('post_detail/<int:post_id>/', post_detail, name='post_detail'),
     path('post_edit/<int:post_id>/', post_edit, name='post_edit'),
+    
+    # Новые URLs для системы заявок
+    path('post/<int:post_id>/join/', join_post, name='join_post'),
+    path('post/<int:post_id>/requests/', post_requests, name='post_requests'),
+    path('post/<int:post_id>/requests/<int:request_id>/approve/', approve_request, name='approve_request'),
+    path('post/<int:post_id>/requests/<int:request_id>/reject/', reject_request, name='reject_request'),
     
     # Core/Auth URLs
     path("register/", register_page, name="register"),

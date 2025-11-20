@@ -53,3 +53,18 @@
 .author-link:hover {
     text-decoration: underline;
 }
+
+.post-card {
+    transition: background-color 0.3s ease;
+}
+
+.show-on-map {
+    margin-left: 10px;
+}
+
+.map-section {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}

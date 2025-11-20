@@ -1,0 +1,97 @@
+{% extends "core/base1.html" %}
+{% load static %}
+
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'pages/css/homepage/post_requests.css' %}" />
+{% endblock %}
+
+{% block title %}Заявки на участие - {{ post.name }}{% endblock %}
+
+{% block main %}
+<div class="post-detail-container">
+  <!-- Заголовок поста -->
+  <div class="author-info">
+    <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-photo-link">
+        {% if post.user.profile.photo %}
+            <img src="{{ post.user.profile.photo.url }}" class="author-photo" alt="{{ post.user.username }}">
+        {% else %}
+            <div class="author-photo default-avatar">{{ post.user.username|first|upper }}</div>
+        {% endif %}
+    </a>
+    <div class="author-details">
+        <h2><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h2>
+        <strong>Автор:</strong> 
+        <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link">
+            {{ post.user.username }}
+        </a>
+    </div>
+  </div>
+
+  <!-- Статистика -->
+  <div class="requests-stats">
+    <div class="stat-item">
+      <span class="stat-label">Текущие участники:</span>
+      <span class="stat-value">{{ post.participants.count }}/{{ post.max_participants }}</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Ожидающие заявки:</span>
+      <span class="stat-value">{{ pending_requests|length }}</span>
+    </div>
+  </div>
+
+  <!-- Список заявок -->
+  <div class="requests-section">
+    <h3>📋 Заявки на участие</h3>
+    
+    {% if pending_requests %}
+      <div class="requests-list">
+        {% for request in pending_requests %}
+        <div class="request-item">
+          <div class="request-user-info">
+            <a href="{% url 'profile_view' user_id=request.user.id %}" class="user-link">
+              {% if request.user.profile.photo %}
+                <img src="{{ request.user.profile.photo.url }}" class="user-avatar" alt="{{ request.user.username }}">
+              {% else %}
+                <div class="user-avatar default-avatar">{{ request.user.username|first|upper }}</div>
+              {% endif %}
+              <div class="user-details">
+                <strong>{{ request.user.username }}</strong>
+                <span class="request-date">Заявка отправлена: {{ request.created_at|date:"d.m.Y H:i" }}</span>
+              </div>
+            </a>
+          </div>
+          
+          <div class="request-actions">
+            <form method="post" action="{% url 'approve_request' post.id request.id %}" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn-approve" 
+                      {% if post.participants.count >= post.max_participants %}disabled{% endif %}>
+                ✅ Одобрить
+              </button>
+            </form>
+            
+            <form method="post" action="{% url 'reject_request' post.id request.id %}" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn-reject">
+                ❌ Отклонить
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="no-requests">
+        <p>🎉 Пока нет заявок на участие!</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Кнопки навигации -->
+  <div class="action-buttons">
+    <a href="{% url 'post_detail' post.id %}" class="btn-back">
+      ← Назад к посту
+    </a>
+  </div>
+</div>
+{% endblock %}

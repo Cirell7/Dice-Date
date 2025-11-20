@@ -2,124 +2,174 @@
 {% load static %}
 
 {% block extra_style %}
-  <link rel="stylesheet" href="{% static 'css/view_voting.css' %}" />
+  <link rel="stylesheet" href="{% static 'pages/css/homepage/post_detail.css' %}" />
+  <link rel="stylesheet" href="{% static 'pages/css/homepage/button_post.css' %}" />
+  <link rel="stylesheet" href="{% static 'pages/css/homepage/post_list.css' %}" />
+
+{% endblock %}
+{% block extra_scripts %}
+  <div id="csrf-token" data-csrf="{{ csrf_token }}" style="display: none;"></div>
+  <script src="{% static 'js/post_detail.js' %}"></script>
 {% endblock %}
 
+
 {% block main %}
-<div class="container" id="post-container">
-    <div class="elements_container">
-        <div class="description">
-            <h1>{{ post.name }}</h1>
-            <p><strong>Описание:</strong> {{ post.description }}</p>
-            <hr />
-            
-            {% if post.image %}
-            <img src="{{ post.image.url }}" class="img-fluid" />
-            <hr />
-            {% endif %}
-
-            <span><strong>Дата создания:</strong> {{ post.creation_date|date:"d.m.Y H:i" }}</span>
-            <span class="date_field"><strong>Когда:</strong> {{ post.expiration_date|date:"d.m.Y H:i" }}</span>
-            <br>
-            <span><strong>Где:</strong> {{ post.address }}</span>
-            <br>
-            <span><strong>Максимум участников:</strong> {{ post.max_participants }}</span>
-            <hr />
-            
-            {% if user == post.user %}
-            <a class="btn btn-warning" href="{% url 'post_edit' post.id %}">Редактировать</a>
-            {% endif %}
-        </div>
-
-        <!-- Комментарии -->
-        <div class="container list_container">
-            <h3>Комментарии ({{ comments|length }})</h3>
-            <div class="comments-list">
-                {% for comment in comments %}
-                <div class="comment-item border-bottom pb-3 mb-3">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <strong class="text-primary">{{ comment.user.username }}</strong>
-                        <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
-                        {% if user.is_authenticated and user == comment.user %}
-                        <button class="btn btn-outline-danger btn-sm ms-2 delete-comment" 
-                                data-comment-id="{{ comment.id }}"
-                                data-post-id="{{ post.id }}">
-                            🗑️
-                        </button>
-                        {% endif %}
-                    </div>
-                    <div class="mt-2">{{ comment.text }}</div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Форма комментария -->
-        <div class="container_background">
-            <div class="center">
-                <form action="{% url 'post_detail' post.id %}" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="post_id" value="{{ post.id }}">
-                    <label for="comment_description">Добавить комментарий</label>
-                    <div class="input-group">
-                        <textarea name="comment_description" id="comment_description" 
-                                placeholder="Введите ваш комментарий..." required minlength="1" maxlength="500" 
-                                class="form-control"></textarea>
-                        {% if user.is_authenticated %}
-                        <button type="submit" class="btn btn-success">Отправить</button>
-                        {% else %}
-                        <button type="button" class="btn btn-success" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#loginModal">Отправить
-                        </button>
-                        {% endif %}
-                    </div>
-                </form>
-            </div>
-        </div>
+<div class="post-detail-container">
+  <!-- Заголовок поста -->
+  <div class="author-info">
+    <!-- Фото автора из профиля (кликабельное) -->
+    <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-photo-link">
+        {% if post.user.profile.photo %}
+            <img src="{{ post.user.profile.photo.url }}" class="author-photo" alt="{{ post.user.username }}">
+        {% else %}
+            <div class="author-photo default-avatar">{{ post.user.username|first|upper }}</div>
+        {% endif %}
+    </a>
+    <div class="author-details">
+        <h2><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h2>
+          <strong>Автор:</strong> 
+          <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link">
+                {{ post.user.username }}
+          </a>
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Обработка удаления комментариев
-    document.querySelectorAll('.delete-comment').forEach(button => {
-        button.addEventListener('click', function() {
-            const commentId = this.getAttribute('data-comment-id');
-            const postId = this.getAttribute('data-post-id');
-            
-            if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
-                deleteComment(commentId, postId, this);
-            }
-        });
-    });
+<p class="post-description"> {{ post.description }}</p>
+
+
+<!-- Изображение поста -->
+  
+  <!-- Мета-информация -->
+  <div class="post-meta-grid">
+    <div class="meta-item">
+      <span class="meta-icon">📅</span>
+      <span class="meta-label">Дата создания:</span>
+      <span class="meta-value">{{ post.creation_date|date:"d.m.Y H:i" }}</span>
+    </div>
     
-    function deleteComment(commentId, postId, buttonElement) {
-        const formData = new FormData();
-        formData.append('action', 'delete_comment');
-        formData.append('comment_id', commentId);
+    <div class="meta-item">
+      <span class="meta-icon">⏰</span>
+      <span class="meta-label">Когда:</span>
+      <span class="meta-value">{{ post.expiration_date|date:"d.m.Y H:i" }}</span>
+    </div>
     
-        fetch(window.location.href, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const commentItem = buttonElement.closest('.comment-item');
-                commentItem.remove();
-            } else {
-                alert('Ошибка при удалении комментария: ' + data.error);
-            }
-        })
-        .catch(error => {
-            alert('Комментарий удален, перезагрузите страницу');
-        });
-    }
-});
-</script>
+    <div class="meta-item">
+      <span class="meta-icon">📍</span>
+      <span class="meta-label">Где:</span>
+      <span class="meta-value">{{ post.address }}</span>
+    </div>
+    
+    <div class="meta-item">
+      <span class="meta-icon">👥</span>
+      <span class="meta-label">Максимум участников:</span>
+      <span class="meta-value">{{ post.max_participants }}</span>
+    </div>
+  </div>
+  
+  <div class="action-buttons">
+    {% if user == post.user %}
+      <!-- Для автора поста -->
+      <a class="btn-primary" href="{% url 'post_edit' post.id %}">
+        <span>✏️</span>
+      </a>
+      <a class="btn-outline-secondary" href="{% url 'post_requests' post.id %}">
+        <span>🔔 Заявки ({{ post.pending_requests.count }})</span>
+      </a>
+    {% else %}
+      <!-- Для других пользователей -->
+      {% if user.is_authenticated %}
+        {% if user_has_pending_request %}
+          <button class="btn-pending" disabled>
+            ⏳ Заявка отправлена
+          </button>
+        {% elif user_is_approved %}
+          <button class="btn-approved" disabled>
+            ✅ Вы участник
+          </button>
+        {% elif is_full %}
+          <button class="btn-full" disabled>
+            ❌ Мест нет
+          </button>
+        {% else %}
+          <form method="post" action="{% url 'join_post' post.id %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-join">
+              🎯 Присоединиться
+            </button>
+          </form>
+        {% endif %}
+      {% else %}
+        <button type="button" class="btn-join" 
+                data-bs-toggle="modal" 
+                data-bs-target="#loginModal">
+          🔐 Войти для участия
+        </button>
+      {% endif %}
+    {% endif %}
+  </div>
+  
+<!-- Комментарии -->
+<div class="comments-section">
+  <div class="comments-header">
+      <span>💬 Комментарии</span>
+      <span class="comment-count-badge">{{ comments|length }}</span>
+  </div>
+  
+  {% for comment in comments %}
+  <div class="comment-item">
+      <div class="comment-header">
+          <div class="comment-author-block">
+              <a href="{% url 'profile_view' user_id=comment.user.id %}">
+                  {% if comment.user.profile.photo %}
+                      <img src="{{ comment.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ comment.user.username }}">
+                  {% else %}
+                      <div class="comment-avatar-default">{{ comment.user.username|first|upper }}</div>
+                  {% endif %}
+              </a>
+              <div class="comment-author-info">
+                  <a href="{% url 'profile_view' user_id=comment.user.id %}" class="comment-author-name">
+                      {{ comment.user.username }}
+                  </a>
+                  <span class="comment-date">{{ comment.created_at|date:"d.m.Y в H:i" }}</span>
+              </div>
+          </div>
+          {% if user.is_authenticated and user == comment.user %}
+          <button class="delete-comment" 
+                  data-comment-id="{{ comment.id }}"
+                  data-post-id="{{ post.id }}">
+              🗑️ Удалить
+          </button>
+          {% endif %}
+      </div>
+      <div class="comment-text">{{ comment.text }}</div>
+  </div>
+
+  {% empty %}
+  <div class="no-comments">
+      Пока нет комментариев. Будьте первым!
+  </div>
+  {% endfor %}
+
+  <!-- Форма комментария -->
+  <div class="comment-form-container">
+      <form action="" method="post" style="width: 100%;">
+          {% csrf_token %}
+          <div class="comment-input-container">
+              <textarea name="comment_description" id="comment_description" 
+                  placeholder="Поделитесь вашими мыслями..." required minlength="1" maxlength="500" 
+                  class="comment-input"></textarea>
+          </div>
+          <div class="comment-button-container">
+              {% if user.is_authenticated %}
+              <button type="submit" class="comment-submit-btn">📤 Опубликовать комментарий</button>
+              {% else %}
+              <button type="button" class="comment-submit-btn" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#loginModal">🔐 Войти для комментирования
+              </button>
+              {% endif %}
+          </div>
+      </form>
+  </div>
+</div>
 {% endblock %}

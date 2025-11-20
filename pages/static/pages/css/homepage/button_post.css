@@ -1,0 +1,86 @@
+
+/* Стили для кнопок - добавляем к твоему дизайну */
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: white;
+}
+
+.btn-outline-secondary {
+    background: white;
+    color: #6c757d;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-secondary:hover {
+    border-color: #007bff;
+    color: #007bff;
+    transform: translateY(-1px);
+}
+
+.comment-count {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* Мобильная версия для кнопок */
+@media (max-width: 768px) {
+    .post-footer {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    .action-buttons {
+        justify-content: space-between;
+    }
+    
+    .btn-primary,
+    .btn-outline-secondary {
+        flex: 1;
+        text-align: center;
+    }
+    
+    .comment-count {
+        text-align: center;
+        order: -1;
+    }
+    
+    .show-on-map {
+        margin-left: 0 !important;
+    }
+}

@@ -3,12 +3,13 @@
 
 {% block extra_style %}
   <link rel="stylesheet" href="{% static 'pages/css/homepage/post_list.css' %}" />
+  <link rel="stylesheet" href="{% static 'pages/css/homepage/button_post.css' %}" />
 {% endblock %}
 
 {% block extra_scripts %}
-  <!-- API Яндекс Карт -->
   <script src="https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ&lang=ru_RU" type="text/javascript"></script>
-{% endblock %}
+  <script src="{% static 'js/post_list_map.js' %}"></script>
+  {% endblock %}
 
 {% block main %}
 <div class="container">
@@ -64,13 +65,15 @@
         </div>
         {% endif %}
         
-        <div class="post-footer mt-3">
-            <a href="{% url 'post_detail' post.id %}" class="btn btn-primary">Подробнее</a>
-            <span class="text-muted ms-3">Комментарии: {{ post.comments.count }}</span>
-            <button type="button" class="btn btn-outline-secondary btn-sm show-on-map" 
-                    data-post-id="{{ post.id }}">
-                📍 Показать на карте
-            </button>
+        <div class="post-footer">
+            <span class="comment-count">Комментарии: {{ post.comments.count }}</span>
+            <div class="action-buttons">
+                <a href="{% url 'post_detail' post.id %}" class="btn-primary">Подробнее</a>
+                <button type="button" class="btn-outline-secondary show-on-map" 
+                        data-post-id="{{ post.id }}">
+                    📍 Показать на карте
+                </button>
+            </div>
         </div>
     </div>
     {% empty %}
@@ -79,117 +82,7 @@
 </div>
 
 <script>
-// Инициализация карты
-ymaps.ready(init);
 
-let postsMap;
-let placemarks = [];
-
-function init() {
-    // Создаем карту
-    postsMap = new ymaps.Map('posts-map', {
-        center: [55.76, 37.64], // Москва по умолчанию
-        zoom: 10
-    });
-
-    // Добавляем метки для всех постов
-    addPostsToMap();
-
-    // Обработчик для кнопок "Показать на карте"
-    document.querySelectorAll('.show-on-map').forEach(button => {
-        button.addEventListener('click', function() {
-            const postId = this.getAttribute('data-post-id');
-            showPostOnMap(postId);
-        });
-    });
-}
-
-function addPostsToMap() {
-    const postCards = document.querySelectorAll('.post-card');
-    
-    postCards.forEach(card => {
-        const lat = card.getAttribute('data-lat');
-        const lng = card.getAttribute('data-lng');
-        const name = card.getAttribute('data-post-name');
-        const address = card.getAttribute('data-post-address');
-        const url = card.getAttribute('data-post-url');
-        
-        if (lat && lng) {
-            // Если есть координаты - ставим точную метку
-            const placemark = new ymaps.Placemark([parseFloat(lat), parseFloat(lng)], {
-                balloonContent: `
-                    <strong><a href="${url}">${name}</a></strong><br>
-                    ${address}<br>
-                    <a href="${url}">Перейти к встрече →</a>
-                `
-            }, {
-                preset: 'islands#blueDotIcon'
-            });
-            
-            postsMap.geoObjects.add(placemark);
-            placemarks.push({
-                id: card.getAttribute('data-post-id'),
-                placemark: placemark
-            });
-        } else if (address) {
-            // Если нет координат, но есть адрес - геокодируем
-            ymaps.geocode(address).then(function (res) {
-                const firstGeoObject = res.geoObjects.get(0);
-                if (firstGeoObject) {
-                    const coords = firstGeoObject.geometry.getCoordinates();
-                    
-                    const placemark = new ymaps.Placemark(coords, {
-                        balloonContent: `
-                            <strong><a href="${url}">${name}</a></strong><br>
-                            ${address}<br>
-                            <a href="${url}">Перейти к встрече →</a>
-                        `
-                    }, {
-                        preset: 'islands#redDotIcon'
-                    });
-                    
-                    postsMap.geoObjects.add(placemark);
-                    placemarks.push({
-                        id: card.getAttribute('data-post-id'),
-                        placemark: placemark
-                    });
-                }
-            });
-        }
-    });
-}
-
-function showPostOnMap(postId) {
-    // Находим метку поста
-    const postMark = placemarks.find(item => item.id === postId);
-    if (postMark) {
-        // Открываем балун и центрируем карту
-        postMark.placemark.balloon.open();
-        postsMap.setCenter(postMark.placemark.geometry.getCoordinates(), 15);
-        
-        // Подсвечиваем карточку поста
-        document.querySelectorAll('.post-card').forEach(card => {
-            card.style.backgroundColor = '';
-        });
-        document.querySelector(`[data-post-id="${postId}"]`).style.backgroundColor = '#f0f8ff';
-    }
-}
 </script>
 
-<style>
-.post-card {
-    transition: background-color 0.3s ease;
-}
-
-.show-on-map {
-    margin-left: 10px;
-}
-
-.map-section {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-</style>
 {% endblock %}

@@ -1,8 +1,11 @@
-function closeOnboarding() {
+function skipOnboarding() {
     document.querySelector('.onboarding-overlay').style.display = 'none';
     window.location.href = "/profile_onboarding2/";
 }
-
+function closeOnboarding() {
+    document.querySelector('.onboarding-overlay').style.display = 'none';
+    window.location.href = "/post_list/";
+}
 function saveOnboarding() {
     const selectedGender = document.querySelector('input[name="gender"]:checked');
     const submitBtn = document.getElementById('submit-btn');
