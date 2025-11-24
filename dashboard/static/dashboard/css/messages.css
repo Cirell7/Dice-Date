@@ -1,3 +1,59 @@
+.messages-container {
+    max-height: 60vh; /* меняем height на max-height */
+    overflow-y: auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.message.sent {
+    justify-content: flex-end;
+}
+
+.message.received {
+    justify-content: flex-start;
+}
+
+.message-content {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    position: relative;
+    word-wrap: break-word; /* Перенос длинных слов */
+    overflow-wrap: break-word; /* Альтернатива для современных браузеров */
+}
+
+/* Убедитесь, что параграфы внутри сообщений правильно отображаются */
+.message-content p {
+    margin: 0 0 8px 0; /* Отступ снизу для времени */
+    white-space: pre-wrap; /* Сохраняет переносы строк и переносит по словам */
+    word-break: break-word; /* Переносит длинные слова */
+}
+
+.message-content small {
+    display: block;
+    text-align: right;
+    font-size: 0.75em;
+    opacity: 0.8;
+}
+
+.message.sent .message-content {
+    background: #007bff;
+    color: white;
+}
+
+.message.received .message-content {
+    background: white;
+    border: 1px solid #ddd;
+}
+
+/* Остальные стили остаются без изменений */
 .threads-list {
     background: white;
     border-radius: 12px;
@@ -79,45 +135,6 @@
     color: #999;
 }
 
-.messages-container {
-    height: 60vh;
-    overflow-y: auto;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    margin-bottom: 20px;
-}
-
-.message {
-    display: flex;
-    margin-bottom: 15px;
-}
-
-.message.sent {
-    justify-content: flex-end;
-}
-
-.message.received {
-    justify-content: flex-start;
-}
-
-.message-content {
-    max-width: 70%;
-    padding: 12px 16px;
-    border-radius: 18px;
-    position: relative;
-}
-
-.message.sent .message-content {
-    background: #007bff;
-    color: white;
-}
-
-.message.received .message-content {
-    background: white;
-    border: 1px solid #ddd;
-}
-
 .message-form textarea {
     width: 100%;
     border: 1px solid #ddd;
@@ -130,4 +147,22 @@
 .no-messages {
     text-align: center;
     padding: 40px;
+}
+
+.btn-primary {
+    background: #95a5a6;
+    color: white;
+    cursor: not-allowed;
+}
+
+.message-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.message-grid textarea {
+    min-height: 40px;
+    resize: vertical;
 }

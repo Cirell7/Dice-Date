@@ -10,20 +10,8 @@
 {% block main %}
 <div class="post-detail-container">
   <!-- Заголовок поста -->
-  <div class="author-info">
-    <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-photo-link">
-        {% if post.user.profile.photo %}
-            <img src="{{ post.user.profile.photo.url }}" class="author-photo" alt="{{ post.user.username }}">
-        {% else %}
-            <div class="author-photo default-avatar">{{ post.user.username|first|upper }}</div>
-        {% endif %}
-    </a>
     <div class="author-details">
         <h2><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h2>
-        <strong>Автор:</strong> 
-        <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link">
-            {{ post.user.username }}
-        </a>
     </div>
   </div>
 
@@ -39,9 +27,61 @@
     </div>
   </div>
 
+  <!-- Список текущих участников -->
+  <div class="requests-section">
+    <h3>👥 Текущие участники ({{ post.participants.count }})</h3>
+    
+    {% if post.participants.all %}
+      <div class="requests-list">
+        {% for participant in post.participants.all %}
+        <div class="request-item">
+          <div class="request-user-info">
+            <a href="{% url 'profile_view' user_id=participant.user.id %}" class="user-link">
+              {% if participant.user.profile.photo %}
+                <img src="{{ participant.user.profile.photo.url }}" class="user-avatar" alt="{{ participant.user.username }}">
+              {% else %}
+                <div class="user-avatar default-avatar">{{ participant.user.username|first|upper }}</div>
+              {% endif %}
+              <div class="user-details">
+                <strong>{{ participant.user.username }}</strong>
+                <span class="request-date">
+                  {% if participant.user == post.user %}
+                    👑 Автор мероприятия
+                  {% else %}
+                    Присоединился: {{ participant.joined_at|date:"d.m.Y H:i" }}
+                  {% endif %}
+                </span>
+              </div>
+            </a>
+          </div>
+          
+          <div class="request-actions">
+            {% if participant.user != post.user %}
+            <form method="post" action="" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn-remove" onclick="return confirm('Вы уверены, что хотите удалить этого участника?')">
+                🗑️ Удалить
+              </button>
+            </form>
+            {% else %}
+            <div class="author-badge">
+              👑 Автор
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="no-requests">
+        <p>😔 Пока нет участников</p>
+      </div>
+    {% endif %}
+  </div>
+
   <!-- Список заявок -->
   <div class="requests-section">
-    <h3>📋 Заявки на участие</h3>
+    <h3>📋 Заявки на участие ({{ pending_requests|length }})</h3>
     
     {% if pending_requests %}
       <div class="requests-list">

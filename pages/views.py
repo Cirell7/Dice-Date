@@ -4,8 +4,8 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from pages.models import Posts, Comment, PostRequest, PostParticipant,Notification  # Добавлены новые модели
-from core.models import Profile  # Добавлен Notification
+from pages.models import Posts, Comment, PostRequest, PostParticipant  # Добавлены новые модели
+from core.models import Profile, Notification
 from core.utils import Verification
 
 def main_menu(request):
@@ -76,10 +76,7 @@ def add_post(request):
             latitude=latitude,
             longitude=longitude
         )
-        
-        if 'image' in request.FILES:
-            post.image = request.FILES['image']
-            
+
         post.save()
         return redirect('post_list')
     
@@ -95,6 +92,7 @@ def post_list(request):
     }
     return render(request, 'pages/post_list.html', context)
 
+@login_required
 def post_detail(request, post_id):
     """Детальный просмотр поста с комментариями"""
     post = get_object_or_404(Posts, id=post_id)
@@ -105,25 +103,23 @@ def post_detail(request, post_id):
     user_is_approved = False
     is_full = False
     
-    if request.user.is_authenticated:
-        # Проверяем, есть ли pending заявка
-        user_has_pending_request = PostRequest.objects.filter(
-            post=post, 
-            user=request.user, 
-            status='pending'
-        ).exists()
+    user_has_pending_request = PostRequest.objects.filter(
+        post=post, 
+        user=request.user, 
+        status='pending'
+    ).exists()
         
         # Проверяем, является ли пользователь одобренным участником
-        user_is_approved = PostParticipant.objects.filter(
-            post=post, 
-            user=request.user
-        ).exists()
+    user_is_approved = PostParticipant.objects.filter(
+        post=post, 
+        user=request.user
+    ).exists()
         
         # Проверяем, достигнут ли лимит участников
-        current_participants = PostParticipant.objects.filter(post=post).count()
-        is_full = current_participants >= post.max_participants
+    current_participants = PostParticipant.objects.filter(post=post).count()
+    is_full = current_participants >= post.max_participants
     
-    if request.method == "POST" and request.user.is_authenticated:
+    if request.method == "POST":
         action = request.POST.get("action")
         if action == "delete_comment":
             comment_id = request.POST.get("comment_id")
@@ -151,7 +147,6 @@ def post_detail(request, post_id):
         "comments": comments,
         "title_page": post.name,
         "user": request.user,
-        "user_is_authenticated": request.user.is_authenticated,
         "user_has_pending_request": user_has_pending_request,
         "user_is_approved": user_is_approved,
         "is_full": is_full,
@@ -191,32 +186,7 @@ def post_edit(request: HttpRequest, post_id) -> HttpResponse:
 def join_post(request, post_id):
     """Обработка заявки на участие в мероприятии"""
     if request.method == 'POST':
-        post = get_object_or_404(Posts, id=post_id)  # Исправлено: Posts вместо Post
-        
-        # Проверяем, не является ли пользователь автором
-        if request.user == post.user:
-            messages.error(request, "Вы не можете присоединиться к своему мероприятию")
-            return redirect('post_detail', post_id=post_id)
-        
-        # Проверяем, не отправлял ли уже заявку
-        existing_request = PostRequest.objects.filter(post=post, user=request.user).first()
-        if existing_request:
-            messages.info(request, "Вы уже отправили заявку на участие")
-            return redirect('post_detail', post_id=post_id)
-        
-        # Проверяем, не является ли уже участником
-        existing_participant = PostParticipant.objects.filter(post=post, user=request.user).first()
-        if existing_participant:
-            messages.info(request, "Вы уже являетесь участником")
-            return redirect('post_detail', post_id=post_id)
-        
-        # Проверяем, есть ли свободные места
-        current_participants = PostParticipant.objects.filter(post=post).count()
-        if current_participants >= post.max_participants:
-            messages.error(request, "К сожалению, все места заняты")
-            return redirect('post_detail', post_id=post_id)
-        
-        # Создаем заявку
+        post = get_object_or_404(Posts, id=post_id)
         PostRequest.objects.create(post=post, user=request.user)
         
         # Создаем уведомление для автора поста
@@ -226,16 +196,12 @@ def join_post(request, post_id):
             message=f"Пользователь {request.user.username} хочет присоединиться к вашему мероприятию '{post.name}'",
             notification_type='join_request'
         )
-        
-        messages.success(request, "Заявка на участие отправлена!")
-        return redirect('post_detail', post_id=post_id)
-    
     return redirect('post_detail', post_id=post_id)
 
 @login_required
 def post_requests(request, post_id):
     """Страница с заявками на участие"""
-    post = get_object_or_404(Posts, id=post_id)  # Исправлено: Posts вместо Post
+    post = get_object_or_404(Posts, id=post_id)
     
     # Проверяем, что пользователь - автор поста
     if request.user != post.user:
@@ -243,7 +209,7 @@ def post_requests(request, post_id):
     
     pending_requests = PostRequest.objects.filter(post=post, status='pending')
     
-    return render(request, 'pages/post_requests.html', {  # Исправлено: 'pages/' вместо 'posts/'
+    return render(request, 'pages/post_requests.html', {
         'post': post,
         'pending_requests': pending_requests,
     })
@@ -278,9 +244,7 @@ def approve_request(request, post_id, request_id):
             message=f"Ваша заявка на участие в мероприятии '{post_request.post.name}' была одобрена!",
             notification_type='request_approved'
         )
-        
-        messages.success(request, "Заявка одобрена!")
-    
+
     return redirect('post_requests', post_id=post_id)
 
 @login_required
@@ -304,7 +268,4 @@ def reject_request(request, post_id, request_id):
             message=f"Ваша заявка на участие в мероприятии '{post_request.post.name}' была отклонена",
             notification_type='request_rejected'
         )
-        
-        messages.info(request, "Заявка отклонена")
-    
     return redirect('post_requests', post_id=post_id)

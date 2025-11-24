@@ -28,7 +28,7 @@
     <div class="message-form-container">
         <form method="post" class="message-form">
             {% csrf_token %}
-            <div class="input-group">
+            <div class="message-grid">
                 <textarea name="content" placeholder="Напишите сообщение..." required></textarea>
                 <button type="submit" class="btn btn-primary">Отправить</button>
             </div>

@@ -55,9 +55,7 @@
             <p><strong>Максимум участников:</strong> {{ post.max_participants }}</p>
         </div>
         
-        <div class="post-description">
-            <p>{{ post.description }}</p>
-        </div>
+        <div><p>{{ post.description }}</p></div>
         
         {% if post.image %}
         <div class="post-image">
@@ -80,9 +78,4 @@
     <p>Пока нет активных встреч. <a href="{% url 'add_post' %}">Создайте первую!</a></p>
     {% endfor %}
 </div>
-
-<script>
-
-</script>
-
 {% endblock %}

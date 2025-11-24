@@ -12,7 +12,7 @@ from pages.views import (
 )
 
 # Импорты из CORE - только аутентификация
-from core.views import CustomLoginView, register_page, logout_view, check_username, submit_error
+from core.views import CustomLoginView, register_page, logout_view, check_username, submit_error, notifications_page
 
 # Импорты из DASHBOARD - только то что реально есть в dashboard
 from dashboard.views import (
@@ -30,6 +30,7 @@ urlpatterns = [
     path('post_list/', post_list, name='post_list'),
     path('post_detail/<int:post_id>/', post_detail, name='post_detail'),
     path('post_edit/<int:post_id>/', post_edit, name='post_edit'),
+    path('notifications/', notifications_page, name='notifications_page'),
     
     # Новые URLs для системы заявок
     path('post/<int:post_id>/join/', join_post, name='join_post'),

@@ -81,62 +81,7 @@
     background: white;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    transform: translateY(-1px);
-}
 
-.form-group textarea {
-    min-height: 120px;
-    resize: vertical;
-    line-height: 1.5;
-}
-
-.file-upload-area {
-    border: 2px dashed #dee2e6;
-    border-radius: 12px;
-    padding: 40px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    background: #fafbfc;
-}
-
-.file-upload-area:hover {
-    border-color: #667eea;
-    background: #f8f9ff;
-    transform: translateY(-2px);
-}
-
-.file-upload-area input[type="file"] {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.upload-icon {
-    font-size: 32px;
-    margin-bottom: 15px;
-    display: block;
-}
-
-.upload-text {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 8px;
-    font-size: 18px;
-}
-
-.file-hint {
-    color: #666;
-    font-size: 14px;
-}
 /* Полностью убрать фиолетовую полоску на мобильных */
 @media (max-width: 768px) {
     .form-container {

@@ -3,20 +3,17 @@
 
 {% block extra_style %}
   <link rel="stylesheet" href="{% static 'pages/css/homepage/post_detail.css' %}" />
-  <link rel="stylesheet" href="{% static 'pages/css/homepage/button_post.css' %}" />
-  <link rel="stylesheet" href="{% static 'pages/css/homepage/post_list.css' %}" />
-
 {% endblock %}
+
 {% block extra_scripts %}
   <div id="csrf-token" data-csrf="{{ csrf_token }}" style="display: none;"></div>
   <script src="{% static 'js/post_detail.js' %}"></script>
 {% endblock %}
 
-
 {% block main %}
 <div class="post-detail-container">
   <!-- Заголовок поста -->
-  <div class="author-info">
+  <div>
     <!-- Фото автора из профиля (кликабельное) -->
     <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-photo-link">
         {% if post.user.profile.photo %}
@@ -26,18 +23,24 @@
         {% endif %}
     </a>
     <div class="author-details">
-        <h2><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h2>
+        <h2 class="post-title"><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h2>
+        <p class="author-meta">
           <strong>Автор:</strong> 
           <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link">
-                {{ post.user.username }}
+            {{ post.user.username }}
           </a>
+        </p>
     </div>
-</div>
+  </div>
 
-<p class="post-description"> {{ post.description }}</p>
+  <p class="post-description">{{ post.description }}</p>
 
-
-<!-- Изображение поста -->
+  <!-- Изображение поста -->
+  {% if post.image %}
+  <div class="post-image-container">
+    <img src="{{ post.image.url }}" class="post-image" alt="{{ post.name }}" />
+  </div>
+  {% endif %}
   
   <!-- Мета-информация -->
   <div class="post-meta-grid">
@@ -66,24 +69,23 @@
     </div>
   </div>
   
-  <div class="action-buttons">
+  <div class="post-footer">
     {% if user == post.user %}
       <!-- Для автора поста -->
       <a class="btn-primary" href="{% url 'post_edit' post.id %}">
-        <span>✏️</span>
+        <span>✏️ Редактировать</span>
       </a>
       <a class="btn-outline-secondary" href="{% url 'post_requests' post.id %}">
-        <span>🔔 Заявки ({{ post.pending_requests.count }})</span>
+        <span>🔔 Заявки ({{ pending_requests_count }})</span>
       </a>
     {% else %}
       <!-- Для других пользователей -->
-      {% if user.is_authenticated %}
         {% if user_has_pending_request %}
-          <button class="btn-pending" disabled>
+          <button class="btn-primary" disabled>
             ⏳ Заявка отправлена
           </button>
         {% elif user_is_approved %}
-          <button class="btn-approved" disabled>
+          <button class="btn-primary" disabled>
             ✅ Вы участник
           </button>
         {% elif is_full %}
@@ -98,78 +100,64 @@
             </button>
           </form>
         {% endif %}
-      {% else %}
-        <button type="button" class="btn-join" 
-                data-bs-toggle="modal" 
-                data-bs-target="#loginModal">
-          🔐 Войти для участия
-        </button>
-      {% endif %}
     {% endif %}
   </div>
   
-<!-- Комментарии -->
-<div class="comments-section">
-  <div class="comments-header">
-      <span>💬 Комментарии</span>
-      <span class="comment-count-badge">{{ comments|length }}</span>
-  </div>
-  
-  {% for comment in comments %}
-  <div class="comment-item">
-      <div class="comment-header">
-          <div class="comment-author-block">
-              <a href="{% url 'profile_view' user_id=comment.user.id %}">
-                  {% if comment.user.profile.photo %}
-                      <img src="{{ comment.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ comment.user.username }}">
-                  {% else %}
-                      <div class="comment-avatar-default">{{ comment.user.username|first|upper }}</div>
-                  {% endif %}
-              </a>
-              <div class="comment-author-info">
-                  <a href="{% url 'profile_view' user_id=comment.user.id %}" class="comment-author-name">
-                      {{ comment.user.username }}
-                  </a>
-                  <span class="comment-date">{{ comment.created_at|date:"d.m.Y в H:i" }}</span>
-              </div>
-          </div>
-          {% if user.is_authenticated and user == comment.user %}
-          <button class="delete-comment" 
-                  data-comment-id="{{ comment.id }}"
-                  data-post-id="{{ post.id }}">
-              🗑️ Удалить
-          </button>
-          {% endif %}
-      </div>
-      <div class="comment-text">{{ comment.text }}</div>
-  </div>
+  <!-- Комментарии -->
+  <div class="comments-section">
+    <div class="comments-header">
+        <span>💬 Комментарии</span>
+        <span class="comment-count-badge">{{ comments|length }}</span>
+    </div>
+    
+    {% for comment in comments %}
+    <div class="comment-item">
+        <div class="comment-header">
+            <div class="comment-author-block">
+                <a href="{% url 'profile_view' user_id=comment.user.id %}">
+                    {% if comment.user.profile.photo %}
+                        <img src="{{ comment.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ comment.user.username }}">
+                    {% else %}
+                        <div class="comment-avatar-default">{{ comment.user.username|first|upper }}</div>
+                    {% endif %}
+                </a>
+                <div class="comment-author-info">
+                    <a href="{% url 'profile_view' user_id=comment.user.id %}" class="comment-author-name">
+                        {{ comment.user.username }}
+                    </a>
+                    <span class="comment-date">{{ comment.created_at|date:"d.m.Y в H:i" }}</span>
+                </div>
+            </div>
+            {% if user == comment.user %}
+            <button class="delete-comment" 
+                    data-comment-id="{{ comment.id }}"
+                    data-post-id="{{ post.id }}">
+                🗑️ Удалить
+            </button>
+            {% endif %}
+        </div>
+        <div class="comment-text">{{ comment.text }}</div>
+    </div>
+    {% empty %}
+    <div class="no-comments">
+        Пока нет комментариев. Будьте первым!
+    </div>
+    {% endfor %}
 
-  {% empty %}
-  <div class="no-comments">
-      Пока нет комментариев. Будьте первым!
-  </div>
-  {% endfor %}
-
-  <!-- Форма комментария -->
-  <div class="comment-form-container">
-      <form action="" method="post" style="width: 100%;">
-          {% csrf_token %}
-          <div class="comment-input-container">
-              <textarea name="comment_description" id="comment_description" 
-                  placeholder="Поделитесь вашими мыслями..." required minlength="1" maxlength="500" 
-                  class="comment-input"></textarea>
-          </div>
-          <div class="comment-button-container">
-              {% if user.is_authenticated %}
-              <button type="submit" class="comment-submit-btn">📤 Опубликовать комментарий</button>
-              {% else %}
-              <button type="button" class="comment-submit-btn" 
-                  data-bs-toggle="modal" 
-                  data-bs-target="#loginModal">🔐 Войти для комментирования
-              </button>
-              {% endif %}
-          </div>
-      </form>
+    <!-- Форма комментария -->
+    <div class="comment-form-container">
+        <form action="" method="post" style="width: 100%;">
+            {% csrf_token %}
+            <div class="comment-input-container">
+                <textarea name="comment_description" id="comment_description" 
+                    placeholder="Поделитесь вашими мыслями..." required minlength="1" maxlength="500" 
+                    class="comment-input"></textarea>
+            </div>
+            <div class="comment-button-container">
+                <button type="submit" class="comment-submit-btn">📤 Опубликовать комментарий</button>
+            </div>
+        </form>
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -1,11 +1,77 @@
+/* Общие стили для кнопок */
+.btn-primary, .btn-outline-secondary, .btn-join, .btn-full {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    font-size: 0.95rem;
+}
 
-/* Стили для кнопок - добавляем к твоему дизайну */
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #2980b9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    text-decoration: none;
+    color: white;
+}
+
+.btn-outline-secondary {
+    background: white;
+    color: #7f8c8d;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+}
+
+.btn-outline-secondary:hover {
+    border-color: #3498db;
+    color: #3498db;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-join {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-join:hover {
+    background: #219a52;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.btn-full {
+    background: #95a5a6;
+    color: white;
+    cursor: not-allowed;
+}
+
+.btn-primary:disabled, .btn-full:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Стили для подвала поста в списке */
 .post-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 15px;
-    padding-top: 15px;
+    margin-top: 1rem;
+    padding-top: 1rem;
     border-top: 1px solid #eee;
 }
 
@@ -15,46 +81,9 @@
     align-items: center;
 }
 
-.btn-primary {
-    background: #007bff;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-    background: #0056b3;
-    transform: translateY(-1px);
-    text-decoration: none;
-    color: white;
-}
-
-.btn-outline-secondary {
-    background: white;
-    color: #6c757d;
-    padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    border: 1px solid #dee2e6;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-
-.btn-outline-secondary:hover {
-    border-color: #007bff;
-    color: #007bff;
-    transform: translateY(-1px);
-}
-
 .comment-count {
-    color: #6c757d;
-    font-size: 14px;
+    color: #7f8c8d;
+    font-size: 0.9rem;
 }
 
 /* Мобильная версия для кнопок */
@@ -67,12 +96,18 @@
     
     .action-buttons {
         justify-content: space-between;
+        width: 100%;
     }
     
     .btn-primary,
-    .btn-outline-secondary {
+    .btn-outline-secondary,
+    .btn-join,
+    .btn-full {
         flex: 1;
         text-align: center;
+        justify-content: center;
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
     }
     
     .comment-count {

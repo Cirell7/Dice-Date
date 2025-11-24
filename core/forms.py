@@ -6,7 +6,7 @@ class RegisterForm(forms.ModelForm):
     """Форма для регистрации пользователя"""
 
     username = forms.CharField(
-        widget=forms.TextInput, max_length=15, label="Имя пользователя"
+        widget=forms.TextInput, max_length=15, min_length=3, label="Имя пользователя"
     )
     email = forms.EmailField(widget=forms.EmailInput, label="Email")
     password = forms.CharField(widget=forms.PasswordInput, label="Пароль")

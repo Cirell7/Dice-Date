@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 
 from core.forms import RegisterForm
-from core.models import Profile, Form_error
+from core.models import Profile, Form_error, Notification
 
 class CustomLoginView(LoginView):
     template_name = "core/login.html"
@@ -45,3 +45,10 @@ def submit_error(request):
             Form_error.objects.create(error=error, email=email)
             return render(request, 'pages/main.html', {'show_success': True})
     return redirect('main_menu')
+
+def notifications_page(request):
+    """Страница со всеми уведомлениями"""
+    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'core/notifications_page.html', {
+        'notifications': notifications
+    })
