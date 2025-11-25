@@ -8,11 +8,16 @@ from pages.views import (
     main_menu, maintwo_menu, add_post, post_list, 
     post_detail, post_edit, profile_page_onboarding1,  
     profile_page_onboarding2, join_post, post_requests,  # ← ДОБАВЛЕНЫ новые функции
-    approve_request, reject_request                      # ← ДОБАВЛЕНЫ новые функции
+    approve_request, reject_request,games                      # ← ДОБАВЛЕНЫ новые функции
 )
 
+from pages.but_cpp import games
+
 # Импорты из CORE - только аутентификация
-from core.views import CustomLoginView, register_page, logout_view, check_username, submit_error, notifications_page
+from core.views import (CustomLoginView, register_page, logout_view, check_username, submit_error, 
+notifications_page,mark_notification_read,
+mark_all_notifications_read
+)
 
 # Импорты из DASHBOARD - только то что реально есть в dashboard
 from dashboard.views import (
@@ -24,6 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # Pages URLs
+    path('games', games, name='games'),
     path('', main_menu, name='main_menu'),
     path('main/', maintwo_menu, name='maintwo_menu'),
     path("add_post/", add_post, name="add_post"),
@@ -31,7 +37,9 @@ urlpatterns = [
     path('post_detail/<int:post_id>/', post_detail, name='post_detail'),
     path('post_edit/<int:post_id>/', post_edit, name='post_edit'),
     path('notifications/', notifications_page, name='notifications_page'),
-    
+    path('notifications/<int:notification_id>/mark-read/', mark_notification_read, name='mark_notification_read'),
+    path('notifications/mark-all-read/', mark_all_notifications_read, name='mark_all_read'),
+
     # Новые URLs для системы заявок
     path('post/<int:post_id>/join/', join_post, name='join_post'),
     path('post/<int:post_id>/requests/', post_requests, name='post_requests'),

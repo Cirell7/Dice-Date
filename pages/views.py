@@ -12,6 +12,294 @@ def main_menu(request):
     """Главная страница"""
     return render(request, "pages/main.html")
 
+import subprocess
+import os
+from django.conf import settings
+import subprocess
+import os
+from django.conf import settings
+from django.http import HttpResponse
+
+import subprocess
+import os
+import tempfile
+from django.conf import settings
+from django.http import HttpResponse
+
+def games(request):
+    """Компиляция и выполнение C++ кода"""
+    
+    # Получаем координаты из GET параметров
+    x = request.GET.get('x')
+    y = request.GET.get('y')
+    
+    # Создаем временный C++ файл с правильным экранированием
+    cpp_code = '''#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+class Minesweeper {
+private:
+    vector<vector<char>> board;
+    vector<vector<bool>> mines;
+    vector<vector<bool>> revealed;
+    int size;
+    int mineCount;
+    bool gameOver;
+    bool gameWon;
+
+public:
+    Minesweeper(int n, int minesCount) : size(n), mineCount(minesCount), gameOver(false), gameWon(false) {
+        board.resize(size, vector<char>(size, ' '));
+        mines.resize(size, vector<bool>(size, false));
+        revealed.resize(size, vector<bool>(size, false));
+        placeMines();
+        calculateNumbers();
+    }
+
+    void placeMines() {
+        srand(time(0));
+        int placed = 0;
+        while (placed < mineCount) {
+            int x = rand() % size;
+            int y = rand() % size;
+            if (!mines[x][y]) {
+                mines[x][y] = true;
+                placed++;
+            }
+        }
+    }
+
+    void calculateNumbers() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (!mines[i][j]) {
+                    int count = 0;
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dy = -1; dy <= 1; dy++) {
+                            int ni = i + dx, nj = j + dy;
+                            if (ni >= 0 && ni < size && nj >= 0 && nj < size && mines[ni][nj]) {
+                                count++;
+                            }
+                        }
+                    }
+                    if (count > 0) {
+                        board[i][j] = '0' + count;
+                    }
+                }
+            }
+        }
+    }
+
+    void reveal(int x, int y) {
+        if (x < 0 || x >= size || y < 0 || y >= size || revealed[x][y] || gameOver || gameWon) {
+            return;
+        }
+
+        revealed[x][y] = true;
+
+        if (mines[x][y]) {
+            gameOver = true;
+            return;
+        }
+
+        if (board[x][y] == ' ') {
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    reveal(x + dx, y + dy);
+                }
+            }
+        }
+
+        checkWin();
+    }
+
+    void checkWin() {
+        int unrevealedSafe = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (!revealed[i][j] && !mines[i][j]) {
+                    unrevealedSafe++;
+                }
+            }
+        }
+        gameWon = (unrevealedSafe == 0);
+    }
+
+    void display() {
+        cout << "<div class='minesweeper-game'>";
+        cout << "<div class='game-status'>";
+        if (gameOver) {
+            cout << "<div class='status game-over'>💥 Игра окончена! Вы проиграли!</div>";
+        } else if (gameWon) {
+            cout << "<div class='status game-won'>🎉 Поздравляем! Вы выиграли!</div>";
+        } else {
+            cout << "<div class='status playing'>🎮 Игра идет...</div>";
+        }
+        cout << "</div>";
+
+        cout << "<div class='game-board'>";
+        for (int i = 0; i < size; i++) {
+            cout << "<div class='row'>";
+            for (int j = 0; j < size; j++) {
+                if (gameOver && mines[i][j]) {
+                    cout << "<div class='cell mine'>💣</div>";
+                } else if (revealed[i][j]) {
+                    if (board[i][j] == ' ') {
+                        cout << "<div class='cell revealed'></div>";
+                    } else {
+                        cout << "<div class='cell revealed number-" << board[i][j] << "'>" << board[i][j] << "</div>";
+                    }
+                } else {
+                    cout << "<a href='/games?x=" << i << "&y=" << j << "' class='cell hidden'>?</a>";
+                }
+            }
+            cout << "</div>";
+        }
+        cout << "</div>";
+
+        cout << "<div class='game-controls'>";
+        cout << "<a href='/games' class='btn new-game'>🔄 Новая игра</a>";
+        cout << "</div>";
+        cout << "</div>";
+    }
+};
+
+int main() {
+    // Устанавливаем заголовок HTML
+    cout << "Content-Type: text/html; charset=utf-8\\\\n\\\\n";
+    
+    cout << "<!DOCTYPE html>";
+    cout << "<html lang='ru'>";
+    cout << "<head>";
+    cout << "<meta charset='UTF-8'>";
+    cout << "<meta name='viewport' content='width=device-width, initial-scale=1.0'>";
+    cout << "<title>Сапер на C++</title>";
+    cout << "<style>";
+    cout << "* { margin: 0; padding: 0; box-sizing: border-box; }";
+    cout << "body { font-family: 'Courier New', monospace; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }";
+    cout << ".container { max-width: 600px; width: 100%; text-align: center; }";
+    cout << ".header { margin-bottom: 30px; }";
+    cout << ".header h1 { font-size: 2.5em; color: #00ff88; text-shadow: 0 0 10px rgba(0, 255, 136, 0.5); margin-bottom: 10px; }";
+    cout << ".minesweeper-game { background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); }";
+    cout << ".game-status { margin-bottom: 20px; }";
+    cout << ".status { font-size: 1.2em; font-weight: bold; padding: 10px; border-radius: 8px; }";
+    cout << ".game-over { background: rgba(255, 0, 0, 0.3); color: #ff6b6b; }";
+    cout << ".game-won { background: rgba(0, 255, 0, 0.3); color: #51ff00; }";
+    cout << ".playing { background: rgba(0, 150, 255, 0.3); color: #00a8ff; }";
+    cout << ".game-board { display: inline-block; margin: 20px 0; }";
+    cout << ".row { display: flex; }";
+    cout << ".cell { width: 40px; height: 40px; margin: 2px; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; text-decoration: none; color: white; }";
+    cout << ".hidden { background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); }";
+    cout << ".hidden:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.05); }";
+    cout << ".revealed { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); }";
+    cout << ".mine { background: rgba(255, 0, 0, 0.3); font-size: 1.2em; }";
+    cout << ".number-1 { color: #00ff88; }";
+    cout << ".number-2 { color: #ffd700; }";
+    cout << ".number-3 { color: #ff6b6b; }";
+    cout << ".number-4 { color: #a855f7; }";
+    cout << ".number-5 { color: #ff8c00; }";
+    cout << ".number-6 { color: #00ced1; }";
+    cout << ".number-7 { color: #ff1493; }";
+    cout << ".number-8 { color: #7cfc00; }";
+    cout << ".game-controls { margin-top: 20px; }";
+    cout << ".btn { background: linear-gradient(135deg, #00ff88 0%, #00a8ff 100%); color: #1a1a2e; border: none; padding: 12px 24px; border-radius: 25px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: all 0.3s ease; font-family: 'Courier New', monospace; text-decoration: none; display: inline-block; }";
+    cout << ".btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4); }";
+    cout << ".instructions { margin-top: 30px; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; text-align: left; }";
+    cout << ".instructions h3 { color: #00ff88; margin-bottom: 10px; }";
+    cout << ".instructions ul { list-style-position: inside; }";
+    cout << ".instructions li { margin: 5px 0; }";
+    cout << "</style>";
+    cout << "</head>";
+    cout << "<body>";
+    cout << "<div class='container'>";
+    cout << "<div class='header'>";
+    cout << "<h1>🎮 Сапер на C++</h1>";
+    cout << "<p>Классическая игра, полностью написанная на C++</p>";
+    cout << "</div>";
+
+    // Создаем игру
+    Minesweeper game(8, 10);
+    ''' + (f'game.reveal({x}, {y});' if x and y else '') + '''
+    
+    // Отображаем игровое поле
+    game.display();
+
+    cout << "<div class='instructions'>";
+    cout << "<h3>📋 Правила игры:</h3>";
+    cout << "<ul>";
+    cout << "<li>Нажмите на клетку, чтобы открыть её</li>";
+    cout << "<li>Цифра показывает количество мин вокруг клетки</li>";
+    cout << "<li>Избегайте мин 💣</li>";
+    cout << "<li>Откройте все безопасные клетки, чтобы выиграть!</li>";
+    cout << "</ul>";
+    cout << "</div>";
+    cout << "</div>";
+    cout << "</body>";
+    cout << "</html>";
+    
+    return 0;
+}'''
+    
+    try:
+        # Создаем временный файл
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.cpp', delete=False, encoding='utf-8') as f:
+            f.write(cpp_code)
+            cpp_file_path = f.name
+        
+        # Компилируем
+        executable_path = cpp_file_path.replace('.cpp', '.exe')
+        compile_result = subprocess.run([
+            'g++', '-std=c++11', cpp_file_path, '-o', executable_path
+        ], capture_output=True, text=True, timeout=30)
+        
+        if compile_result.returncode != 0:
+            # Если компиляция не удалась, показываем простую HTML страницу
+            simple_html = '''
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Сапер</title>
+                <style>
+                    body { font-family: Arial; padding: 20px; }
+                    .cell { width: 30px; height: 30px; border: 1px solid #000; display: inline-block; margin: 2px; text-align: center; line-height: 30px; }
+                </style>
+            </head>
+            <body>
+                <h1>Сапер (упрощенная версия)</h1>
+                <p>К сожалению, компиляция C++ кода не удалась.</p>
+                <p>Ошибка: ''' + compile_result.stderr + '''</p>
+                <div>
+                    <a href="/games">Новая игра</a>
+                </div>
+            </body>
+            </html>
+            '''
+            return HttpResponse(simple_html, content_type='text/html; charset=utf-8')
+        
+        # Запускаем
+        exec_result = subprocess.run([executable_path], capture_output=True, text=True, timeout=10)
+        
+        if exec_result.returncode == 0:
+            return HttpResponse(exec_result.stdout, content_type='text/html; charset=utf-8')
+        else:
+            return HttpResponse(f"Ошибка выполнения: {exec_result.stderr}", status=500)
+            
+    except Exception as e:
+        return HttpResponse(f"Ошибка: {str(e)}", status=500)
+    finally:
+        # Удаляем временные файлы
+        try:
+            if 'cpp_file_path' in locals() and os.path.exists(cpp_file_path):
+                os.remove(cpp_file_path)
+            if 'executable_path' in locals() and os.path.exists(executable_path):
+                os.remove(executable_path)
+        except:
+            pass
+
 def maintwo_menu(request):
     """Страница с информацией о проекте"""
     return render(request, "pages/main2.html")

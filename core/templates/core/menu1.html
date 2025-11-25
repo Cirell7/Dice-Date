@@ -74,7 +74,7 @@
     <aside class="sidebar desktop-only">
         <nav class="sidebar-nav">
             <ul>
-                {% include 'core/desktop_notifications.html' %}
+                <a href="{% url 'notifications_page' %}"> Уведомления</a>
                 <a href="{% url 'profile' user_id=user.id %}"> Профиль</a>
                 <li><a href="{% url 'add_post' %}"> Добавить событие </a></li>
                 <li><a href="{% url 'post_list' %}"> Посмотреть события </a></li>

@@ -35,11 +35,6 @@
         </div>
         {% endfor %}
     </div>
-    {% else %}
-    <div class="no-messages">
-        <p>У вас пока нет сообщений</p>
-        <a href="{% url 'post_list' %}" class="btn btn-primary">Найти встречи</a>
-    </div>
     {% endif %}
 </div>
 {% endblock %}

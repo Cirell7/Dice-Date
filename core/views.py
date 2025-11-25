@@ -46,9 +46,57 @@ def submit_error(request):
             return render(request, 'pages/main.html', {'show_success': True})
     return redirect('main_menu')
 
+
 def notifications_page(request):
     """Страница со всеми уведомлениями"""
-    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'core/notifications_page.html', {
-        'notifications': notifications
-    })
+    try:
+        # Получаем уведомления для текущего пользователя
+        notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+        
+        # Получаем количество непрочитанных уведомлений
+        unread_notifications_count = Notification.objects.filter(
+            user=request.user, 
+            is_read=False
+        ).count()
+        
+        # Получаем последние уведомления для выпадающего списка (если нужно)
+        recent_notifications = Notification.objects.filter(
+            user=request.user
+        ).order_by('-created_at')[:5]
+        
+        context = {
+            'notifications': notifications,
+            'unread_notifications_count': unread_notifications_count,
+            'recent_notifications': recent_notifications,
+        }
+        
+        return render(request, 'core/notifications_page.html', context)
+        
+    except Exception as e:
+        # Обработка ошибок (логирование, возврат пустого контекста и т.д.)
+        print(f"Ошибка при загрузке уведомлений: {e}")
+        context = {
+            'notifications': [],
+            'unread_notifications_count': 0,
+            'recent_notifications': [],
+        }
+        return render(request, 'core/notifications_page.html', context)
+
+def mark_notification_read(request, notification_id):
+    """Пометить уведомление как прочитанное"""
+    try:
+        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+def mark_all_notifications_read(request):
+    """Пометить все уведомления как прочитанные"""
+    try:
+        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

@@ -16,4 +16,5 @@ main {
 
 footer {
     flex-shrink: 0; /* Не сжимается */
+    margin-top: auto; /* Дополнительная страховка */
 }
