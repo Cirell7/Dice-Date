@@ -6,13 +6,10 @@
 {% endblock %}
 
 {% block main %}
-<div class="container">
-    <div class="messages-header">
-        <h1>💬 Мои сообщения</h1>
-    </div>
+<div class="form-container">
+    <div class="form-content">
 
     {% if threads %}
-    <div class="threads-list">
         {% for thread in threads %}
         <div class="thread-item {% if thread.unread_count > 0 %}unread{% endif %}">
             <a href="{% url 'message_thread' thread.user.id %}" class="thread-link">
@@ -28,13 +25,12 @@
                 </div>
                 <div class="thread-info">
                     <h4>{{ thread.user.username }}</h4>
-                    <p class="last-message">{{ thread.last_message.content|truncatechars:50 }}</p>
-                    <small class="timestamp">{{ thread.last_message.timestamp|date:"d.m.Y H:i" }}</small>
+                    <p class="last-message">{{ thread.last_message.content|truncatechars:15 }}</p>
                 </div>
             </a>
-        </div>
         {% endfor %}
     </div>
     {% endif %}
+</div>
 </div>
 {% endblock %}

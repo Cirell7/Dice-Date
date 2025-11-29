@@ -48,11 +48,11 @@
 }
 
 .profile-info {
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto; /* центрируем весь блок */
+    text-align: left; /* текст внутри по левому краю */
 }
-
 /* Модальное окно */
 
 .modal-content-foto {

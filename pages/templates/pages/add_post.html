@@ -13,100 +13,83 @@
 {% block title %}Создать встречу - Dice&Date{% endblock %}
 
 {% block main %}
-<!-- Специальный контейнер для полной страницы -->
-<div class="fullpage-create-container">
-    <div class="create-meetup-hero">
-        <div class="hero-background"></div>
-        
-        <div class="create-meetup-content">
-            <!-- Левая часть - форма -->
-            <div class="form-container">
-                <div class="form-header">
-                    <button class="back-btn" onclick="window.history.back()">
-                        ← Назад
-                    </button>
-                    <h1>Создать встречу</h1>
-                    <p>Расскажите о вашем мероприятии</p>
+<div class="form-container">
+    <div class="form-content">
+        <div class="form-header">
+            <h3>Создать встречу</h3>
+        </div>
+
+        <form class="meetup-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Основная информация -->
+            <div class="form-section">
+                
+                <div class="form-group">
+                    <label for="title">Название встречи *</label>
+                    <input type="text" id="title" name="title" required 
+                           placeholder="Кофе в центре, Прогулка в парке...">
                 </div>
 
-                <form class="meetup-form" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    <!-- Основная информация -->
-                    <div class="form-section">
-                        <h3>📝 Основная информация</h3>
-                        
-                        <div class="form-group">
-                            <label for="title">Название встречи *</label>
-                            <input type="text" id="title" name="title" required 
-                                   placeholder="Кофе в центре, Прогулка в парке...">
-                        </div>
+                <div class="form-group">
+                    <label for="description">Описание встречи</label>
+                    <textarea id="description" name="description" rows="4"
+                              placeholder="Опишите, что будет происходить..."></textarea>
+                </div>
+            </div>
 
-                        <div class="form-group">
-                            <label for="description">Описание встречи</label>
-                            <textarea id="description" name="description" rows="4"
-                                      placeholder="Опишите, что будет происходить..."></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Дата и время -->
-                    <div class="form-section">
-                        <h3>📅 Дата и время</h3>
-                        
-                        <div class="form-group">
-                            <label for="event_date">Дата и время встречи *</label>
-                            <input type="datetime-local" id="event_date" name="event_date" required>
-                        </div>
-                    </div>
-
-                    <!-- Место встречи -->
-                    <div class="form-section">
-                        <h3>📍 Место встречи</h3>
-                        
-                        <div class="form-group">
-                            <label for="address">Место встречи</label>
-                            <input type="text" id="address" name="address" 
-                                   placeholder="Центральный парк, кафе 'Кофейня'...">
-                        </div>
-                    </div>
-                    <div class="form-section">
-                        <!-- Карта -->
-                        <div class="map-container">
-                            <div id="map" style="width: 100%; height: 300px; border-radius: 12px;"></div>
-                            <div class="map-controls">
-                                <button type="button" id="find-me" class="btn-map">📍 Мое местоположение</button>
-                                <button type="button" id="clear-map" class="btn-map">🗑️ Очистить</button>
-                            </div>
-                            <small>Выберите место на карте</small>
-                        </div>
-                        <input type="hidden" id="latitude" name="latitude">
-                        <input type="hidden" id="longitude" name="longitude">
-                    </div>
-
-                    <!-- Участники и фото -->
-                    <div class="form-section">
-                        <h3>👥 Участники и фото</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="max_participants">Максимум участников</label>
-                                <input type="number" id="max_participants" name="max_participants" 
-                                       value="10" min="2" max="50">
-                            </div>
-                        </div>
-
-                        
-                    </div>
-
-                    <!-- Кнопки отправки -->
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            🎯 Создать встречу
-                        </button>
-                    </div>
-                </form>
+        <!-- Дата и время -->
+        <div class="form-section">
+            
+            <div class="form-group">
+                <label for="event_date">Дата и время встречи *</label>
+                <input type="datetime-local" id="event_date" name="event_date" required>
             </div>
         </div>
-    </div>
+
+        <!-- Место встречи -->
+        <div class="form-section">
+            
+            <div class="form-group">
+                <label for="address">Место встречи</label>
+                <input type="text" id="address" name="address" 
+                       placeholder="Центральный парк, кафе 'Кофейня'...">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <!-- Карта -->
+            <div class="map-container">
+                <div id="map" style="width: 100%; height: 300px; border-radius: 12px;"></div>
+                <div class="map-controls">
+                    <button type="button" id="find-me" class="btn-map">📍 Мое местоположение</button>
+                    <button type="button" id="clear-map" class="btn-map">🗑️ Очистить</button>
+                </div>
+                
+            </div>
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+        </div>
+
+        <!-- Участники и фото -->
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="max_participants">Максимум участников</label>
+                    <input type="number" id="max_participants" name="max_participants" 
+                           value="10" min="2" max="50">
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопки отправки -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                🎯 Создать встречу
+            </button>
+        </div>
+    </form>
+</div>
 </div>
 
 <script>

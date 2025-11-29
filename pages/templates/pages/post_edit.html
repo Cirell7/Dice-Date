@@ -1,44 +1,226 @@
 {% extends "core/base1.html" %}
 {% load static %}
 
-{% block extra_scripts %}
-  <script src="{% static 'js/edit_post.js' %}" defer></script>
+{% block extra_style %}
+  <link rel="stylesheet" href="{% static 'pages/css/posts/add_post.css' %}" />
+  <link rel="stylesheet" href="{% static 'pages/css/dice_date/map.css' %}" />
 {% endblock %}
 
-{% block extra_style %}
-  <link rel="stylesheet" href="{% static 'css/edit_post.css' %}" />
+{% block extra_scripts %}
+  <script src="https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ&lang=ru_RU" type="text/javascript"></script>
 {% endblock %}
+
+{% block title %}Редактировать встречу - Dice&Date{% endblock %}
 
 {% block main %}
-  <div class="container_background">
-    <div class="center">
-      <form action="{% url 'post_edit' post.id %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="post_name">Название события</label>
-        <input type="text" name="post_name" id="post_name" placeholder="Название события" required minlength="1" maxlength="100" size="50" class="form-control" value="{{ post.name }}" />
-        
-        <label for="post_description">Описание события</label>
-        <textarea name="post_description" id="post_description" placeholder="Описание" required minlength="1" maxlength="500" class="form-control">{{ post.description }}</textarea>
-        
-        <label for="post_address">Адрес</label>
-        <input type="text" name="post_address" id="post_address" placeholder="Адрес" required minlength="1" maxlength="200" class="form-control" value="{{ post.address }}" />
-        
-        <label for="post_max_participants">Максимум участников</label>
-        <input type="number" name="post_max_participants" id="post_max_participants" required min="1" class="form-control" value="{{ post.max_participants }}" />
-        
-        <label for="post_expiration_date">Дата окончания</label>
-        <input type="datetime-local" name="post_expiration_date" id="post_expiration_date" required class="form-control" value="{{ post.expiration_date|date:'Y-m-d\\TH:i' }}" />
-        
-        <label for="post_image">Изображение</label>
-        <input type="file" name="post_image" id="post_image" class="form-control" accept="image/*" />
-        
-        <hr />
-        
-        <div class="actions">
-          <button type="submit" id="submit_changes" name="action" class="btn btn-success" value="submit">Применить изменения</button>
-          <button type="submit" id="delete_post" name="action" class="btn btn-danger" value="delete">УДАЛИТЬ</button>
-        </div>
-      </form>
+<div class="form-container">
+    <div class="form-content">
+    <div class="form-header">
+        <button class="back-btn" onclick="window.history.back()">← Назад</button>
+        <h3>Редактировать встречу</h3>
     </div>
-  </div>
+
+    <form class="meetup-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Основная информация -->
+        <div class="form-section">
+            
+            <div class="form-group">
+                <label for="title">Название встречи *</label>
+                <input type="text" id="title" name="title" required 
+                       placeholder="Кофе в центре, Прогулка в парке..." value="{{ post.name }}">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Описание встречи</label>
+                <textarea id="description" name="description" rows="4"
+                          placeholder="Опишите, что будет происходить...">{{ post.description }}</textarea>
+            </div>
+        </div>
+
+        <!-- Дата и время -->
+        <div class="form-section">
+            
+            <div class="form-group">
+                <label for="event_date">Дата и время встречи *</label>
+                <input type="datetime-local" id="event_date" name="event_date" required value="{{ post.expiration_date|date:'Y-m-d\\TH:i' }}">
+            </div>
+        </div>
+
+        <!-- Место встречи -->
+        <div class="form-section">
+            
+            <div class="form-group">
+                <label for="address">Место встречи</label>
+                <input type="text" id="address" name="address" 
+                       placeholder="Центральный парк, кафе 'Кофейня'..." value="{{ post.address }}">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <!-- Карта -->
+            <div class="map-container">
+                <div id="map" style="width: 100%; height: 300px; border-radius: 12px;"></div>
+                <div class="map-controls">
+                    <button type="button" id="find-me" class="btn-map">📍 Мое местоположение</button>
+                    <button type="button" id="clear-map" class="btn-map">🗑️ Очистить</button>
+                </div>
+            </div>
+            <input type="hidden" id="latitude" name="latitude" value="{{ post.latitude }}">
+            <input type="hidden" id="longitude" name="longitude" value="{{ post.longitude }}">
+        </div>
+
+        <!-- Участники и фото -->
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="max_participants">Максимум участников</label>
+                    <input type="number" id="max_participants" name="max_participants" 
+                           value="{{ post.max_participants }}" min="2" max="50">
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопки отправки -->
+        <div class="form-actions">
+          <button type="submit" class="btn-join">
+              💾 Сохранить изменения
+          </button>
+          <button type="submit" id="delete_post" name="action" class="btn btn-primary" value="delete">
+              🗑️ Удалить встречу
+          </button>
+      </div>
+    </form>
+</div>
+</div>
+
+<script>
+
+// Инициализация карты с текущими координатами
+ymaps.ready(init);
+
+let map, placemark;
+
+function init() {
+    // Получаем текущие координаты из формы
+    const currentLat = parseFloat("{{ post.latitude }}") || 55.76;
+    const currentLon = parseFloat("{{ post.longitude }}") || 37.64;
+    
+    // Создаем карту
+    map = new ymaps.Map('map', {
+        center: [currentLat, currentLon],
+        zoom: 12
+    });
+
+    // Если есть координаты, ставим метку
+    if ("{{ post.latitude }}" && "{{ post.longitude }}") {
+        placemark = new ymaps.Placemark([currentLat, currentLon], {}, {
+            preset: 'islands#redDotIcon'
+        });
+        map.geoObjects.add(placemark);
+    }
+
+    // Обработчик клика по карте
+    map.events.add('click', function (e) {
+        const coords = e.get('coords');
+        
+        // Сохраняем координаты в скрытые поля
+        document.getElementById('latitude').value = coords[0];
+        document.getElementById('longitude').value = coords[1];
+        
+        // Если метка уже есть - удаляем
+        if (placemark) {
+            map.geoObjects.remove(placemark);
+        }
+        
+        // Создаем новую метку
+        placemark = new ymaps.Placemark(coords, {}, {
+            preset: 'islands#redDotIcon'
+        });
+        
+        map.geoObjects.add(placemark);
+        
+        // Получаем адрес по координатам
+        ymaps.geocode(coords).then(function (res) {
+            const firstGeoObject = res.geoObjects.get(0);
+            const address = firstGeoObject.getAddressLine();
+            document.getElementById('address').value = address;
+        });
+    });
+
+    // Кнопка "Мое местоположение"
+    document.getElementById('find-me').addEventListener('click', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const coords = [position.coords.latitude, position.coords.longitude];
+                
+                // Сохраняем координаты в скрытые поля
+                document.getElementById('latitude').value = coords[0];
+                document.getElementById('longitude').value = coords[1];
+                
+                map.setCenter(coords, 15);
+                
+                if (placemark) {
+                    map.geoObjects.remove(placemark);
+                }
+                
+                placemark = new ymaps.Placemark(coords, {}, {
+                    preset: 'islands#blueHomeIcon'
+                });
+                
+                map.geoObjects.add(placemark);
+                
+                // Получаем адрес
+                ymaps.geocode(coords).then(function (res) {
+                    const firstGeoObject = res.geoObjects.get(0);
+                    const address = firstGeoObject.getAddressLine();
+                    document.getElementById('address').value = address;
+                });
+            });
+        }
+    });
+
+    // Кнопка "Очистить"
+    document.getElementById('clear-map').addEventListener('click', function() {
+        if (placemark) {
+            map.geoObjects.remove(placemark);
+            placemark = null;
+        }
+        document.getElementById('address').value = '';
+        // Очищаем координаты
+        document.getElementById('latitude').value = '';
+        document.getElementById('longitude').value = '';
+    });
+
+    // Обработчик ручного ввода адреса (геокодирование)
+    document.getElementById('address').addEventListener('change', function() {
+        const address = this.value;
+        if (address) {
+            ymaps.geocode(address).then(function (res) {
+                const firstGeoObject = res.geoObjects.get(0);
+                if (firstGeoObject) {
+                    const coords = firstGeoObject.geometry.getCoordinates();
+                    
+                    // Сохраняем координаты
+                    document.getElementById('latitude').value = coords[0];
+                    document.getElementById('longitude').value = coords[1];
+                    
+                    // Устанавливаем метку
+                    if (placemark) {
+                        map.geoObjects.remove(placemark);
+                    }
+                    
+                    placemark = new ymaps.Placemark(coords, {}, {
+                        preset: 'islands#greenDotIcon'
+                    });
+                    
+                    map.geoObjects.add(placemark);
+                    map.setCenter(coords, 15);
+                }
+            });
+        }
+    });
+}
+</script>
 {% endblock %}

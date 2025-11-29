@@ -3,7 +3,11 @@
     margin: 0 auto;
     padding: 0 1rem;
 }
-
+strong {
+    color: #2c3e50;
+    font-weight: 600;
+    font-family: inherit;
+}
 h1 {
     color: #2c3e50;
     margin-bottom: 2rem;
@@ -50,67 +54,23 @@ h1 {
 }
 
 /* Стили автора (уже есть в post_detail.css, но дублируем для consistency) */
-.author-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 15px;
-}
 
-.author-photo-link {
-    text-decoration: none;
-    display: block;
-    flex-shrink: 0;
-}
-
-.author-photo {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ddd;
-    transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.author-photo:hover {
-    transform: scale(1.05);
-    border-color: #3498db;
-}
-
-.default-avatar {
-    width: 50px;
-    height: 50px;
-    background: #3498db;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-    border-radius: 50%;
-    transition: transform 0.2s ease, background-color 0.2s ease;
-}
-
-.default-avatar:hover {
-    transform: scale(1.05);
-    background-color: #2980b9;
-}
 
 .author-details {
     flex: 1;
 }
 
-.author-details h2 {
+.author-details h3 {
     margin: 0 0 5px 0;
     font-size: 1.4rem;
 }
 
-.author-details h2 a {
+.author-details h3 a {
     color: #2c3e50;
     text-decoration: none;
 }
 
-.author-details h2 a:hover {
+.author-details h3 a:hover {
     color: #3498db;
 }
 
@@ -120,15 +80,7 @@ h1 {
     font-size: 0.95rem;
 }
 
-.author-link {
-    color: #3498db;
-    text-decoration: none;
-    font-weight: 600;
-}
 
-.author-link:hover {
-    text-decoration: underline;
-}
 
 .post-header p {
     margin: 5px 0;
@@ -224,3 +176,4 @@ h1 {
         margin-left: 0 !important;
     }
 }
+

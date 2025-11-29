@@ -105,7 +105,8 @@ def message_thread(request: HttpRequest, user_id: int) -> HttpResponse:
     
     context = {
         'other_user': other_user,
-        'messages': messages
+        'messages': messages,
+        'post_user_username': other_user.username
     }
     return render(request, "dashboard/message_thread.html", context)
 

@@ -12,6 +12,8 @@
     gap: 8px;
     white-space: nowrap;
     font-size: 0.95rem;
+    box-shadow: none; /* ← Добавьте это */
+    outline: none; /* ← И это */
 }
 
 .btn-primary {
@@ -38,7 +40,6 @@
     border-color: #3498db;
     color: #3498db;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-join {
@@ -49,7 +50,6 @@
 .btn-join:hover {
     background: #219a52;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
 }
 
 .btn-full {

@@ -82,3 +82,21 @@
         min-height: calc(100vh - 60px);
     }
 }
+
+
+.notification-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: #dc3545;
+    border-radius: 50%;
+    margin-left: -3px;
+    position: relative;  /* ← ДОБАВЬ ЭТО */
+    top: -5px;  /* ← Теперь сработает */
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}

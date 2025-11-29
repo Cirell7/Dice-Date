@@ -12,18 +12,20 @@ body {
 
 main {
     flex: 1 0 auto; /* Занимает всё доступное пространство */
+    padding-top: 80px; /* ОТСТУП ПОСЛЕ HEADER */
 }
 
 .main-content {
     margin-left: 25px; /* Ширина бокового меню */
     padding: 20px;
-    margin-top: 60px; /* Высота верхнего хедера */
-    min-height: calc(100vh - 60px);
+    margin-top: 0; /* Убираем т.к. добавили padding-top в main */
+    min-height: calc(100vh - 140px); /* Учитываем header и footer */
 }
 
 footer {
     flex-shrink: 0; /* Не сжимается */
 }
+
 /* На десктопе - меню после футера */
 @media (min-width: 769px) {
     .mobile-menu {
@@ -51,5 +53,11 @@ footer {
     
     main {
         order: 1;
+        padding-top: 70px !important; /* Меньший отступ на мобильных */
+    }
+    
+    .main-content {
+        margin-left: 0; /* Убираем отступ бокового меню на мобильных */
+        min-height: calc(100vh - 130px);
     }
 }

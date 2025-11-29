@@ -12,35 +12,23 @@
 
 {% block main %}
 <div class="post-detail-container">
+  
   <!-- Заголовок поста -->
   <div>
     <!-- Фото автора из профиля (кликабельное) -->
-    <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-photo-link">
-        {% if post.user.profile.photo %}
-            <img src="{{ post.user.profile.photo.url }}" class="author-photo" alt="{{ post.user.username }}">
-        {% else %}
-            <div class="author-photo default-avatar">{{ post.user.username|first|upper }}</div>
-        {% endif %}
-    </a>
-    <div class="author-details">
-        <h2 class="post-title"><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h2>
-        <p class="author-meta">
-          <strong>Автор:</strong> 
-          <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link">
-            {{ post.user.username }}
-          </a>
-        </p>
+    <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link" style="display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;">
+      {% if post.user.profile.photo %}
+          <img src="{{ post.user.profile.photo.url }}" class="author-photo-link" alt="{{ post.user.username }}">
+      {% else %}
+          <div class="author-photo default-avatar">{{ post.user.username|first|upper }}</div>
+      {% endif %}
+      {{ post.user.username }}
+  </a>
     </div>
   </div>
 
   <p class="post-description">{{ post.description }}</p>
 
-  <!-- Изображение поста -->
-  {% if post.image %}
-  <div class="post-image-container">
-    <img src="{{ post.image.url }}" class="post-image" alt="{{ post.name }}" />
-  </div>
-  {% endif %}
   
   <!-- Мета-информация -->
   <div class="post-meta-grid">
@@ -70,9 +58,10 @@
   </div>
   
   <div class="post-footer">
+    
     {% if user == post.user %}
       <!-- Для автора поста -->
-      <a class="btn-primary" href="{% url 'post_edit' post.id %}">
+      <a class="btn btn-primary" href="{% url 'post_edit' post.id %}">
         <span>✏️ Редактировать</span>
       </a>
       <a class="btn-outline-secondary" href="{% url 'post_requests' post.id %}">
@@ -105,24 +94,20 @@
   
   <!-- Комментарии -->
   <div class="comments-section">
-    <div class="comments-header">
-        <span>💬 Комментарии</span>
-        <span class="comment-count-badge">{{ comments|length }}</span>
-    </div>
     
     {% for comment in comments %}
     <div class="comment-item">
         <div class="comment-header">
             <div class="comment-author-block">
-                <a href="{% url 'profile_view' user_id=comment.user.id %}">
+                <a href="{% url 'profile_view' user_id=comment.user.id %}"  class="author-link" >
                     {% if comment.user.profile.photo %}
-                        <img src="{{ comment.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ comment.user.username }}">
+                        <img src="{{ comment.user.profile.photo.url }}" class="author-photo-link" alt="{{ comment.user.username }}">
                     {% else %}
-                        <div class="comment-avatar-default">{{ comment.user.username|first|upper }}</div>
+                        <div class="author-photo default-avatar">{{ comment.user.username|first|upper }}</div>
                     {% endif %}
                 </a>
                 <div class="comment-author-info">
-                    <a href="{% url 'profile_view' user_id=comment.user.id %}" class="comment-author-name">
+                    <a href="{% url 'profile_view' user_id=comment.user.id %}" class="author-link">
                         {{ comment.user.username }}
                     </a>
                     <span class="comment-date">{{ comment.created_at|date:"d.m.Y в H:i" }}</span>
@@ -139,9 +124,9 @@
         <div class="comment-text">{{ comment.text }}</div>
     </div>
     {% empty %}
-    <div class="no-comments">
+    <p class="no-comments">
         Пока нет комментариев. Будьте первым!
-    </div>
+    </p>
     {% endfor %}
 
     <!-- Форма комментария -->

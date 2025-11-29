@@ -1,187 +1,100 @@
 {% extends "core/base1.html" %}
 {% load static %}
 
+{% block extra_style %}
+<link rel="stylesheet" href="{% static 'core/css/base/notifications_page.css' %}" />
+{% endblock %}
 
 {% block main %}
-    <div class="container">
-        <!-- Заголовок страницы -->
-        <div class="notification-header">
-            <h1 class="page-title">Уведомления</h1>
+
+<div class="form-container">
+    <div class="form-content">
+        <div class="form-header">
+            <h3>Уведомления</h3>
             {% if unread_notifications_count > 0 %}
-            <div class="notification-actions">
-                <a href="{% url 'mark_all_read' %}" class="btn btn-outline-primary btn-sm">
-                    Отметить все как прочитанные
-                </a>
-            </div>
+            <button onclick="markAllAsRead()" class="btn-primary">
+                📬 Прочитать все
+            </button>
             {% endif %}
         </div>
 
-        <!-- Счетчик непрочитанных уведомлений -->
-        {% if unread_notifications_count > 0 %}
-        <div class="unread-counter mb-3">
-            <span class="badge bg-primary">{{ unread_notifications_count }} непрочитанных</span>
-        </div>
-        {% endif %}
-
-        <!-- Список уведомлений -->
-        <div class="notification-list-container">
+        <div class="notifications-list">
             {% if notifications %}
-            <ul class="notification-list">
                 {% for notification in notifications %}
-                <li class="notification-item {% if not notification.is_read %}unread{% endif %}" 
-                    data-notification-id="{{ notification.id }}">
-                <div class="notification-icon">
-                    {% if notification.type == 'message' %}
-                        ✉️
-                    {% elif notification.type == 'event' %}
-                        📅
-                    {% elif notification.type == 'system' %}
-                        🔔
-                    {% else %}
-                        ℹ️
-                    {% endif %}
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title">{{ notification.title }}</div>
-                        <div class="notification-message">{{ notification.message }}</div>
+                <div class="notification-item {% if not notification.is_read %}unread{% endif %}" 
+                     onclick="markAsRead({{ notification.id }})">
+                    <div class="notification-content">
+                        <div class="notification-text">{{ notification.message }}</div>
                         <div class="notification-time">{{ notification.created_at|timesince }} назад</div>
                     </div>
                     {% if not notification.is_read %}
-                    <div class="notification-status">
-                        <span class="unread-indicator"></span>
-                    </div>
+                    <div class="unread-dot"></div>
                     {% endif %}
-                </li>
+                </div>
                 {% endfor %}
-            </ul>
             {% else %}
-            <!-- Сообщение при отсутствии уведомлений -->
-            <div class="empty-state text-center py-5">
-                <div class="empty-icon mb-3">🔔</div>
-                <h3>Нет уведомлений</h3>
-                <p class="text-muted">Здесь будут появляться ваши уведомления</p>
-            </div>
+                <div class="empty-state">
+                    <div class="empty-icon">🎯</div>
+                    <h3>Все уведомления прочитаны</h3>
+                    <p>Новых сообщений пока нет</p>
+                </div>
             {% endif %}
         </div>
-
-        <!-- Пагинация (если нужно) -->
-        {% if notifications.has_other_pages %}
-        <nav aria-label="Навигация по уведомлениям" class="mt-4">
-            <ul class="pagination justify-content-center">
-                {% if notifications.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ notifications.previous_page_number }}">Назад</a>
-                </li>
-                {% endif %}
-                
-                {% for num in notifications.paginator.page_range %}
-                {% if notifications.number == num %}
-                <li class="page-item active">
-                    <span class="page-link">{{ num }}</span>
-                </li>
-                {% else %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-                
-                {% if notifications.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ notifications.next_page_number }}">Вперед</a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
     </div>
-</main>
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Скрипт для работы с уведомлениями -->
+</div>
 <script>
-    // Функция для отметки уведомления как прочитанного
-    function markAsRead(notificationId) {
-        fetch(`/notifications/${notificationId}/mark-read/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Обновляем интерфейс
-                const notificationItem = document.querySelector(`[data-notification-id="${notificationId}"]`);
-                if (notificationItem) {
-                    notificationItem.classList.remove('unread');
-                    const unreadIndicator = notificationItem.querySelector('.unread-indicator');
-                    if (unreadIndicator) {
-                        unreadIndicator.remove();
-                    }
-                    
-                    // Обновляем счетчик непрочитанных
-                    updateUnreadCount();
-                }
-            }
-        })
-        .catch(error => console.error('Ошибка:', error));
-    }
+// JavaScript функции остаются такими же
+function markAsRead(notificationId) {
+    const formData = new FormData();
+    formData.append('notification_id', notificationId);
     
-    // Функция для получения CSRF токена
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+    fetch(`/notifications/${notificationId}/mark-read/`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const item = document.querySelector(`[onclick="markAsRead(${notificationId})"]`);
+            if (item) {
+                item.classList.remove('unread');
+                const dot = item.querySelector('.unread-dot');
+                if (dot) dot.remove();
+                updateUnreadCount();
             }
         }
-        return cookieValue;
-    }
-    
-    // Функция для обновления счетчика непрочитанных уведомлений
-    function updateUnreadCount() {
-        const unreadItems = document.querySelectorAll('.notification-item.unread');
-        const unreadCounter = document.querySelector('.unread-counter .badge');
-        
-        if (unreadCounter) {
-            if (unreadItems.length > 0) {
-                unreadCounter.textContent = `${unreadItems.length} непрочитанных`;
-            } else {
-                unreadCounter.remove();
-            }
-        }
-        
-        // Обновляем кнопку "Отметить все как прочитанные"
-        const markAllReadBtn = document.querySelector('.notification-actions');
-        if (unreadItems.length === 0 && markAllReadBtn) {
-            markAllReadBtn.remove();
-        }
-    }
-    
-    // Обработчик клика по уведомлению
-    document.addEventListener('DOMContentLoaded', function() {
-        const notificationItems = document.querySelectorAll('.notification-item.unread');
-        
-        notificationItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const notificationId = this.getAttribute('data-notification-id');
-                markAsRead(notificationId);
-            });
-        });
     });
+}
+
+function markAllAsRead() {
+    fetch(`/mark_all_read/`, {
+        method: 'POST',
+        body: new FormData()
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.classList.remove('unread');
+                const dot = item.querySelector('.unread-dot');
+                if (dot) dot.remove();
+            });
+            updateUnreadCount();
+        }
+    });
+}
+
+function updateUnreadCount() {
+    const unreadCount = document.querySelectorAll('.notification-item.unread').length;
+    const badge = document.querySelector('.unread-badge');
+    const markAllBtn = document.querySelector('.mark-all-btn');
     
-    // Функция для открытия модального окна сообщения об ошибке
-    function openErrorModal() {
-        // Реализация открытия модального окна
-        alert('Функция сообщения об ошибке будет реализована позже');
+    if (unreadCount > 0) {
+        if (badge) badge.textContent = `📌 ${unreadCount} непрочитанных`;
+    } else {
+        if (badge) badge.remove();
+        if (markAllBtn) markAllBtn.remove();
     }
+}
 </script>
 {% endblock %}

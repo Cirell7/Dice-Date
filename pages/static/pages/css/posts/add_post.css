@@ -1,107 +1,72 @@
-.form-container {
-    padding: 50px;
-    max-width: 1000px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    margin-top: 30px;
-    margin-bottom: 30px;
+/* ОСНОВНЫЕ СТИЛИ ФОРМЫ */
+
+
+.form-header h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
 }
 
-.form-header {
-    margin-bottom: 50px;
-    border-bottom: 2px solid #f0f2f5;
-    padding-bottom: 25px;
-}
-
-.back-btn {
-    background: none;
-    border: none;
-    color: #667eea;
-    cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 20px;
-    padding: 10px 0;
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-.form-header p {
-    color: #666;
-    font-size: 18px;
-    line-height: 1.5;
-}
 
 .form-section {
-    margin-bottom: 35px;
-    padding: 30px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-radius: 16px;
-    border-left: 5px solid #667eea;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease;
-}
-
-.form-section:hover {
-    transform: translateY(-2px);
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
 }
 
 .form-section h3 {
     color: #2c3e50;
-    font-size: 22px;
-    margin-bottom: 25px;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 1.5rem;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
     font-weight: 600;
     color: #2c3e50;
-    font-size: 16px;
+    font-size: 1rem;
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
-    padding: 16px 20px;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    font-size: 16px;
-    transition: all 0.3s ease;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
     box-sizing: border-box;
     background: white;
 }
 
-
-/* Полностью убрать фиолетовую полоску на мобильных */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+/* Адаптивность */
 @media (max-width: 768px) {
     .form-container {
-        padding: 20px !important;
-        margin: 0 !important;
-        margin-top: 10px !important;
-        margin-bottom: 10px !important;
-        border-radius: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        box-shadow: none !important;
+        padding: 0 0.5rem;
+    }
+    
+    .form-content {
+        padding: 1rem;
+        margin-bottom: 1rem;
     }
     
     .form-section {
-        border-left: none !important;
-        margin: 10px 0 !important;
-        padding: 20px !important;
-    }
-    
-    .form-section:hover {
-        transform: none !important;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
     }
 }

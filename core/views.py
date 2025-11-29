@@ -50,16 +50,13 @@ def submit_error(request):
 def notifications_page(request):
     """Страница со всеми уведомлениями"""
     try:
-        # Получаем уведомления для текущего пользователя
         notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
-        
-        # Получаем количество непрочитанных уведомлений
+
         unread_notifications_count = Notification.objects.filter(
             user=request.user, 
             is_read=False
         ).count()
         
-        # Получаем последние уведомления для выпадающего списка (если нужно)
         recent_notifications = Notification.objects.filter(
             user=request.user
         ).order_by('-created_at')[:5]

@@ -3,23 +3,20 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-# Импорты из PAGES - ВСЕ onboarding и profile_page тут!
 from pages.views import (
     main_menu, maintwo_menu, add_post, post_list, 
     post_detail, post_edit, profile_page_onboarding1,  
-    profile_page_onboarding2, join_post, post_requests,  # ← ДОБАВЛЕНЫ новые функции
-    approve_request, reject_request,games                      # ← ДОБАВЛЕНЫ новые функции
+    profile_page_onboarding2, join_post, post_requests,
+    approve_request, reject_request
 )
 
 from pages.but_cpp import games
 
-# Импорты из CORE - только аутентификация
 from core.views import (CustomLoginView, register_page, logout_view, check_username, submit_error, 
 notifications_page,mark_notification_read,
 mark_all_notifications_read
 )
 
-# Импорты из DASHBOARD - только то что реально есть в dashboard
 from dashboard.views import (
     messages_list, message_thread, send_message, profile_view, profile_page
     # НЕТ profile_page_onboarding1, profile_page_onboarding2, profile_page!

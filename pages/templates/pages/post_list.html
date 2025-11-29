@@ -13,7 +13,6 @@
 
 {% block main %}
 <div class="container">
-    <h1>Все встречи</h1>
     
     <!-- Контейнер для карты -->
     <div class="map-section mb-4">
@@ -41,7 +40,7 @@
                     {% endif %}
                 </a>
                 <div class="author-details">
-                    <h2><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h2>
+                    <h3><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h3>
                     <p>
                         <strong>Автор:</strong> 
                         <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link">
@@ -55,7 +54,6 @@
             <p><strong>Максимум участников:</strong> {{ post.max_participants }}</p>
         </div>
         
-        <div><p>{{ post.description }}</p></div>
         
         {% if post.image %}
         <div class="post-image">
@@ -64,7 +62,7 @@
         {% endif %}
         
         <div class="post-footer">
-            <span class="comment-count">Комментарии: {{ post.comments.count }}</span>
+            <p>Комментарии: {{ post.comments.count }}</p>
             <div class="action-buttons">
                 <a href="{% url 'post_detail' post.id %}" class="btn-primary">Подробнее</a>
                 <button type="button" class="btn-outline-secondary show-on-map" 

@@ -8,59 +8,50 @@
 {% block title %}Заявки на участие - {{ post.name }}{% endblock %}
 
 {% block main %}
-<div class="post-detail-container">
-  <!-- Заголовок поста -->
-    <div class="author-details">
-        <h2><a href="{% url 'post_detail' post.id %}">{{ post.name }}</a></h2>
-    </div>
-  </div>
 
-  <!-- Статистика -->
-  <div class="requests-stats">
-    <div class="stat-item">
-      <span class="stat-label">Текущие участники:</span>
-      <span class="stat-value">{{ post.participants.count }}/{{ post.max_participants }}</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-label">Ожидающие заявки:</span>
-      <span class="stat-value">{{ pending_requests|length }}</span>
-    </div>
-  </div>
+<div class="form-container">
+  <div class="form-content">
+    <div class="form-header">
+      <button class="back-btn" onclick="window.history.back()">← Назад</button>
+      <h3>Заявки</h3>
+      </div>
 
   <!-- Список текущих участников -->
   <div class="requests-section">
-    <h3>👥 Текущие участники ({{ post.participants.count }})</h3>
+    <p> Текущие участники {{ post.participants.count }}/{{ post.max_participants }}</p>
     
     {% if post.participants.all %}
       <div class="requests-list">
         {% for participant in post.participants.all %}
         <div class="request-item">
-          <div class="request-user-info">
-            <a href="{% url 'profile_view' user_id=participant.user.id %}" class="user-link">
-              {% if participant.user.profile.photo %}
-                <img src="{{ participant.user.profile.photo.url }}" class="user-avatar" alt="{{ participant.user.username }}">
-              {% else %}
-                <div class="user-avatar default-avatar">{{ participant.user.username|first|upper }}</div>
-              {% endif %}
-              <div class="user-details">
-                <strong>{{ participant.user.username }}</strong>
-                <span class="request-date">
-                  {% if participant.user == post.user %}
-                    👑 Автор мероприятия
+          <div class="comment-author-block">
+              <a href="{% url 'profile_view' user_id=participant.user.id %}" class="author-link">
+                  {% if participant.user.profile.photo %}
+                      <img src="{{ participant.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ participant.user.username }}">
                   {% else %}
-                    Присоединился: {{ participant.joined_at|date:"d.m.Y H:i" }}
+                      <div class="comment-avatar-default">{{ participant.user.username|first|upper }}</div>
                   {% endif %}
-                </span>
+              </a>
+              <div class="comment-author-info">
+                  <a href="{% url 'profile_view' user_id=participant.user.id %}" class="author-link">
+                      {{ participant.user.username }}
+                  </a>
+                  <span class="comment-date">
+                      {% if participant.user == post.user %}
+                          👑 Автор мероприятия
+                      {% else %}
+                          Присоединился: {{ participant.joined_at|date:"d.m.Y H:i" }}
+                      {% endif %}
+                  </span>
               </div>
-            </a>
           </div>
           
           <div class="request-actions">
             {% if participant.user != post.user %}
             <form method="post" action="" style="display: inline;">
               {% csrf_token %}
-              <button type="submit" class="btn-remove" onclick="return confirm('Вы уверены, что хотите удалить этого участника?')">
-                🗑️ Удалить
+              <button type="submit" class="btn-primary" onclick="return confirm('Вы уверены, что хотите удалить этого участника?')">
+                🗑️
               </button>
             </form>
             {% else %}
@@ -74,46 +65,47 @@
       </div>
     {% else %}
       <div class="no-requests">
-        <p>😔 Пока нет участников</p>
       </div>
     {% endif %}
   </div>
 
   <!-- Список заявок -->
   <div class="requests-section">
-    <h3>📋 Заявки на участие ({{ pending_requests|length }})</h3>
+    <p> Заявки на участие ({{ pending_requests|length }})</p>
     
     {% if pending_requests %}
-      <div class="requests-list">
-        {% for request in pending_requests %}
-        <div class="request-item">
-          <div class="request-user-info">
-            <a href="{% url 'profile_view' user_id=request.user.id %}" class="user-link">
-              {% if request.user.profile.photo %}
-                <img src="{{ request.user.profile.photo.url }}" class="user-avatar" alt="{{ request.user.username }}">
-              {% else %}
-                <div class="user-avatar default-avatar">{{ request.user.username|first|upper }}</div>
-              {% endif %}
-              <div class="user-details">
-                <strong>{{ request.user.username }}</strong>
-                <span class="request-date">Заявка отправлена: {{ request.created_at|date:"d.m.Y H:i" }}</span>
+    <div class="requests-list">
+      {% for request in pending_requests %}
+      <div class="request-item">
+          <div class="comment-author-block">
+              <a href="{% url 'profile_view' user_id=request.user.id %}" class="author-link">
+                  {% if request.user.profile.photo %}
+                      <img src="{{ request.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ request.user.username }}">
+                  {% else %}
+                      <div class="comment-avatar-default">{{ request.user.username|first|upper }}</div>
+                  {% endif %}
+              </a>
+              <div class="comment-author-info">
+                  <a href="{% url 'profile_view' user_id=request.user.id %}" class="author-link">
+                      {{ request.user.username }}
+                  </a>
+                  <span class="comment-date">Заявка отправлена: {{ request.created_at|date:"d.m.Y H:i" }}</span>
               </div>
-            </a>
           </div>
           
           <div class="request-actions">
             <form method="post" action="{% url 'approve_request' post.id request.id %}" style="display: inline;">
               {% csrf_token %}
-              <button type="submit" class="btn-approve" 
+              <button type="submit" class="btn-join" 
                       {% if post.participants.count >= post.max_participants %}disabled{% endif %}>
-                ✅ Одобрить
+                ✅
               </button>
             </form>
             
             <form method="post" action="{% url 'reject_request' post.id request.id %}" style="display: inline;">
               {% csrf_token %}
-              <button type="submit" class="btn-reject">
-                ❌ Отклонить
+              <button type="submit" class="btn-primary">
+                ❌
               </button>
             </form>
           </div>
@@ -122,16 +114,9 @@
       </div>
     {% else %}
       <div class="no-requests">
-        <p>🎉 Пока нет заявок на участие!</p>
       </div>
     {% endif %}
   </div>
-
-  <!-- Кнопки навигации -->
-  <div class="action-buttons">
-    <a href="{% url 'post_detail' post.id %}" class="btn-back">
-      ← Назад к посту
-    </a>
-  </div>
+</div>
 </div>
 {% endblock %}

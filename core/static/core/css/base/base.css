@@ -18,3 +18,30 @@ footer {
     flex-shrink: 0; /* Не сжимается */
     margin-top: auto; /* Дополнительная страховка */
 }
+/* ОГРАНИЧИТЕЛИ ТОЛЬКО ДЛЯ МОБИЛЬНЫХ */
+@media (max-width: 768px) {
+    html, body {
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden !important;
+    }
+
+    body {
+        display: block !important;
+        position: relative;
+    }
+
+    main {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        min-height: auto !important;
+    }
+
+    /* ЖЕСТКОЕ ОГРАНИЧЕНИЕ ДЛЯ ВСЕХ ЭЛЕМЕНТОВ */
+    .container, .benefits-grid, .benefit-item, .relevance {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}

@@ -1,40 +1,12 @@
 .post-detail-container {
     margin: 0 auto;
-    padding: 3rem 1rem;
+    margin-top: 3rem;
 }
 
-.author-photo {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ddd;
-}
 
-.default-avatar {
-    background: #007bff;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-}
-
-.comment-author-block a {
-    text-decoration: none;
-}
-.post-title a {
-    text-decoration: none;
-    color: inherit; /* Наследует цвет от родителя */
-}
-
-.author-link {
-    color: #007bff;
-    text-decoration: none;
-}
 
 .post-description {
+    margin-top: 1rem;
     font-size: 1.1rem;
     line-height: 1.6;
     color: #555;
@@ -76,41 +48,7 @@
     padding: 2rem;
 }
 
-.comment-author-block {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
 
-.comment-avatar-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.comment-avatar-default {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #95a5a6;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-.comment-author-name {
-    font-weight: 600;
-    color: #2c3e50;
-    text-decoration: none;
-}
-
-.comment-date {
-    font-size: 0.85rem;
-    color: #7f8c8d;
-}
 
 .comment-text {
     line-height: 1.5;
@@ -118,18 +56,11 @@
 }
 
 .no-comments {
-    text-align: center;
     color: #7f8c8d;
     font-style: italic;
     padding: 2rem;
 }
 
-.comment-form-container {
-    background-color: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 10px;
-    margin-top: 2rem;
-}
 
 .comment-input-container {
     width: 100%;
@@ -156,7 +87,6 @@
     background: linear-gradient(135deg, #3498db, #2980b9);
     color: white;
     font-weight: 600;
-    
 }
 
 .delete-comment {
@@ -178,34 +108,3 @@
     justify-content: flex-end;
 }
 
-.btn-primary, .btn-outline-secondary, .btn-join, .btn-full {
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background: #007bff;
-    color: white;
-}
-
-.btn-outline-secondary {
-    background: white;
-    color: #6c757d;
-    border: 1px solid #dee2e6;
-}
-
-.btn-join {
-    background: #28a745;
-    color: white;
-}
-
-.btn-full {
-    background: #6c757d;
-    color: white;
-}

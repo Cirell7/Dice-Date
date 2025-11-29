@@ -40,7 +40,7 @@
                 <a class="nav-link" href="{% url 'notifications_page' %}">
                     🔔 Уведомления
                     {% if unread_notifications_count > 0 %}
-                    <span class="notification-badge">{{ unread_notifications_count }}</span>
+                    <span class="notification-dot">{{ unread_notifications_count }}</span>
                     {% endif %}
                 </a>
             </li>
@@ -74,7 +74,12 @@
     <aside class="sidebar desktop-only">
         <nav class="sidebar-nav">
             <ul>
-                <a href="{% url 'notifications_page' %}"> Уведомления</a>
+                <a href="{% url 'notifications_page' %}">
+                    Уведомления
+                    {% if unread_notifications_count > 0 %}
+                    <span class="notification-dot"></span>  <!-- Красная точка -->
+                    {% endif %}
+                </a>
                 <a href="{% url 'profile' user_id=user.id %}"> Профиль</a>
                 <li><a href="{% url 'add_post' %}"> Добавить событие </a></li>
                 <li><a href="{% url 'post_list' %}"> Посмотреть события </a></li>

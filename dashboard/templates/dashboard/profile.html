@@ -13,8 +13,12 @@
 
 {% block main %}
 
-<div class="profile-container">
-    <h1>Профиль {{ user.username }}</h1>
+<div class="form-container">
+    <div class="form-content">
+        <div class="form-header">
+            <h3>Профиль {{ user.username }}</h3>
+        </div>
+    
     <!-- Кружок для загрузки фото -->
     <div class="photo-section">
         <div class="upload-circle" onclick="openUploadModal()">
@@ -113,7 +117,7 @@
         </div>
     </form>
 </div>
-
+</div>
 <!-- Модальное окно загрузки фото -->
 <div id="uploadModal" class="modal">
     <div class="modal-content-foto">

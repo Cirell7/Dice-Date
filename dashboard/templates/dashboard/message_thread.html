@@ -10,19 +10,29 @@
     <div class="thread-header">
         <a href="{% url 'messages_list' %}" class="back-btn">← Назад</a>
         <div class="user-info">
-            <h2>{{ other_user.username }}</h2>
+            <a href="{% url 'profile_view' user_id=other_user.id %}" class="author-link">
+                <h2>{{ post_user_username }}<h2>
+              </a>
         </div>
     </div>
 
     <div class="messages-container">
-        {% for message in messages %}
-        <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
-            <div class="message-content">
-                <p>{{ message.content }}</p>
-                <small>{{ message.timestamp|date:"d.m.Y H:i" }}</small>
+        {% if messages %}
+            {% for message in messages %}
+            <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                <div class="message-content">
+                    <p>{{ message.content }}</p>
+                    <small>{{ message.timestamp|date:"d.m.Y H:i" }}</small>
+                </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-chat">
+                <div class="empty-icon">💬</div>
+                <h3>Чат пуст</h3>
+                <p>Начните общение первым!</p>
+            </div>
+        {% endif %}
     </div>
 
     <div class="message-form-container">
