@@ -5,6 +5,10 @@
 <link rel="stylesheet" href="{% static 'core/css/base/notifications_page.css' %}" />
 {% endblock %}
 
+{% block extra_scripts %}
+<script src="{% static 'core/js/notifications_page.js' %}"defer></script>
+{%endblock%}
+
 {% block main %}
 
 <div class="form-container">
@@ -22,7 +26,8 @@
             {% if notifications %}
                 {% for notification in notifications %}
                 <div class="notification-item {% if not notification.is_read %}unread{% endif %}" 
-                     onclick="markAsRead({{ notification.id }})">
+                     data-notification-id="{{ notification.id }}"
+                     onclick="markAsReadAndNavigate({{ notification.id }})">
                     <div class="notification-content">
                         <div class="notification-text">{{ notification.message }}</div>
                         <div class="notification-time">{{ notification.created_at|timesince }} назад</div>
@@ -33,68 +38,12 @@
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="empty-state">
-                    <div class="empty-icon">🎯</div>
-                    <h3>Все уведомления прочитаны</h3>
-                    <p>Новых сообщений пока нет</p>
+                <div class="no-messages" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 200px;">
+                    <p>У вас пока нет сообщений</p>
+                    <a href="{% url 'post_list' %}" class="btn btn-primary">Найти встречи</a>
                 </div>
             {% endif %}
         </div>
     </div>
 </div>
-<script>
-// JavaScript функции остаются такими же
-function markAsRead(notificationId) {
-    const formData = new FormData();
-    formData.append('notification_id', notificationId);
-    
-    fetch(`/notifications/${notificationId}/mark-read/`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const item = document.querySelector(`[onclick="markAsRead(${notificationId})"]`);
-            if (item) {
-                item.classList.remove('unread');
-                const dot = item.querySelector('.unread-dot');
-                if (dot) dot.remove();
-                updateUnreadCount();
-            }
-        }
-    });
-}
-
-function markAllAsRead() {
-    fetch(`/mark_all_read/`, {
-        method: 'POST',
-        body: new FormData()
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.querySelectorAll('.notification-item.unread').forEach(item => {
-                item.classList.remove('unread');
-                const dot = item.querySelector('.unread-dot');
-                if (dot) dot.remove();
-            });
-            updateUnreadCount();
-        }
-    });
-}
-
-function updateUnreadCount() {
-    const unreadCount = document.querySelectorAll('.notification-item.unread').length;
-    const badge = document.querySelector('.unread-badge');
-    const markAllBtn = document.querySelector('.mark-all-btn');
-    
-    if (unreadCount > 0) {
-        if (badge) badge.textContent = `📌 ${unreadCount} непрочитанных`;
-    } else {
-        if (badge) badge.remove();
-        if (markAllBtn) markAllBtn.remove();
-    }
-}
-</script>
 {% endblock %}

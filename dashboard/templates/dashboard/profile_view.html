@@ -2,178 +2,83 @@
 {% load static %}
 
 {% block extra_style %}
-  <link rel="stylesheet" href="{% static 'dashboard/css/profile_view.css' %}" />
-  <style>
-    .profile-view-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    
-    .profile-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .profile-info-view {
-      margin-top: 30px;
-    }
-    
-    .info-field {
-      padding: 15px 0;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    
-    .info-field:last-child {
-      border-bottom: none;
-    }
-    
-    .field-label {
-      font-weight: bold;
-      color: #333;
-      min-width: 150px;
-    }
-    
-    .field-value {
-      color: #666;
-      text-align: right;
-      flex: 1;
-      margin-left: 20px;
-    }
-    
-    .empty-field {
-      color: #999;
-      font-style: italic;
-    }
-    
-    .profile-photo-view {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #007bff;
-      margin: 0 auto 20px;
-      display: block;
-    }
-    
-    .default-photo {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: #f0f0f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      border: 3px solid #ddd;
-      font-size: 48px;
-      color: #999;
-    }
-    
-    .action-buttons {
-      margin-top: 30px;
-      text-align: center;
-    }
-    
-    .btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      margin: 0 10px;
-      text-decoration: none;
-      display: inline-block;
-    }
-    
-    .btn-primary {
-      background: #007bff;
-      color: white;
-    }
-    
-    .btn-secondary {
-      background: #6c757d;
-      color: white;
-    }
-  </style>
+  <link rel="stylesheet" href="{% static 'dashboard/css/profile.css' %}" />
+  <link rel="stylesheet" href="{% static 'dashboard/css/profile_btn.css' %}" />
+  <link rel="stylesheet" href="{% static 'dashboard/css/profile_avatar.css' %}" />
 {% endblock %}
 
 {% block main %}
-<div class="profile-view-container">
-    <div class="profile-header">
-        <h1>Профиль {{ profile_user.username }}</h1>
-        
-        <!-- Фото профиля -->
-        <div class="photo-section">
-            {% if profile.photo %}
-                <img src="{{ profile.photo.url }}" class="profile-photo-view">
-            {% else %}
-                <div class="default-photo">
-                    👤
-                </div>
-            {% endif %}
-        </div>
-    </div>
+<div class="form-container">
+  <div class="form-content">
+      <div class="form-header">
+        <button class="back-btn" onclick="window.history.back()">← Назад</button>
+          <h3> {{ profile_user.username }}</h3>
+      </div>
 
-    <!-- Информация профиля (только для просмотра) -->
-    <div class="profile-info-view">
-        <!-- Имя пользователя -->
-        <div class="info-field">
-            <span class="field-label">Имя пользователя:</span>
-            <span class="field-value {% if not profile_user.username %}empty-field{% endif %}">
-                {{ profile_user.username|default:"Не указано" }}
-            </span>
-        </div>
+      <!-- Кружок с фото профиля -->
+      <div class="photo-section">
+          <div class="upload-circle">
+              {% if profile.photo %}
+                  <img src="{{ profile.photo.url }}" class="profile-photo">
+              {% else %}
+                  <div class="plus-icon">👤</div>
+              {% endif %}
+          </div>
+      </div>
 
-        <!-- Пол -->
-        <div class="info-field">
-            <span class="field-label">Пол:</span>
-            <span class="field-value {% if not profile.gender %}empty-field{% endif %}">
-                {{ profile.get_gender_display|default:"Не указан" }}
-            </span>
-        </div>
+      <!-- Информация профиля (только для просмотра) -->
+      <div class="profile-info">
+          <!-- Имя пользователя -->
+          <div class="editable-field">
+              <strong>Имя пользователя:</strong>
+              <span class="field-value {% if not profile_user.username %}empty-field{% endif %}">
+                  {{ profile_user.username|default:"Не указано" }}
+              </span>
+          </div>
 
-        <!-- Дата рождения -->
-        <div class="info-field">
-            <span class="field-label">Дата рождения:</span>
-            <span class="field-value {% if not profile.birth_date %}empty-field{% endif %}">
-                {{ profile.birth_date|default:"Не указана" }}
-            </span>
-        </div>
+          <!-- Пол -->
+          <div class="editable-field">
+              <strong>Пол:</strong>
+              <span class="field-value {% if not profile.gender %}empty-field{% endif %}">
+                  {{ profile.get_gender_display|default:"Не указан" }}
+              </span>
+          </div>
 
-        <!-- Возраст (если есть дата рождения) -->
-        {% if profile.birth_date %}
-        <div class="info-field">
-            <span class="field-label">Возраст:</span>
-            <span class="field-value">
-                {{ profile.age }} лет
-            </span>
-        </div>
-        {% endif %}
+          <!-- Дата рождения -->
+          <div class="editable-field">
+              <strong>Дата рождения:</strong>
+              <span class="field-value {% if not profile.birth_date %}empty-field{% endif %}">
+                  {{ profile.birth_date|default:"Не указана" }}
+              </span>
+          </div>
 
-        <!-- Описание -->
-        <div class="info-field">
-            <span class="field-label">Описание:</span>
-            <span class="field-value {% if not profile.description %}empty-field{% endif %}">
-                {{ profile.description|default:"Нет описания" }}
-            </span>
-        </div>
-    </div>
+          <!-- Возраст (если есть дата рождения) -->
+          {% if profile.birth_date %}
+          <div class="ieditable-field">
+              <strong>Возраст:</strong>
+              <span class="field-value">
+                  {{ profile.age }} лет
+              </span>
+          </div>
+          {% endif %}
 
-    <!-- Кнопки действий -->
-    <div class="action-buttons">
-        <a href="{% url 'message_thread' profile_user.id %}" class="btn btn-primary">
-            💬 Написать сообщение
-        </a>
-        <a href="javascript:history.back()" class="btn btn-secondary">
-            ← Назад
-        </a>
-    </div>
+          <!-- Описание -->
+          <div class="editable-field">
+              <strong>Описание:</strong>
+              <span class="field-value {% if not profile.description %}empty-field{% endif %}">
+                  {{ profile.description|default:"Нет описания" }}
+              </span>
+          </div>
+      </div>
+
+      <!-- Кнопки действий -->
+      <div class="action-buttons">
+        <a href="{% url 'message_thread' profile_user.id %}" class="btn btn-primary" style=" margin-left: 60%;">
+          💬
+      </a>
+
+      </div>
+  </div>
 </div>
+
 {% endblock %}

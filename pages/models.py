@@ -11,6 +11,7 @@ class Posts(models.Model):
     max_participants = models.IntegerField(default=10)
     latitude = models.FloatField(null=True, blank=True, verbose_name="Широта")
     longitude = models.FloatField(null=True, blank=True, verbose_name="Долгота")
+    is_active = models.BooleanField(default=True)
 
 class Comment(models.Model):
     post = models.ForeignKey(Posts, on_delete=models.CASCADE, related_name='comments')

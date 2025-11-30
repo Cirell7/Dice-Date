@@ -8,10 +8,10 @@
 {% block main %}
 <div class="container">
     <div class="thread-header">
-        <a href="{% url 'messages_list' %}" class="back-btn">← Назад</a>
-        <div class="user-info">
+        <div class="form-header">
+            <button class="back-btn" onclick="window.history.back()">← Назад</button>
             <a href="{% url 'profile_view' user_id=other_user.id %}" class="author-link">
-                <h2>{{ post_user_username }}<h2>
+                {{ post_user_username }}
               </a>
         </div>
     </div>

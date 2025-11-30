@@ -18,8 +18,7 @@
         <div class="form-header">
             <h3>Создать встречу</h3>
         </div>
-
-        <form class="meetup-form" method="post" enctype="multipart/form-data">
+        <form onsubmit="return validateForm()" class="meetup-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             
             <!-- Основная информация -->
@@ -93,6 +92,19 @@
 </div>
 
 <script>
+function validateForm() {
+    const event_date = document.getElementById('event_date');
+    
+    const selectedDate = new Date(event_date.value);
+    const now = new Date();
+    
+    if (selectedDate < now) {
+        alert('Неправильно указано время встречи');
+        return false;
+    }
+    
+    return true;
+}
 // Инициализация карты
 ymaps.ready(init);
 

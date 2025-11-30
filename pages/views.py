@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from datetime import datetime
 
 from pages.models import Posts, Comment, PostRequest, PostParticipant  # Добавлены новые модели
 from core.models import Profile, Notification
@@ -50,10 +51,19 @@ def profile_page_onboarding2(request: HttpRequest) -> HttpResponse:
             return redirect('post_list')
     return render(request, "pages/onboarding2.html")
 
+
 @login_required
 def add_post(request):
     """Создание нового поста"""
     if request.method == 'POST':
+        # Проверяем дату (только формат)
+        event_date = request.POST['event_date']
+        
+        try:
+            _ = datetime.fromisoformat(event_date.replace('Z', '+00:00'))
+        except ValueError:
+            pass
+        
         latitude_str = request.POST.get('latitude', '').strip()
         longitude_str = request.POST.get('longitude', '').strip()
         
@@ -75,7 +85,8 @@ def add_post(request):
             max_participants=request.POST.get('max_participants', 10),
             user=request.user,
             latitude=latitude,
-            longitude=longitude
+            longitude=longitude,
+            is_active=True
         )
 
         post.save()
@@ -85,7 +96,10 @@ def add_post(request):
 
 def post_list(request):
     """Страница со всеми постами"""
-    posts = Posts.objects.filter(expiration_date__gte=timezone.now()).order_by('-creation_date')
+    posts = Posts.objects.filter(
+        expiration_date__gte=timezone.now(),
+        is_active=True
+    ).order_by('-creation_date')
     
     context = {
         'posts': posts,

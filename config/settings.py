@@ -108,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow' 
 
 USE_I18N = True
 
@@ -131,3 +131,19 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Настройки Celery
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Moscow'  # Ваш часовой пояс
+
+CELERY_BEAT_SCHEDULE = {
+    'check-expired-events-every-5-minutes': {
+        'task': 'core.tasks.check_expired_events',
+        'schedule': 300.0,  # Каждые 300 секунд (5 минут)
+    },
+}
