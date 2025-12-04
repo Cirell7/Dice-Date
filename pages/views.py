@@ -2,11 +2,12 @@ from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib import messages
 from datetime import datetime
 
 from pages.models import Posts, Comment, PostRequest, PostParticipant  # Добавлены новые модели
-from core.models import Profile, Notification
+from core.models import Profile, Notification, ParticipantRating
 from core.utils import Verification
 
 def main_menu(request):
@@ -284,3 +285,158 @@ def reject_request(request, post_id, request_id):
             notification_type='request_rejected'
         )
     return redirect('post_requests', post_id=post_id)
+
+@login_required
+def remove_participant(request, post_id, user_id):
+    """Удаление участника из мероприятия"""
+    if request.method == 'POST':
+        # Получаем пост
+        post = get_object_or_404(Posts, id=post_id)
+        
+        # Проверяем, что пользователь - автор поста
+        if request.user != post.user:
+            messages.error(request, "У вас нет прав для удаления участников")
+            return redirect('post_detail', post_id=post_id)
+        
+        # Находим участника
+        participant = get_object_or_404(PostParticipant, post=post, user_id=user_id)
+        
+        # Не разрешаем удалять автора поста
+        if participant.user == post.user:
+            messages.error(request, "Нельзя удалить автора мероприятия")
+            return redirect('post_requests', post_id=post_id)
+        
+        # Сохраняем имя пользователя для сообщения
+        username = participant.user.username
+        
+        # Удаляем участника
+        participant.delete()
+        
+        # Обновляем счетчик участников в посте (если есть такое поле)
+        if hasattr(post, 'current_participants'):
+            post.current_participants = PostParticipant.objects.filter(post=post).count()
+            post.save()
+        
+        # Создаем уведомление для удаленного пользователя
+        Notification.objects.create(
+            user=participant.user,
+            title="Вы были удалены из мероприятия",
+            message=f"Автор удалил вас из мероприятия '{post.name}'",
+            notification_type='removed_from_post'
+        )
+        
+        messages.success(request, f"Участник {username} удален")
+    
+    return redirect('post_requests', post_id=post_id)
+
+def get_next_participant(request, post):
+    """Находит следующего неоцененного человека в мероприятии"""
+    # Определяем, кто может быть оценен текущим пользователем
+    people_to_rate = []
+    
+    # Если текущий пользователь - организатор, он оценивает ВСЕХ участников
+    if request.user == post.user:
+        # Организатор оценивает только участников (не себя)
+        participants = PostParticipant.objects.filter(post=post).select_related('user')
+        for participant in participants:
+            people_to_rate.append(participant.user)
+    
+    # Если текущий пользователь - участник, он оценивает:
+    # 1. Организатора
+    # 2. Всех других участников (кроме себя)
+    else:
+        # 1. Организатор
+        people_to_rate.append(post.user)
+        
+        # 2. Другие участники
+        participants = PostParticipant.objects.filter(post=post).exclude(user=request.user).select_related('user')
+        for participant in participants:
+            people_to_rate.append(participant.user)
+    
+    # Ищем первого неоцененного
+    for person in people_to_rate:
+        if not ParticipantRating.objects.filter(
+            post=post, 
+            rater=request.user, 
+            participant=person
+        ).exists():
+            return redirect('rate_participant', event_id=post.id, participant_id=person.id)
+    
+    # Все оценены
+    return render(request, 'pages/rating_complete.html')
+
+@login_required
+def rate_participant(request, event_id, participant_id):
+    post = get_object_or_404(Posts, id=event_id)
+    participant = get_object_or_404(User, id=participant_id)
+    
+    # Проверяем что пользователь участвует в мероприятии
+    is_organizer = (request.user == post.user)
+    is_participant = PostParticipant.objects.filter(post=post, user=request.user).exists()
+    
+    if not (is_organizer or is_participant):
+        return redirect('post_detail', post_id=event_id)
+    
+    # Нельзя оценивать самого себя
+    if participant == request.user:
+        return get_next_participant(request, post)
+    
+    # Проверяем что оцениваемый может быть оценен
+    can_be_rated = False
+    
+    if is_organizer:
+        # Организатор может оценивать только участников (не себя)
+        can_be_rated = PostParticipant.objects.filter(post=post, user=participant).exists()
+    else:
+        # Участник может оценивать:
+        # 1. Организатора
+        # 2. Других участников (кроме себя)
+        can_be_rated = (
+            participant == post.user or  # организатор
+            PostParticipant.objects.filter(post=post, user=participant).exclude(user=request.user).exists()
+        )
+    
+    if not can_be_rated:
+        return redirect('post_detail', post_id=event_id)
+    
+    # Уже оценен? Ищем следующего
+    if ParticipantRating.objects.filter(post=post, rater=request.user, participant=participant).exists():
+        return get_next_participant(request, post)
+    
+    if request.method == 'POST':
+        was_late = request.POST.get('was_late') == 'true'
+        would_repeat = request.POST.get('would_repeat') == 'true'
+        
+        ParticipantRating.objects.create(
+            post=post,
+            rater=request.user,
+            participant=participant,
+            was_late=was_late,
+            would_repeat=would_repeat
+        )
+        
+        return get_next_participant(request, post)
+    
+    # Считаем прогресс ДЛЯ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
+    if is_organizer:
+        # Организатор оценивает только участников
+        all_to_rate = PostParticipant.objects.filter(post=post).values_list('user', flat=True)
+    else:
+        # Участник оценивает: организатор + другие участники
+        all_to_rate = [post.user]  # организатор
+        other_participants = PostParticipant.objects.filter(post=post).exclude(user=request.user).values_list('user', flat=True)
+        all_to_rate.extend(other_participants)
+    
+    total_count = len(all_to_rate)
+    
+    # Сколько уже оценено этим пользователем
+    rated_count = ParticipantRating.objects.filter(post=post, rater=request.user).count()
+    
+    context = {
+        'post': post,
+        'participant': participant,
+        'current_number': rated_count + 1,
+        'total_count': total_count,
+        'is_last': (rated_count + 1) == total_count,
+    }
+    return render(request, 'pages/rate_participant.html', context)

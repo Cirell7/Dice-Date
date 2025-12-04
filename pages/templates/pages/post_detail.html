@@ -18,7 +18,7 @@
     <!-- Фото автора из профиля (кликабельное) -->
     <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link" style="display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;">
       {% if post.user.profile.photo %}
-          <img src="{{ post.user.profile.photo.url }}" class="author-photo-link" alt="{{ post.user.username }}">
+          <img src="{{ post.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ post.user.username }}">
       {% else %}
           <div class="author-photo default-avatar">{{ post.user.username|first|upper }}</div>
       {% endif %}
@@ -101,7 +101,7 @@
             <div class="comment-author-block">
                 <a href="{% url 'profile_view' user_id=comment.user.id %}"  class="author-link" >
                     {% if comment.user.profile.photo %}
-                        <img src="{{ comment.user.profile.photo.url }}" class="author-photo-link" alt="{{ comment.user.username }}">
+                        <img src="{{ comment.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ comment.user.username }}">
                     {% else %}
                         <div class="author-photo default-avatar">{{ comment.user.username|first|upper }}</div>
                     {% endif %}

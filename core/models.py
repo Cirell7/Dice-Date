@@ -33,18 +33,25 @@ class Notification(models.Model):
         ('request_rejected', 'Заявка отклонена'),
         ('new_message', 'Новое сообщение'),
         ('system', 'Системное уведомление'),
+        ('event_completed', 'Мероприятие завершено'),
     ]
-    
+    post = models.ForeignKey('pages.Posts', on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     title = models.CharField(max_length=200)
     message = models.TextField()
     notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='system')
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    related_post = models.ForeignKey(Posts, on_delete=models.CASCADE, null=True, blank=True)
-    
     class Meta:
         ordering = ['-created_at']
     
     def __str__(self):
         return f"{self.title} - {self.user.username}"
+
+class ParticipantRating(models.Model):
+    rater = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_ratings')
+    participant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_ratings')
+    post = models.ForeignKey('pages.Posts', on_delete=models.CASCADE, null=True, blank=True)
+    was_late = models.BooleanField(null=True)  # Опоздал ли
+    would_repeat = models.BooleanField(null=True)  # Повторили бы встречу
+    rated_at = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,13 @@
+{% extends "core/base1.html" %}
+{% load static %}
+
+{% block main %}
+<div class="form-container">
+    <div class="form-content" style="text-align: center;">
+        <div class="success-icon">🎉</div>
+        <h2>Спасибо за оценку!</h2>
+        <p>Ваши отзывы помогут улучшить качество встреч</p>
+        <a href="{% url 'post_list' %}" class="btn btn-primary">Вернуться к встречам</a>
+    </div>
+</div>
+{% endblock %}

@@ -13,6 +13,7 @@ def check_expired_events():
     for post in expired_posts:
         # Отправляем уведомление организатору
         Notification.objects.create(
+            post = post,
             user=post.user,
             title="Мероприятие завершено",
             message=f"Ваше мероприятие '{post.name}' завершено",
@@ -23,6 +24,7 @@ def check_expired_events():
         participants = PostParticipant.objects.filter(post=post)
         for participant in participants:
             Notification.objects.create(
+                post = post,
                 user=participant.user,
                 title="Мероприятие завершено", 
                 message=f"Мероприятие '{post.name}', в котором вы участвовали, завершено",

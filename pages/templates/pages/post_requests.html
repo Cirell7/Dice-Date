@@ -37,29 +37,18 @@
                       {{ participant.user.username }}
                   </a>
                   <span class="comment-date">
-                      {% if participant.user == post.user %}
-                          👑 Автор мероприятия
-                      {% else %}
                           Присоединился: {{ participant.joined_at|date:"d.m.Y H:i" }}
-                      {% endif %}
                   </span>
               </div>
           </div>
           
-          <div class="request-actions">
-            {% if participant.user != post.user %}
-            <form method="post" action="" style="display: inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn-primary" onclick="return confirm('Вы уверены, что хотите удалить этого участника?')">
-                🗑️
-              </button>
-            </form>
-            {% else %}
-            <div class="author-badge">
-              👑 Автор
-            </div>
-            {% endif %}
-          </div>
+          <form method="post" action="{% url 'remove_participant' post.id participant.user.id %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-reject" 
+                    onclick="return confirm('Вы уверены, что хотите удалить участника {{ participant.user.username }}?')">
+                🗑️ Удалить
+            </button>
+        </form>
         </div>
         {% endfor %}
       </div>

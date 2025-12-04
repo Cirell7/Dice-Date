@@ -29,7 +29,29 @@
                      data-notification-id="{{ notification.id }}"
                      onclick="markAsReadAndNavigate({{ notification.id }})">
                     <div class="notification-content">
-                        <div class="notification-text">{{ notification.message }}</div>
+                        {% if notification.notification_type == 'event_completed' and notification.post %}
+                            {# Для уведомлений о завершении мероприятия #}
+                            {% if notification.user == notification.post.user %}
+                                {# Организатор оценивает первого участника #}
+                                {% with first_participant=notification.post.participants.first %}
+                                    {% if first_participant %}
+                                        <a href="{% url 'rate_participant' notification.post.id first_participant.user.id %}">
+                                            {{ notification.message }} (оцените участников)
+                                        </a>
+                                    {% else %}
+                                        <div class="notification-text">{{ notification.message }}</div>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                {# Участник оценивает организатора #}
+                                <a href="{% url 'rate_participant' notification.post.id notification.post.user.id %}">
+                                    {{ notification.message }} (оцените встречу)
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            {# Все другие уведомления #}
+                            <div class="notification-text">{{ notification.message }}</div>
+                        {% endif %}
                         <div class="notification-time">{{ notification.created_at|timesince }} назад</div>
                     </div>
                     {% if not notification.is_read %}
@@ -39,7 +61,7 @@
                 {% endfor %}
             {% else %}
                 <div class="no-messages" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 200px;">
-                    <p>У вас пока нет сообщений</p>
+                    <p>У вас пока нет уведомлений</p>
                     <a href="{% url 'post_list' %}" class="btn btn-primary">Найти встречи</a>
                 </div>
             {% endif %}
