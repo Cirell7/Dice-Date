@@ -4,9 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib import messages
 
-from core.models import Profile, User
+from core.models import Profile, User, ParticipantRating
 from dashboard.models import Message,Posts
-from core.utils import Verification  # Перенести класс Verification в core/utils.py
+from core.utils import Verification
 
 @login_required
 def profile_page(request: HttpRequest, user_id) -> HttpResponse:
@@ -46,13 +46,20 @@ def profile_view(request: HttpRequest, user_id: int):
     """Просмотр чужого профиля"""
     profile_user = get_object_or_404(User, id=user_id)
     profile, created = Profile.objects.get_or_create(user=profile_user)
-    
+
+    ratings = ParticipantRating.objects.filter(participant=user_id)
+
+    would_repeat_count = ratings.filter(would_repeat=True).count()
+    late_count = ratings.filter(was_late=True).count()
+
     is_own_profile = request.user.is_authenticated and request.user.id == user_id
     
     context = {
         'profile_user': profile_user,
         'profile': profile,
         'is_own_profile': is_own_profile,
+        'late_count': late_count,
+        'would_repeat_count': would_repeat_count
     }
     
     return render(request, 'dashboard/profile_view.html', context)

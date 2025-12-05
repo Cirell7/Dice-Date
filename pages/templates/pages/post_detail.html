@@ -3,29 +3,74 @@
 
 {% block extra_style %}
   <link rel="stylesheet" href="{% static 'pages/css/homepage/post_detail.css' %}" />
+  <link rel="stylesheet" href="{% static 'pages/css/homepage/post_detail_list.css' %}" />
 {% endblock %}
 
 {% block extra_scripts %}
   <div id="csrf-token" data-csrf="{{ csrf_token }}" style="display: none;"></div>
   <script src="{% static 'js/post_detail.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Управление выпадающим списком участников
+        const toggleBtn = document.querySelector('.participants-toggle');
+        const dropdownContent = document.querySelector('.participants-dropdown-content');
+        
+        if (toggleBtn && dropdownContent) {
+            toggleBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.classList.toggle('active');
+                dropdownContent.classList.toggle('show');
+            });
+            
+            // Закрытие при клике вне элемента
+            document.addEventListener('click', function(e) {
+                if (!toggleBtn.contains(e.target) && !dropdownContent.contains(e.target)) {
+                    toggleBtn.classList.remove('active');
+                    dropdownContent.classList.remove('show');
+                }
+            });
+            
+            // Предотвращаем закрытие при клике внутри списка
+            dropdownContent.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+        
+        // Адаптивное поведение для мобильных устройств
+        function adjustDropdownPosition() {
+            if (window.innerWidth < 768) {
+                dropdownContent.classList.add('fixed');
+            } else {
+                dropdownContent.classList.remove('fixed');
+            }
+        }
+        
+        if (dropdownContent) {
+            adjustDropdownPosition();
+            window.addEventListener('resize', adjustDropdownPosition);
+        }
+    });
+  </script>
 {% endblock %}
 
 {% block main %}
 <div class="post-detail-container">
   
   <!-- Заголовок поста -->
-  <div>
-    <!-- Фото автора из профиля (кликабельное) -->
-    <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link" style="display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;">
-      {% if post.user.profile.photo %}
+  <div class="post-header">
+    <h1 class="post-title">{{ post.name }}</h1>
+    <div class="post-author-info">
+      <!-- Фото автора из профиля (кликабельное) -->
+      <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link" style="display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;">
+        {% if post.user.profile.photo %}
           <img src="{{ post.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ post.user.username }}">
-      {% else %}
+        {% else %}
           <div class="author-photo default-avatar">{{ post.user.username|first|upper }}</div>
-      {% endif %}
-      {{ post.user.username }}
-  </a>
-    </div>
-  </div>
+        {% endif %}
+        {{ post.user.username }}
+      </a>
+      
+      
 
   <p class="post-description">{{ post.description }}</p>
 
@@ -51,9 +96,65 @@
     </div>
     
     <div class="meta-item">
-      <span class="meta-icon">👥</span>
-      <span class="meta-label">Максимум участников:</span>
-      <span class="meta-value">{{ post.max_participants }}</span>
+      <!-- Счетчик участников со стрелочкой -->
+      {% if approved_participants_count > 0 %}
+      <div class="participants-dropdown">
+        <button class="participants-toggle">
+          <span>👥 Участники: {{ approved_participants_count }}/{{ post.max_participants }}</span>
+          <span class="arrow">▼</span>
+        </button>
+        
+        <div class="participants-dropdown-content">
+          <div class="participants-list">
+            <!-- Организатор всегда первый -->
+            <div class="participant-item">
+              <div class="comment-author-block">
+                <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link">
+                  {% if post.user.profile.photo %}
+                    <img src="{{ post.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ post.user.username }}">
+                  {% else %}
+                    <div class="comment-avatar-default">{{ post.user.username|first|upper }}</div>
+                  {% endif %}
+                </a>
+                <div class="comment-author-info">
+                  <a href="{% url 'profile_view' user_id=post.user.id %}" class="author-link">
+                    {{ post.user.username }}
+                  </a>
+                  <span class="comment-date">👑 Организатор</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Остальные участники -->
+            {% for participant in participants %}
+            <div class="participant-item">
+              <div class="comment-author-block">
+                <a href="{% url 'profile_view' user_id=participant.user.id %}" class="author-link">
+                  {% if participant.user.profile.photo %}
+                    <img src="{{ participant.user.profile.photo.url }}" class="comment-avatar-img" alt="{{ participant.user.username }}">
+                  {% else %}
+                    <div class="comment-avatar-default">{{ participant.user.username|first|upper }}</div>
+                  {% endif %}
+                </a>
+                <div class="comment-author-info">
+                  <a href="{% url 'profile_view' user_id=participant.user.id %}" class="author-link">
+                    {{ participant.user.username }}
+                  </a>
+                  <span class="comment-date">Присоединился: {{ participant.joined_at|date:"d.m.Y H:i" }}</span>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="participants-dropdown">
+        <button class="participants-toggle" disabled>
+          <span>👥 Участники: 0/{{ post.max_participants }}</span>
+        </button>
+      </div>
+      {% endif %}
     </div>
   </div>
   

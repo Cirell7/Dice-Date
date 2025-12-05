@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: dice-date
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        sync: false # Вы введете значение вручную в панели
+      - key: DEBUG
+        value: false
+      - key: YANDEX_MAPS_API_KEY
+        sync: false

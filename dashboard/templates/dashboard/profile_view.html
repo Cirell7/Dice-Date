@@ -28,13 +28,6 @@
 
       <!-- Информация профиля (только для просмотра) -->
       <div class="profile-info">
-          <!-- Имя пользователя -->
-          <div class="editable-field">
-              <strong>Имя пользователя:</strong>
-              <span class="field-value {% if not profile_user.username %}empty-field{% endif %}">
-                  {{ profile_user.username|default:"Не указано" }}
-              </span>
-          </div>
 
           <!-- Пол -->
           <div class="editable-field">
@@ -62,13 +55,24 @@
           </div>
           {% endif %}
 
-          <!-- Описание -->
+
           <div class="editable-field">
-              <strong>Описание:</strong>
-              <span class="field-value {% if not profile.description %}empty-field{% endif %}">
-                  {{ profile.description|default:"Нет описания" }}
-              </span>
-          </div>
+            <strong> Количество опозданий </strong>
+            <span class="field-value"> {{ late_count }}
+            </span>
+        </div>
+        <div class="editable-field">
+            <strong> Хорошие знакомства </strong>
+            <span class="field-value"> {{ would_repeat_count }}
+            </span>
+        </div>
+        <!-- Описание -->
+        <div class="editable-field">
+            <strong>Описание:</strong>
+            <span class="field-value {% if not profile.description %}empty-field{% endif %}">
+                {{ profile.description|default:"Нет описания" }}
+            </span>
+        </div>
       </div>
 
       <!-- Кнопки действий -->

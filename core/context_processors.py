@@ -1,5 +1,5 @@
-# core/context_processors.py
 from .models import Notification
+import os
 
 def notifications_count(request):
     if request.user.is_authenticated:
@@ -12,3 +12,6 @@ def notifications_count(request):
         except Exception:
             return {'unread_notifications_count': 0}
     return {'unread_notifications_count': 0}
+
+def yandex_maps_api_key(request):
+    return {'YANDEX_MAPS_API_KEY': os.environ.get('YANDEX_MAPS_API_KEY', '')}

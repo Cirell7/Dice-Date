@@ -1,4 +1,3 @@
-# core/views.py
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
@@ -26,7 +25,7 @@ def register_page(request: HttpRequest) -> HttpResponse:
         form = RegisterForm()
 
     context = {"form": form, "user": request.user}
-    return render(request, "core/register.html", context)  # ← ИСПРАВИТЬ НА "core/register.html"
+    return render(request, "core/register.html", context)
 
 def logout_view(request):
     logout(request)

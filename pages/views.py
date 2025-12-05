@@ -119,21 +119,25 @@ def post_detail(request, post_id):
     user_is_approved = False
     is_full = False
     
-    user_has_pending_request = PostRequest.objects.filter(
-        post=post, 
-        user=request.user, 
-        status='pending'
-    ).exists()
+    if request.user.is_authenticated:
+        user_has_pending_request = PostRequest.objects.filter(
+            post=post, 
+            user=request.user, 
+            status='pending'
+        ).exists()
         
         # Проверяем, является ли пользователь одобренным участником
-    user_is_approved = PostParticipant.objects.filter(
-        post=post, 
-        user=request.user
-    ).exists()
+        user_is_approved = PostParticipant.objects.filter(
+            post=post, 
+            user=request.user
+        ).exists()
         
         # Проверяем, достигнут ли лимит участников
-    current_participants = PostParticipant.objects.filter(post=post).count()
-    is_full = current_participants >= post.max_participants
+        current_participants = PostParticipant.objects.filter(post=post).count()
+        is_full = current_participants >= post.max_participants
+    
+    # Получаем список участников
+    participants = PostParticipant.objects.filter(post=post).select_related('user').order_by('-joined_at')
     
     if request.method == "POST":
         action = request.POST.get("action")
@@ -168,6 +172,7 @@ def post_detail(request, post_id):
         "is_full": is_full,
         "approved_participants_count": PostParticipant.objects.filter(post=post).count(),
         "pending_requests_count": PostRequest.objects.filter(post=post, status='pending').count(),
+        "participants": participants,  # Добавляем участников в контекст
     }
     return render(request, "pages/post_detail.html", context)
 
@@ -330,29 +335,20 @@ def remove_participant(request, post_id, user_id):
     return redirect('post_requests', post_id=post_id)
 
 def get_next_participant(request, post):
-    """Находит следующего неоцененного человека в мероприятии"""
-    # Определяем, кто может быть оценен текущим пользователем
     people_to_rate = []
-    
-    # Если текущий пользователь - организатор, он оценивает ВСЕХ участников
+
     if request.user == post.user:
-        # Организатор оценивает только участников (не себя)
         participants = PostParticipant.objects.filter(post=post).select_related('user')
         for participant in participants:
             people_to_rate.append(participant.user)
     
-    # Если текущий пользователь - участник, он оценивает:
-    # 1. Организатора
-    # 2. Всех других участников (кроме себя)
     else:
-        # 1. Организатор
         people_to_rate.append(post.user)
-        
-        # 2. Другие участники
+
         participants = PostParticipant.objects.filter(post=post).exclude(user=request.user).select_related('user')
         for participant in participants:
             people_to_rate.append(participant.user)
-    
+
     # Ищем первого неоцененного
     for person in people_to_rate:
         if not ParticipantRating.objects.filter(
@@ -361,7 +357,6 @@ def get_next_participant(request, post):
             participant=person
         ).exists():
             return redirect('rate_participant', event_id=post.id, participant_id=person.id)
-    
     # Все оценены
     return render(request, 'pages/rating_complete.html')
 
@@ -369,14 +364,14 @@ def get_next_participant(request, post):
 def rate_participant(request, event_id, participant_id):
     post = get_object_or_404(Posts, id=event_id)
     participant = get_object_or_404(User, id=participant_id)
-    
+
     # Проверяем что пользователь участвует в мероприятии
     is_organizer = (request.user == post.user)
     is_participant = PostParticipant.objects.filter(post=post, user=request.user).exists()
-    
+
     if not (is_organizer or is_participant):
         return redirect('post_detail', post_id=event_id)
-    
+
     # Нельзя оценивать самого себя
     if participant == request.user:
         return get_next_participant(request, post)
