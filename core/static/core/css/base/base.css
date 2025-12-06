@@ -11,14 +11,14 @@ body {
 }
 
 main {
-    flex: 1 0 auto; /* Занимает всё доступное пространство */
+    flex: 1 0 auto;
 }
 
 footer {
-    flex-shrink: 0; /* Не сжимается */
-    margin-top: auto; /* Дополнительная страховка */
+    flex-shrink: 0;
+    margin-top: auto;
 }
-/* ОГРАНИЧИТЕЛИ ТОЛЬКО ДЛЯ МОБИЛЬНЫХ */
+
 @media (max-width: 768px) {
     html, body {
         height: auto !important;
@@ -39,7 +39,6 @@ footer {
         min-height: auto !important;
     }
 
-    /* ЖЕСТКОЕ ОГРАНИЧЕНИЕ ДЛЯ ВСЕХ ЭЛЕМЕНТОВ */
     .container, .benefits-grid, .benefit-item, .relevance {
         max-width: 100% !important;
         box-sizing: border-box !important;

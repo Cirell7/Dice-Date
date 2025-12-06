@@ -1,0 +1,49 @@
+{% extends "core/base1.html" %}
+
+{% block main %}
+<div class="form-container">
+  <div class="form-content">
+    <div class="progress-header">
+      <span>{{ current_number }}/{{ total_count }}</span>
+      <h3>Оцените участника</h3>
+    </div>
+    
+    <div class="participant-card">
+      <div class="participant-avatar">
+        {% if participant.profile.photo %}
+          <img src="{{ participant.profile.photo.url }}">
+        {% else %}
+          <div class="default-avatar">👤</div>
+        {% endif %}
+      </div>
+      <h3>{{ participant.username }}</h3>
+    </div>
+    
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="rating-question">
+        <label>Опоздал ли участник?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="was_late" value="true" required> Да</label>
+          <label><input type="radio" name="was_late" value="false" required> Нет</label>
+        </div>
+      </div>
+      
+      <div class="rating-question">
+        <label>Повторили бы встречу с этим участником?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="would_repeat" value="true" required> Да</label>
+          <label><input type="radio" name="would_repeat" value="false" required> Нет</label>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {% if is_last %}Завершить{% else %}Далее →{% endif %}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

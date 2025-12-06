@@ -10,12 +10,9 @@ header {
     color: white;
     padding: 15px 0;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-    /* УБЕРИ position: sticky */
-    /* position: sticky; */
     z-index: 1000;
 }
 
-/* Общие стили для контейнера и навигации */
 header > div,
 .nav-links,
 .desktop-only {
