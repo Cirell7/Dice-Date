@@ -7,7 +7,7 @@ from django.contrib import messages
 from datetime import datetime
 
 from pages.models import Posts, Comment, PostRequest, PostParticipant  # Добавлены новые модели
-from core.models import Profile, Notification, ParticipantRating
+from core.models import Profile
 from core.utils import Verification
 
 def main_menu(request):

@@ -1,13 +1,13 @@
 /* Мобильное меню - скрыто на десктопе */
 .mobile-menu,
 .menu-toggle,
-.hamburger,
+.stripes,
 .mobile-nav__close {
     display: none;
 }
 
-/* Гамбургер-иконка */
-.hamburger {
+/* Иконка */
+.stripes {
     flex-direction: column;
     justify-content: space-around;
     width: 30px;
@@ -16,7 +16,7 @@
     z-index: 1001;
 }
 
-.hamburger span {
+.stripes span {
     display: block;
     height: 3px;
     width: 100%;
@@ -72,42 +72,30 @@
 /* Медиа-запрос для мобильных */
 @media (max-width: 768px) {
     .menu-toggle:checked ~ .scroll-to-top {
-        display: none !important;
+        display: none !important; 
     }
-    .desktop-only,
-    .desktop-nav {
-        display: none;
+    .desktop-only,.desktop-nav {
+        display: none; 
     }
-    .mobile-menu,
-    .hamburger,
-    .mobile-nav,
-    .mobile-nav__close {
-        display: block;
+    .mobile-menu,.stripes,.mobile-nav,.mobile-nav__close {
+        display: block; 
     }
     
-    .hamburger {
-        display: flex;
-    }
+    .stripes {display: flex;}
     
-    /* Управление меню через чекбокс */
-    .menu-toggle:checked ~ .mobile-nav {
-        right: 0;
-    }
+    .menu-toggle:checked ~ .mobile-nav {right: 0;}
     
-    .menu-toggle:not(:checked) ~ .mobile-nav {
-        right: -100%;
-    }
+    .menu-toggle:not(:checked) ~ .mobile-nav {right: -100%;}
     
-    /* Анимация гамбургера */
-    .menu-toggle:checked + .hamburger span:nth-child(1) {
+    .menu-toggle:checked + .stripes span:nth-child(1) {
         transform: rotate(45deg) translate(6px, 6px);
     }
     
-    .menu-toggle:checked + .hamburger span:nth-child(2) {
+    .menu-toggle:checked + .stripes span:nth-child(2) {
         opacity: 0;
     }
     
-    .menu-toggle:checked + .hamburger span:nth-child(3) {
+    .menu-toggle:checked + .stripes span:nth-child(3) {
         transform: rotate(-45deg) translate(6px, -6px);
     }
 }

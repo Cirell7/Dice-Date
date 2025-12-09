@@ -30,7 +30,7 @@ def register_page(request: HttpRequest) -> HttpResponse:
     return render(request, "core/register.html", context)
 
 def logout_view(request):
-    """Аутентификация пользователя"""
+    """Выход из аккаунта"""
     logout(request)
     return redirect("main_menu")
 

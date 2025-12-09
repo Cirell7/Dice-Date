@@ -21,7 +21,7 @@ def join_post(request, post_id):
             message=f"Пользователь {request.user.username} хочет присоединиться к вашему мероприятию '{post.name}'",
             notification_type='join_request'
         )
-    return redirect('pages:post_detail', post_id=post_id)
+    return redirect('post_detail', post_id=post_id)
 
 @login_required
 def post_requests(request, post_id):

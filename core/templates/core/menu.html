@@ -37,40 +37,32 @@
         </nav>
 
         <!-- Мобильное меню -->
-        
-<div class="mobile-menu">
-    <input id="menu-toggle" type="checkbox" class="menu-toggle">
-    <label for="menu-toggle" class="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-    </label>
-    <a href="#" class="scroll-to-top">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 15l-6-6-6 6"/>
-        </svg>
-    </a>
-    <nav class="mobile-nav">
-        <label for="menu-toggle" class="mobile-nav__close">✕</label>
-        <ul class="mobile-nav__menu">
-            <li class="nav-item"><a class="nav-link" href="{% url 'main_menu' %}">Главная</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'maintwo_menu' %}">О проекте</a></li>
-            <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0)" onclick="openErrorModal()">Сообщить об ошибке</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
-                <ul class="dropdown-menu">
-                    {% if user.is_authenticated %}
-                    <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
-                    {% else %}
-                    <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
-                    <li><a class="dropdown-item" href="{% url 'register' %}">Создать аккаунт</a></li>
-                    {% endif %}
+        <div class="mobile-menu">
+            <input id="menu-toggle" type="checkbox" class="menu-toggle">
+            <label for="menu-toggle" class="stripes"><span></span><span></span><span></span></label>
+            <a href="#" class="scroll-to-top" aria-label="Наверх">↑</a>
+            <nav class="mobile-nav">
+                <label for="menu-toggle" class="mobile-nav__close">✕</label>
+                <ul class="mobile-nav__menu">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'main_menu' %}">Главная</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'maintwo_menu' %}">О проекте</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0)" onclick="openErrorModal()">Сообщить об ошибке</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">Аккаунт</a>
+                        <ul class="dropdown-menu">
+                            {% if user.is_authenticated %}
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+                            {% else %}
+                            <li><a class="dropdown-item" href="{% url 'login' %}">Войти</a></li>
+                            <li><a class="dropdown-item" href="{% url 'register' %}">Создать аккаунт</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
                 </ul>
-            </li>
-        </ul>
-    </nav>
-</div>
+            </nav>
+        </div>
 </header>
 {% endblock %}

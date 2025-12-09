@@ -1,0 +1,120 @@
+/* Стили для выпадающего списка участников */
+.participants-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.participants-toggle {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.participants-toggle:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.participants-toggle .arrow {
+    transition: transform 0.3s ease;
+}
+
+.participants-toggle.active .arrow {
+    transform: rotate(180deg);
+}
+
+.participants-dropdown-content {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    max-width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    margin-top: 5px;
+}
+
+.participants-dropdown-content.show {
+    display: block;
+}
+
+.participants-list {
+    padding: 10px 0;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #f8f9fa;
+    transition: background 0.2s ease;
+}
+
+.participant-item:last-child {
+    border-bottom: none;
+}
+
+.participant-item:hover {
+    background: #f8f9fa;
+}
+
+.participant-info {
+    flex: 1;
+}
+
+.participant-name {
+    font-weight: 500;
+    color: #2c3e50;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.participant-name:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.participant-date {
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.participants-count-badge {
+    background: #007bff;
+    color: white;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+}
+
+.no-participants {
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+}
+
+/* Альтернативный вариант: фиксированное положение */
+.participants-dropdown-content.fixed {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100px;
+    max-width: 400px;
+    width: 90%;
+}
