@@ -16,7 +16,6 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = []
 
-
 # Автоматическая настройка для Render
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
@@ -39,6 +38,43 @@ if RENDER_EXTERNAL_HOSTNAME:
     # CSRF trusted origins
     CSRF_TRUSTED_ORIGINS = [f'https://{RENDER_EXTERNAL_HOSTNAME}']
     
+    # ========== НАСТРОЙКИ BUCKET.RU ДЛЯ МЕДИАФАЙЛОВ ==========
+    # Добавляем 'storages' в приложения
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'storages',  # <-- ВАЖНО: добавлено для работы с bucket.ru
+        "core",
+        "pages",
+        "dashboard",
+        "notifications"
+    ]
+    
+    # Настройки для Bucket.ru (S3-совместимый)
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    
+    # Ключи доступа (будут браться из переменных окружения Render)
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    
+    # Данные из вашего бакета
+    AWS_STORAGE_BUCKET_NAME = 'dice-date-media'
+    AWS_S3_ENDPOINT_URL = 'https://s3.buckets.ru/'
+    AWS_S3_CUSTOM_DOMAIN = '4cc1f6c9d8c50c34b1d3549ee76a4709.bckt.ru'
+    AWS_S3_REGION_NAME = 'ru-1'
+    
+    # URL для медиафайлов теперь ведёт в Bucket.ru
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+    
+    # Дополнительные настройки для корректной работы
+    AWS_DEFAULT_ACL = 'public-read'      # Файлы будут публичными
+    AWS_QUERYSTRING_AUTH = False         # Не добавлять подпись к URL файлов
+    AWS_S3_FILE_OVERWRITE = False        # Не перезаписывать файлы с одинаковыми именами
+    
     # Логирование
     LOGGING = {
         'version': 1,
@@ -57,30 +93,29 @@ else:
     # Локальная разработка
     ALLOWED_HOSTS.extend(['localhost', '127.0.0.1', '0.0.0.0'])
     DEBUG = True
-
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-    DEBUG = False
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-else:
-    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
+    
+    # Локальные настройки (стандартные, без storages)
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        "core",
+        "pages",
+        "dashboard",
+        "notifications"
+    ]
+    
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 APPEND_SLASH = False
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    "core",
-    "pages",
-    "dashboard",
-    "notifications"
-]
+# Если RENDER_EXTERNAL_HOSTNAME не установлен, но DEBUG=False
+if not DEBUG and 'storages' not in INSTALLED_APPS:
+    INSTALLED_APPS.append('storages')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -147,16 +182,12 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 # ========== НАСТРОЙКИ CELERY ==========
 REDIS_URL = os.environ.get('REDIS_URL')
 if REDIS_URL:
     CELERY_BROKER_URL = REDIS_URL
     CELERY_RESULT_BACKEND = REDIS_URL
 else:
-    # Локальная настройка для разработки
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 

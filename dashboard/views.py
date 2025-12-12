@@ -5,7 +5,8 @@ from django.db.models import Q
 from django.contrib import messages
 
 from core.models import Profile, User, ParticipantRating
-from dashboard.models import Message,Posts
+from dashboard.models import Message
+from pages.models import Posts
 from core.utils import Verification
 
 @login_required
