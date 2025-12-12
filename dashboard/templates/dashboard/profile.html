@@ -23,7 +23,8 @@
     <div class="photo-section">
         <div class="upload-circle" onclick="openUploadModal()">
             {% if profile.photo %}
-                <img src="{{ profile.photo.url }}" class="profile-photo">
+            <p>DEBUG Photo URL: {{ profile.photo.url }}</p>
+                <img src="{% static 'img/modal.png' %}" alt="Фото">
                 <div class="change-overlay">✎</div>
             {% else %}
                 <div class="plus-icon">+</div>
