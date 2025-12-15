@@ -13,7 +13,6 @@ from core.utils import Verification
 def profile_page(request: HttpRequest, user_id) -> HttpResponse:
     """Профиль пользователя"""
     profile = get_object_or_404(Profile, user_id=user_id)
-
     if request.method == 'POST':
         if 'update_photo' in request.POST and request.FILES.get('photo'):
             profile.photo = request.FILES['photo']
@@ -32,16 +31,15 @@ def profile_page(request: HttpRequest, user_id) -> HttpResponse:
                 return JsonResponse({'success': True, 'error': 1})
 
             if profile_save:
-                profile.save()
+                profile.
                 profile.user.save()
 
             return JsonResponse({'success': True, 'error': 0})
 
     context = {
-        "profile": profile,
-        "user": profile.user,
+        "profile": profile, "user": profile.user,
     }
-    return render(request, "dashboard/profile.html", context)  # Обновить путь
+    return render(request, "dashboard/profile.html", context)
 
 def profile_view(request: HttpRequest, user_id: int):
     """Просмотр чужого профиля"""

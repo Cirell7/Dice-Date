@@ -1,17 +1,12 @@
 import os
 from celery import Celery
 
-# ИСПРАВЬ ЭТУ СТРОКУ!
+# Устанавливаем переменную окружения для Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
+# Создаем экземпляр Celery
 app = Celery('config')
-app.conf.update(
-    broker_url='redis://localhost:6379/0',
-    result_backend='redis://localhost:6379/0',
-    task_serializer='json',
-    accept_content=['json'],
-    result_serializer='json',
-    timezone='Europe/Moscow',
-)
+
+# Загружаем конфигурацию из settings.py
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()

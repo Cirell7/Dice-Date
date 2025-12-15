@@ -8,6 +8,16 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from core.forms import RegisterForm
 from core.models import Profile, Form_error, Notification
 
+def submit_error(request):
+    """Форма жалобы"""
+    if request.method == "POST":
+        error = request.POST.get("error")
+        email = request.POST.get("email")
+        if error and error.strip():
+            Form_error.objects.create(error=error, email=email)
+            return render(request, 'pages/main.html', {'show_success': True})
+    return redirect('main_menu')
+
 class CustomLoginView(LoginView):
     """Переход между страницами"""
     template_name = "core/login.html"
@@ -39,17 +49,6 @@ def check_username(request):
     username = request.GET.get('username', '').strip()
     exists = User.objects.filter(username__iexact=username).exists()
     return JsonResponse({'available': not exists})
-
-def submit_error(request):
-    """Форма жалобы"""
-    if request.method == "POST":
-        error = request.POST.get("error")
-        email = request.POST.get("email")
-        if error and error.strip():
-            Form_error.objects.create(error=error, email=email)
-            return render(request, 'pages/main.html', {'show_success': True})
-    return redirect('main_menu')
-
 
 def notifications_page(request):
     """Страница со всеми уведомлениями"""

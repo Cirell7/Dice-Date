@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
-from pages.models import Posts
+
+from django.core.files.storage import default_storage
+
+class Form_error(models.Model):
+    error: models.CharField=models.CharField(max_length=100)
+    email: models.CharField=models.CharField(max_length=100)
 
 class Profile(models.Model):
     GENDER_CHOICES = [
@@ -17,14 +22,12 @@ class Profile(models.Model):
         null=True
     )
     birth_date = models.DateField(blank=True, null=True)
-    photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+    photo = models.ImageField(upload_to='profile_photos/', 
+    blank=True, null=True, storage=default_storage)
     description = models.TextField(blank=True, null=True)
     likes_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
-class Form_error(models.Model):
-    error: models.CharField=models.CharField(max_length=100)
-    email: models.CharField=models.CharField(max_length=100)
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = [

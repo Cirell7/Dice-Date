@@ -19,11 +19,13 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'main_menu' %}">Главная</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'maintwo_menu' %}">О проекте</a></li>
                 <li class="nav-item">
-                    <a class="nav-link" href="javascript:void(0)" onclick="openErrorModal()">Сообщить об ошибке</a>
+                    <a class="nav-link" href="javascript:void(0)" 
+                    onclick="openErrorModal()">Сообщить об ошибке</a>
                 </li>
                 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Аккаунт</a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">Аккаунт</a>
                     <ul class="dropdown-menu">
                         {% if user.is_authenticated %}
                         <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
@@ -47,7 +49,8 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'main_menu' %}">Главная</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'maintwo_menu' %}">О проекте</a></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="javascript:void(0)" onclick="openErrorModal()">Сообщить об ошибке</a>
+                        <a class="nav-link" href="javascript:void(0)" 
+                        onclick="openErrorModal()">Сообщить об ошибке</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"

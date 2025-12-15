@@ -4,7 +4,7 @@
 *.sqlite
 db.sqlite3
 __pycache__
-
+.env
 *.pyc
 *.pyo
 *.pyd
@@ -14,3 +14,5 @@ venv/
 .venv/
 
 staticfiles/
+.env
+1.shell
