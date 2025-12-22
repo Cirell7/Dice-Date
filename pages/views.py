@@ -14,7 +14,6 @@ def main_menu(request):
     """Главная страница"""
     return render(request, "pages/main.html")
 
-
 def maintwo_menu(request):
     """Страница с информацией о проекте"""
     return render(request, "pages/main2.html")
@@ -141,25 +140,29 @@ def post_detail(request, post_id):
     
     if request.method == "POST":
         action = request.POST.get("action")
+    
         if action == "delete_comment":
             comment_id = request.POST.get("comment_id")
-            try:
-                comment = Comment.objects.get(id=comment_id, user=request.user)
+            comment = Comment.objects.filter(id=comment_id, user=request.user).first()
+            if comment:
                 comment.delete()
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({'success': True})
-                return redirect('post_detail', post_id=post_id)
-            except Comment.DoesNotExist:
+            else:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return JsonResponse({'success': False, 'error': 'Комментарий не найден'})
-        
-        elif 'comment_description' in request.POST and request.POST['comment_description'].strip():
+                    return JsonResponse({'error': '1'}, status=404)
+            return redirect('post_detail', post_id=post_id)
+
+        elif 'comment_description' in request.POST:
             comment_text = request.POST['comment_description'].strip()
-            Comment.objects.create(
-                post=post,
-                user=request.user,
-                text=comment_text,
-            )
+        
+            if comment_text:
+                Comment.objects.create(
+                    post=post,
+                    user=request.user,
+                    text=comment_text,
+                )
+        
             return redirect('post_detail', post_id=post_id)
     
     context = {

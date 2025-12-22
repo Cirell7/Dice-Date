@@ -12,8 +12,7 @@ def join_post(request, post_id):
     if request.method == 'POST':
         post = get_object_or_404(Posts, id=post_id)
         PostRequest.objects.create(post=post, user=request.user)
-        
-        # Создаем уведомление для автора поста
+
         Notification.objects.create(
             user=post.user,
             title="Новая заявка на участие",

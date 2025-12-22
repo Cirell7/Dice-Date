@@ -10,7 +10,7 @@ mark_all_notifications_read
 )
 
 from dashboard.views import (
-    messages_list, message_thread, send_message, profile_view, profile_page
+    messages_list, message_thread, profile_view, profile_page
 )
 
 from notifications.views import (
@@ -24,7 +24,6 @@ from pages.views import (
     profile_page_onboarding2
 )
 
-from pages.but_cpp import games
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -43,11 +42,9 @@ urlpatterns = [
     path("profile/<int:user_id>/", profile_page, name="profile"),
     path('messages/', messages_list, name='messages_list'),
     path('messages/<int:user_id>/', message_thread, name='message_thread'),
-    path('messages/send/<int:post_id>/', send_message, name='send_message'),
     path('profile_view/<int:user_id>/', profile_view, name='profile_view'),
 
     # Pages URLs
-    path('games', games, name='games'),
     path('', main_menu, name='main_menu'),
     path('main/', maintwo_menu, name='maintwo_menu'),
     path("add_post/", add_post, name="add_post"),

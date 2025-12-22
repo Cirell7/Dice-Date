@@ -22,6 +22,9 @@ class CustomLoginView(LoginView):
     """Переход между страницами"""
     template_name = "core/login.html"
     def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
         return '/post_list/'
 
 def register_page(request: HttpRequest) -> HttpResponse:
@@ -84,14 +87,13 @@ def notifications_page(request):
 
 def mark_notification_read(request, notification_id):
     """Пометить уведомление как прочитанное"""
-    try:
-        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    if notification:
         notification.is_read = True
         notification.save()
         return JsonResponse({'success': True})
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
-
+    else:
+        return JsonResponse({'success': False, 'error': '1'})
 
 def mark_all_notifications_read(request):
     """Пометить все уведомления как прочитанные"""

@@ -67,38 +67,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Функция автоматической загрузки фото
     function uploadPhoto(file) {
-        const form = document.getElementById('uploadForm');
-        const formData = new FormData(form); // Автоматически соберет CSRF!
+        const formData = new FormData(document.getElementById('uploadForm'));
         formData.append('photo', file);
         formData.append('update_photo', 'true');
-    
-        const fileName = document.getElementById('fileName');
+        
         const browseBtn = document.querySelector('.browse-btn');
-    
-        fileName.textContent = 'Загрузка...';
-        if (browseBtn) browseBtn.disabled = true;
-    
-        fetch('', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
+        browseBtn.disabled = true;
+        
+        fetch('', {method: 'POST', body: formData})
+            .then(() => {
                 closeModal();
-                window.location.reload();
-            } else {
-                throw new Error('Ошибка загрузки');
-            }
-        })
-        .catch(error => {
-            fileName.textContent = 'Ошибка загрузки';
-            alert('Ошибка загрузки фото');
-        })
-        .finally(() => {
-            if (browseBtn) browseBtn.disabled = false;
-        });
+                location.reload();
+            })
+            .catch(() => alert('Ошибка загрузки'))
+            .finally(() => browseBtn.disabled = false);
     }
 
     // Закрытие модалки по клику вне её

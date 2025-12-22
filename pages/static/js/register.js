@@ -1,39 +1,24 @@
-let checkTimeout;
-
-document.addEventListener('DOMContentLoaded', function() {
-    const usernameInput = document.querySelector('input[name="username"]');
-    const statusElement = document.getElementById('username-status');
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.querySelector('input[name="username"]');
+    const status = document.getElementById('username-status');
+    let timeout;
     
-    if (usernameInput && statusElement) {
-        usernameInput.addEventListener('input', function() {
-            const username = this.value.trim();
-
-            clearTimeout(checkTimeout);
-
-            if (username.length < 3) {
-                statusElement.textContent = '✗ Минимум 3 символа';
-                statusElement.className = 'username-status taken';
-                return;
-            }
-            
-            // Для валидной длины проверяем уникальность через ТВОЙ API
-            checkTimeout = setTimeout(() => {
-                fetch(`/api/check-username/?username=${encodeURIComponent(username)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.available) {
-                            statusElement.textContent = '✓ Доступно';
-                            statusElement.className = 'username-status available';
-                        } else {
-                            statusElement.textContent = '✗ Занято';
-                            statusElement.className = 'username-status taken';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        statusElement.textContent = '⚠️ Ошибка проверки';
-                    });
-            }, 500);
-        });
-    }
+    input?.addEventListener('input', ({target}) => {
+        const username = target.value.trim();
+        clearTimeout(timeout);
+        
+        if (username.length < 3) {
+            status.textContent = '✗ Минимум 3 символа';
+            return
+        }
+        
+        timeout = setTimeout(() => {
+            fetch('/api/check-username/?username=' + username)
+                .then(response  => response.json())
+                .then(({available}) => {
+                    status.textContent = available ? '✓ Доступно' : '✗ Занято';
+                })
+                .catch(() => status.textContent = '⚠️ Ошибка проверки');
+        }, 500);
+    });
 });
