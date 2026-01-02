@@ -4,6 +4,12 @@ from celery import Celery
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 app = Celery('config')
-
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+
+app.conf.beat_schedule = {
+    'check-expired-events-every-hour': {
+        'task': 'core.tasks.check_expired_events',
+        'schedule': 300.0,
+    },
+}

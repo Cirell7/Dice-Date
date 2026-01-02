@@ -82,7 +82,6 @@ if RENDER_EXTERNAL_HOSTNAME:
         },
     }
 
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 else:
     # ========== ЛОКАЛЬНАЯ РАЗРАБОТКА ==========
@@ -190,10 +189,18 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ========== НАСТРОЙКИ CELERY ==========
+# ========== НАСТРОЙКИ CELERY ==========
 REDIS_URL = os.environ.get('REDIS_URL')
+
 if REDIS_URL:
+    if REDIS_URL.startswith('redis://'):
+        REDIS_URL = REDIS_URL.replace('redis://', 'rediss://')
+    
     CELERY_BROKER_URL = REDIS_URL
     CELERY_RESULT_BACKEND = REDIS_URL
+    CELERY_BROKER_USE_SSL = True
+    CELERY_REDIS_BACKEND_USE_SSL = True
+    
 else:
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
@@ -203,6 +210,8 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
 
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_TASK_IGNORE_RESULT = False
 # ========== ЛОГИРОВАНИЕ ==========
 LOGGING = {
     'version': 1,
