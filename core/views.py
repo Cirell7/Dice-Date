@@ -92,8 +92,7 @@ def mark_notification_read(request, notification_id):
         notification.is_read = True
         notification.save()
         return JsonResponse({'success': True})
-    else:
-        return JsonResponse({'success': False, 'error': '1'})
+    return JsonResponse({'success': False, 'error': '1'})
 
 def mark_all_notifications_read(request):
     """Пометить все уведомления как прочитанные"""

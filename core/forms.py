@@ -17,7 +17,7 @@ class RegisterForm(forms.Form):
     password = forms.CharField(
         label="Пароль",
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
-    )   
+    )
 
     def save(self):
         if not self.is_valid():
@@ -29,5 +29,3 @@ class RegisterForm(forms.Form):
         user.set_password(self.cleaned_data['password'])
         user.save()
         return user
-
-

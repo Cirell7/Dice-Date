@@ -4,9 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib import messages
 
-from core.models import Profile, User, ParticipantRating
 from dashboard.models import Message
-from pages.models import Posts
+from core.models import Profile, User, ParticipantRating
 from core.utils import Verification
 
 @login_required
@@ -46,7 +45,7 @@ def profile_view(request: HttpRequest, user_id: int):
         return redirect('profile', user_id=user_id)
 
     profile_user = get_object_or_404(User, id=user_id)
-    profile, created = Profile.objects.get_or_create(user=profile_user)
+    profile, _ = Profile.objects.get_or_create(user=profile_user)
 
     ratings = ParticipantRating.objects.filter(participant=user_id)
 
@@ -54,7 +53,7 @@ def profile_view(request: HttpRequest, user_id: int):
     late_count = ratings.filter(was_late=True).count()
 
     is_own_profile = request.user.is_authenticated and request.user.id == user_id
-    
+
     context = {
         'profile_user': profile_user,
         'profile': profile,
@@ -62,7 +61,7 @@ def profile_view(request: HttpRequest, user_id: int):
         'late_count': late_count,
         'would_repeat_count': would_repeat_count
     }
-    
+
     return render(request, 'dashboard/profile_view.html', context)
 
 @login_required
@@ -71,7 +70,7 @@ def messages_list(request: HttpRequest) -> HttpResponse:
     user_messages =  Message.objects.filter(
         Q(sender=request.user) | Q(receiver=request.user)
     ).order_by('-timestamp')
-    
+
     threads = {}
     for message in user_messages:
         if message.sender == request.user:
@@ -84,7 +83,7 @@ def messages_list(request: HttpRequest) -> HttpResponse:
                 'last_message': message,
                 'unread_count': Message.objects.filter(sender=other_user, receiver=request.user, is_read=False).count()
             }
-    
+
     context = {
         'threads': sorted(threads.values(), key=lambda x: x['last_message'].timestamp, reverse=True)
     }
@@ -98,7 +97,7 @@ def message_thread(request: HttpRequest, user_id: int) -> HttpResponse:
     unread = Message.objects.filter(sender=other_user,receiver=request.user,is_read=False)
     unread.update(is_read=True)
 
-    messages = Message.objects.filter(
+    messages_l = Message.objects.filter(
         Q(sender=request.user, receiver=other_user) |
         Q(sender=other_user, receiver=request.user)
     ).order_by('timestamp')
@@ -108,10 +107,10 @@ def message_thread(request: HttpRequest, user_id: int) -> HttpResponse:
         if content:
             Message.objects.create(sender=request.user,receiver=other_user,content=content)
             return redirect('message_thread', user_id=user_id)
-    
+
     context = {
         'other_user': other_user,
-        'messages': messages,
+        'messages': messages_l,
         'post_user_username': other_user.username
     }
     return render(request, "dashboard/message_thread.html", context)

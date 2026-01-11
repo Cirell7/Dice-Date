@@ -1,12 +1,11 @@
+from datetime import datetime
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib import messages
-from datetime import datetime
 
-from pages.models import Posts, Comment, PostRequest, PostParticipant  # Добавлены новые модели
+from pages.models import Posts, Comment, PostRequest, PostParticipant
 from core.models import Profile
 from core.utils import Verification
 
@@ -47,7 +46,7 @@ def profile_page_onboarding2(request: HttpRequest) -> HttpResponse:
             profile.save()
             profile.user.save()
             return redirect('post_list')
-        elif profile_save:
+        if profile_save:
             return redirect('post_list')
     return render(request, "pages/onboarding2.html")
 
@@ -58,25 +57,25 @@ def add_post(request):
     if request.method == 'POST':
         # Проверяем дату (только формат)
         event_date = request.POST['event_date']
-        
+
         try:
             _ = datetime.fromisoformat(event_date.replace('Z', '+00:00'))
         except ValueError:
             pass
-        
+
         latitude_str = request.POST.get('latitude', '').strip()
         longitude_str = request.POST.get('longitude', '').strip()
-        
+
         latitude = None
         longitude = None
-        
+
         if latitude_str and longitude_str:
             try:
                 latitude = float(latitude_str)
                 longitude = float(longitude_str)
             except (ValueError, TypeError):
                 pass
-        
+
         post = Posts(
             name=request.POST['title'],
             description=request.POST.get('description', ''),
@@ -91,7 +90,7 @@ def add_post(request):
 
         post.save()
         return redirect('post_list')
-    
+
     return render(request, 'pages/add_post.html')
 
 def post_list(request):
@@ -100,7 +99,7 @@ def post_list(request):
         expiration_date__gte=timezone.now(),
         is_active=True
     ).order_by('-creation_date')
-    
+
     context = {
         'posts': posts,
         'title_page': 'Все встречи'
@@ -112,35 +111,30 @@ def post_detail(request, post_id):
     """Детальный просмотр поста с комментариями"""
     post = get_object_or_404(Posts, id=post_id)
     comments = Comment.objects.filter(post=post).order_by('-created_at')
-    
-    # Добавляем логику для проверки статуса пользователя
+
     user_has_pending_request = False
     user_is_approved = False
     is_full = False
-    
+
     if request.user.is_authenticated:
         user_has_pending_request = PostRequest.objects.filter(
-            post=post, 
-            user=request.user, 
+            post=post,
+            user=request.user,
             status='pending'
         ).exists()
-        
-        # Проверяем, является ли пользователь одобренным участником
+
         user_is_approved = PostParticipant.objects.filter(
-            post=post, 
+            post=post,
             user=request.user
         ).exists()
-        
-        # Проверяем, достигнут ли лимит участников
         current_participants = PostParticipant.objects.filter(post=post).count()
         is_full = current_participants >= post.max_participants
-    
-    # Получаем список участников
+
     participants = PostParticipant.objects.filter(post=post).select_related('user').order_by('-joined_at')
-    
+
     if request.method == "POST":
         action = request.POST.get("action")
-    
+
         if action == "delete_comment":
             comment_id = request.POST.get("comment_id")
             comment = Comment.objects.filter(id=comment_id, user=request.user).first()
@@ -153,18 +147,18 @@ def post_detail(request, post_id):
                     return JsonResponse({'error': '1'}, status=404)
             return redirect('post_detail', post_id=post_id)
 
-        elif 'comment_description' in request.POST:
+        if 'comment_description' in request.POST:
             comment_text = request.POST['comment_description'].strip()
-        
+
             if comment_text:
                 Comment.objects.create(
                     post=post,
                     user=request.user,
                     text=comment_text,
                 )
-        
+
             return redirect('post_detail', post_id=post_id)
-    
+
     context = {
         "post": post,
         "comments": comments,
@@ -175,33 +169,33 @@ def post_detail(request, post_id):
         "is_full": is_full,
         "approved_participants_count": PostParticipant.objects.filter(post=post).count(),
         "pending_requests_count": PostRequest.objects.filter(post=post, status='pending').count(),
-        "participants": participants,  # Добавляем участников в контекст
+        "participants": participants,
     }
     return render(request, "pages/post_detail.html", context)
 
 @login_required
 def post_edit(request: HttpRequest, post_id) -> HttpResponse:
     post = get_object_or_404(Posts, id=post_id)
-    
+
     if request.method == "POST":
         action = request.POST.get('action')
-        
+
         if action == 'delete':
             post.delete()
-            return redirect('post_list') 
-        
-        elif action == 'submit':
+            return redirect('post_list')
+
+        if action == 'submit':
             post.name = request.POST['post_name']
             post.description = request.POST.get('post_description', '')
             post.expiration_date = request.POST['post_expiration_date']
             post.address = request.POST.get('post_address', '')
             post.max_participants = request.POST.get('post_max_participants', 10)
-            
+
             if 'post_image' in request.FILES:
                 post.image = request.FILES['post_image']
-            
+
             post.save()
             return redirect('post_detail', post_id=post_id)
-    
+
     context = {'post': post}
     return render(request, "pages/post_edit.html", context)

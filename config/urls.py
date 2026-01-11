@@ -2,9 +2,8 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-import os
 
-from core.views import (CustomLoginView, register_page, logout_view, check_username, submit_error, 
+from core.views import (CustomLoginView, register_page, logout_view, check_username, submit_error,
 notifications_page,mark_notification_read,
 mark_all_notifications_read
 )
@@ -19,8 +18,8 @@ from notifications.views import (
 )
 
 from pages.views import (
-    main_menu, maintwo_menu, add_post, post_list, 
-    post_detail, post_edit, profile_page_onboarding1,  
+    main_menu, maintwo_menu, add_post, post_list,
+    post_detail, post_edit, profile_page_onboarding1,
     profile_page_onboarding2
 )
 
@@ -62,8 +61,6 @@ urlpatterns = [
 
     path('post/<int:post_id>/join/', join_post, name='join_post'),
     path('post/<int:post_id>/requests/', post_requests, name='post_requests'),
-    
-
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

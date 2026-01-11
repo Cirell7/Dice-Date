@@ -2,7 +2,7 @@ import os
 import django
 
 from django.core.files import File
-from core.models import Profile 
+from core.models import Profile
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
@@ -17,4 +17,3 @@ with open(test_path, 'rb') as f:
     profile.photo.save('test_from_shell.jpg', File(f), save=True)
 
 os.remove(test_path)
-

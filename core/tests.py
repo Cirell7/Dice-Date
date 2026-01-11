@@ -5,7 +5,7 @@ class QuickTest(TestCase):
     def test_1(self):
         r = self.client.get('/register/')
         self.assertEqual(r.status_code, 200)
-    
+
     def test_2(self):
         r = self.client.post('/register/', {
             'username': 'user1',

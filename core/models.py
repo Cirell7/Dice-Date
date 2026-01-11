@@ -13,16 +13,16 @@ class Profile(models.Model):
         ('F', 'Женский'),
         ('prefer-not-to-say', 'Предпочитаю не говорить'),
     ]
-    
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(
-        max_length=20, 
-        choices=GENDER_CHOICES,  
-        blank=True, 
+        max_length=20,
+        choices=GENDER_CHOICES,
+        blank=True,
         null=True
     )
     birth_date = models.DateField(blank=True, null=True)
-    photo = models.ImageField(upload_to='profile_photos/', 
+    photo = models.ImageField(upload_to='profile_photos/',
     blank=True, null=True, storage=default_storage)
     description = models.TextField(blank=True, null=True)
     likes_count = models.IntegerField(default=0)
@@ -47,7 +47,7 @@ class Notification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         ordering = ['-created_at']
-    
+
     def __str__(self):
         return f"{self.title} - {self.user.username}"
 
@@ -55,6 +55,6 @@ class ParticipantRating(models.Model):
     rater = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_ratings')
     participant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_ratings')
     post = models.ForeignKey('pages.Posts', on_delete=models.CASCADE, null=True, blank=True)
-    was_late = models.BooleanField(null=True)  # Опоздал ли
-    would_repeat = models.BooleanField(null=True)  # Повторили бы встречу
+    was_late = models.BooleanField(null=True)
+    would_repeat = models.BooleanField(null=True)
     rated_at = models.DateTimeField(auto_now_add=True)

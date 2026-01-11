@@ -25,12 +25,12 @@ class PostRequest(models.Model):
         ('approved', 'Одобрено'),
         ('rejected', 'Отклонено'),
     ]
-    
+
     post = models.ForeignKey(Posts, on_delete=models.CASCADE, related_name='requests')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         unique_together = ['post', 'user']
 
@@ -38,6 +38,6 @@ class PostParticipant(models.Model):
     post = models.ForeignKey(Posts, on_delete=models.CASCADE, related_name='participants')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     joined_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         unique_together = ['post', 'user']

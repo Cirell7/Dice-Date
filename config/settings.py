@@ -59,13 +59,13 @@ if RENDER_EXTERNAL_HOSTNAME:
     AWS_S3_REGION_NAME = 'ru-1'
 
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
-    
+
     AWS_DEFAULT_ACL = 'public-read'
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_SIGNATURE_VERSION = 's3v4'
     AWS_S3_ADDRESSING_STYLE = 'virtual'
-    
+
     # ========== ВАЖНО: НОВЫЙ ФОРМАТ ДЛЯ DJANGO 5.x ==========
     STORAGES = {
         "default": {
@@ -100,7 +100,7 @@ else:
         "dashboard",
         "notifications"
     ]
-    
+
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -189,18 +189,15 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ========== НАСТРОЙКИ CELERY ==========
-# ========== НАСТРОЙКИ CELERY ==========
 REDIS_URL = os.environ.get('REDIS_URL')
 
 if REDIS_URL:
     if REDIS_URL.startswith('redis://'):
         REDIS_URL = REDIS_URL.replace('redis://', 'rediss://')
-    
+
     CELERY_BROKER_URL = REDIS_URL
     CELERY_RESULT_BACKEND = REDIS_URL
-    CELERY_BROKER_USE_SSL = True
-    CELERY_REDIS_BACKEND_USE_SSL = True
-    
+
 else:
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
@@ -209,9 +206,10 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
-
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_TASK_IGNORE_RESULT = False
+CELERY_ENABLE_UTC = False
+
 # ========== ЛОГИРОВАНИЕ ==========
 LOGGING = {
     'version': 1,
