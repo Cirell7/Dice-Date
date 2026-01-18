@@ -10,7 +10,6 @@ if 'RENDER' not in os.environ:
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ========== БЕЗОПАСНЫЕ НАСТРОЙКИ ==========
 SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
@@ -18,9 +17,7 @@ ALLOWED_HOSTS = []
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
-
 if RENDER_EXTERNAL_HOSTNAME:
-    # ========== НАСТРОЙКИ ДЛЯ RENDER (ПРОДАКШЕН) ==========
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
     ALLOWED_HOSTS.append('dice-date.onrender.com')
     DEBUG = False
@@ -66,7 +63,6 @@ if RENDER_EXTERNAL_HOSTNAME:
     AWS_S3_SIGNATURE_VERSION = 's3v4'
     AWS_S3_ADDRESSING_STYLE = 'virtual'
 
-    # ========== ВАЖНО: НОВЫЙ ФОРМАТ ДЛЯ DJANGO 5.x ==========
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
@@ -82,9 +78,7 @@ if RENDER_EXTERNAL_HOSTNAME:
         },
     }
 
-
 else:
-    # ========== ЛОКАЛЬНАЯ РАЗРАБОТКА ==========
     ALLOWED_HOSTS.extend(['localhost', '127.0.0.1', '0.0.0.0'])
     DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
@@ -113,7 +107,6 @@ else:
         },
     }
 
-# ========== БАЗОВЫЕ НАСТРОЙКИ ==========
 APPEND_SLASH = False
 
 if not DEBUG and 'storages' not in INSTALLED_APPS:
@@ -150,7 +143,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# ========== БАЗА ДАННЫХ ==========
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -158,7 +150,6 @@ DATABASES = {
     }
 }
 
-# ========== ВАЛИДАТОРЫ ПАРОЛЕЙ ==========
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -174,27 +165,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# ========== ЯЗЫК И ВРЕМЯ ==========
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True
 
-# ========== СТАТИЧЕСКИЕ ФАЙЛЫ ==========
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# ========== ОСТАЛЬНЫЕ НАСТРОЙКИ ==========
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ========== НАСТРОЙКИ CELERY ==========
 REDIS_URL = os.environ.get('REDIS_URL')
 
 if REDIS_URL:
-    if REDIS_URL.startswith('redis://'):
-        REDIS_URL = REDIS_URL.replace('redis://', 'rediss://')
-
     CELERY_BROKER_URL = REDIS_URL
     CELERY_RESULT_BACKEND = REDIS_URL
 
@@ -210,7 +194,6 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_TASK_IGNORE_RESULT = False
 CELERY_ENABLE_UTC = False
 
-# ========== ЛОГИРОВАНИЕ ==========
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

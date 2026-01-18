@@ -76,7 +76,6 @@ def notifications_page(request):
         return render(request, 'core/notifications_page.html', context)
 
     except Exception as e:
-        # Обработка ошибок (логирование, возврат пустого контекста и т.д.)
         print(f"Ошибка при загрузке уведомлений: {e}")
         context = {
             'notifications': [],

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 
-from pages.models import Posts, PostRequest, PostParticipant  # Добавлены новые модели
+from pages.models import Posts, PostRequest, PostParticipant
 from core.models import Notification, ParticipantRating
 
 @login_required
