@@ -11,7 +11,6 @@ class Profile(models.Model):
     GENDER_CHOICES = [
         ('M', 'Мужской'),
         ('F', 'Женский'),
-        ('prefer-not-to-say', 'Предпочитаю не говорить'),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
