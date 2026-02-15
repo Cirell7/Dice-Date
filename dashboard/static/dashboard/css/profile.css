@@ -1,6 +1,6 @@
 .editable-field {
     position: relative;
-    padding: 8px 12px;
+    padding: 7px 12px;
     border: 1px solid transparent;
     border-radius: 6px;
     margin: 8px 0;
@@ -29,12 +29,6 @@
 
 .editable-field.editing .edit-icon {
     display: none;
-}
-
-.field-value {
-    display: inline-block;
-    min-height: 20px;
-    padding-right: 30px;
 }
 
 .edit-input, .edit-textarea, .edit-select {

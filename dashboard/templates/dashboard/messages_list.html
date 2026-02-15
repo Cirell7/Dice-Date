@@ -31,9 +31,9 @@
         {% endfor %}
     </div>    
     {% else %}
-    <div class="no-messages" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 200px;">
+    <div class="no-messages" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 50px;">
         <p>У вас пока нет сообщений</p>
-        <a href="{% url 'post_list' %}" class="btn btn-primary">Найти встречи</a>
+        <a href="{% url 'post_list' %}" class="btn-primary">Найти встречи</a>
     </div>
     {% endif %}
 </div>
