@@ -15,12 +15,10 @@
         <h2>Регистрация</h2>
         <form action="{% url 'register' %}" method="post" id="registerForm">
             {% csrf_token %}
-
             {% for field in form.visible_fields %}
                 <div class="form-group">
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {{ field }}
-                    <!-- Добавляем статус только для username -->
                     {% if field.name == 'username' %}
                     <div id="username-status" class="username-status"></div>
                     {% endif %}

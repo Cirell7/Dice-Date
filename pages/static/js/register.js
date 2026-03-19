@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (username.length < 3) {
             status.textContent = '✗ Минимум 3 символа';
-            return
+            return;
         }
         
         timeout = setTimeout(() => {
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(({available}) => {
                     status.textContent = available ? '✓ Доступно' : '✗ Занято';
                 })
-                .catch(() => status.textContent = '⚠️ Ошибка проверки');
+                .catch(() => status.textContent = 'Ошибка');
         }, 500);
     });
 });
