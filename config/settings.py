@@ -1,6 +1,3 @@
-"""
-Django settings for config project.
-"""
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -48,21 +45,19 @@ if RENDER_EXTERNAL_HOSTNAME:
     ]
 
     AWS_STORAGE_BUCKET_NAME = 'dice-date-media'
-
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-
     AWS_S3_ENDPOINT_URL = 'https://s3.buckets.ru/'
     AWS_S3_REGION_NAME = 'ru-1'
 
-    MEDIA_URL = "https://4cc1f6c9d8c50c34b1d3549ee76a4709.bckt.ru/"
-    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_CUSTOM_DOMAIN = '4cc1f6c9d8c50c34b1d3549ee76a4709.bckt.ru'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
 
+    AWS_DEFAULT_ACL = 'public-read'
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_SIGNATURE_VERSION = 's3v4'
     AWS_S3_ADDRESSING_STYLE = 'virtual'
-
 
     STORAGES = {
         "default": {
@@ -77,7 +72,6 @@ if RENDER_EXTERNAL_HOSTNAME:
         "staticfiles": {
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
-
     }
 
 else:
@@ -101,15 +95,15 @@ else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
     STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
         "staticfiles": {
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
 
 APPEND_SLASH = False
-
-if not DEBUG and 'storages' not in INSTALLED_APPS:
-    INSTALLED_APPS.append('storages')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -180,7 +174,6 @@ REDIS_URL = os.environ.get('REDIS_URL')
 if REDIS_URL:
     CELERY_BROKER_URL = REDIS_URL
     CELERY_RESULT_BACKEND = REDIS_URL
-
 else:
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
